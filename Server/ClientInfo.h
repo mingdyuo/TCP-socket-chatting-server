@@ -118,8 +118,6 @@ public:
 		);
 		
 		if(nRet == SOCKET_ERROR && (WSAGetLastError() != ERROR_IO_PENDING)){
-			// printf("[에러] WSARecv()함수 실패 : %d\n", WSAGetLastError());
-			// 10054 뜨는데 이거 어떻게 잘 프로세스 맞춰서 종료해야되징?
 			printf("[알림] 클라이언트(%d) 연결 종료\n", GetIndex());
 			Close();
 			return false;

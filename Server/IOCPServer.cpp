@@ -83,7 +83,7 @@ void IOCPServer::DestroyThread(){
     mbIsWorkerRun = false;
     CloseHandle(mIOCPHandle);
 
-    for(size_t i = 0;i<mIOWorkerThreads.size();++i){
+    for(size_t i = 0; i < mIOWorkerThreads.size();++i){
         WaitForSingleObject(mIOWorkerThreads[i], INFINITE);
     }
 
@@ -107,6 +107,7 @@ bool IOCPServer::createWorkerThread(){
 
     for(int i=0;i<MAX_WORKERTHREAD;i++){
         hThread = CreateThread(NULL, 0, StaticWorkerThread, this, 0, &dwThreadId);
+        if(hThread==NULL) return false;
         mIOWorkerThreads.push_back(hThread);
     }
 
@@ -117,6 +118,7 @@ bool IOCPServer::createWorkerThread(){
 bool IOCPServer::createAccepterThread(){
     unsigned long dwThreadId;
     mAccepterThread = CreateThread(NULL, 0, StaticAccepterThread, (void*) this, 0, &dwThreadId);
+    if(mAccepterThread == NULL) return false;
     CloseHandle(mAccepterThread);
 
     printf("Accepter Thread 시작\n");
@@ -234,3 +236,95 @@ DWORD IOCPServer::WorkerThread(){
     return dwResult;
 }
 
+
+
+bool IOCPServer::ActionProcess(DWORD dwIoSize, stClientInfo* senderClient){
+        
+    Parser parser = Parser(senderClient->mRecvBuf);
+
+    switch(parser.mAction){
+        case CHAT_MULTICAST:
+            MultiCast(dwIoSize, senderClient);
+            break;
+        case CHAT_UNICAST:
+            UniCast(&parser, senderClient);
+            break;
+        case CHAT_BROADCAST:
+        case ROOM_ENTER:
+        case ROOM_EXIT: 
+            BroadCast(dwIoSize, senderClient);
+            break;
+        case SERVER_ENTER:
+            if(senderClient->mbHasNick) {
+                printf("[에러] 닉네임이 이미 세팅되어 있음\n");
+                return false;
+            }
+            senderClient->setNickname(dwIoSize);
+            BroadCast(dwIoSize, senderClient);
+            break;
+        case SERVER_EXIT:
+            MultiCast(dwIoSize, senderClient);
+            senderClient->Close();
+            break;
+        default:
+            return false;
+    }
+    return true;
+}
+
+size_t IOCPServer::GetNicknameIndex(char* nickname){
+    for(size_t i = 0;i<mClientCnt;i++){
+        if(0 == strcmp(nickname, mClientInfos[i].mNickname))
+            return i;
+    }
+    return mMaxClientCount;
+}
+
+void IOCPServer::BroadCast(DWORD dwIoSize, stClientInfo* senderClient){
+    size_t senderIndex = senderClient->GetIndex();
+    std::vector<size_t> closedClient;
+    for(size_t i = 0;i<mClientCnt;i++){
+        if(i == senderIndex || mClientInfos[i].IsConnected() == false) continue;
+        bool bSuccess = mClientInfos[i].SendMsg(dwIoSize, senderClient->mRecvBuf);
+        if(!bSuccess) closedClient.push_back(i);
+    }
+
+    for(size_t i=0;i<closedClient.size();++i){
+        mClientInfos[closedClient[i]].Close();
+        --mClientCnt;
+    }
+};
+
+void IOCPServer::UniCast(Parser* parser, stClientInfo* senderClient){
+    char nickname[32];
+    parser->GetClient(nickname);
+
+    size_t recvIndex = GetNicknameIndex(nickname);
+    if(recvIndex == mMaxClientCount){
+        // 그런 닉네임 없다~
+        bool bSuccess = senderClient->SendMsg(sizeof(notFoundUser), notFoundUser);
+        if(!bSuccess) mClientInfos[recvIndex].Close();
+        return;
+    }
+    int msgLen = parser->SetSender(senderClient->mNickname);
+
+    bool bSuccess = mClientInfos[recvIndex].SendMsg(msgLen, senderClient->mRecvBuf);
+    if(!bSuccess) mClientInfos[recvIndex].Close();
+}
+
+void IOCPServer::MultiCast(DWORD dwIoSize, stClientInfo* senderClient){
+    size_t senderIndex = senderClient->GetIndex();
+    std::vector<size_t> closedClient;
+    for(size_t i = 0;i<mMaxClientCount;i++){
+        if(i == senderIndex || mClientInfos[i].IsConnected() == false || 
+            mClientInfos[i].mRoom != senderClient->mRoom) continue;
+
+        bool bSuccess = mClientInfos[i].SendMsg(dwIoSize, senderClient->mRecvBuf);
+        if(!bSuccess) closedClient.push_back(i);
+    }
+
+    for(size_t i=0;i<closedClient.size();++i){
+        mClientInfos[closedClient[i]].Close();
+        --mClientCnt;
+    }
+}

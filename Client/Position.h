@@ -31,7 +31,7 @@ private:
 public:
     Position(){
         mSendPos.X = 0, mSendPos.Y = 20;
-        mRecvPos.X = 0, mRecvPos.Y = 1;
+        mRecvPos.X = 0, mRecvPos.Y = 6;
         mHelpPos.X = 60, mHelpPos.Y = 7;
     }
     
@@ -112,10 +112,10 @@ public:
         setColor(action);
         switch(action){
             case ROOM_ENTER:
-            printf("[%s´ÔÀÌ ÀÔÀåÇÏ¼Ì½À´Ï´Ù.]\n", nickname); break;
+            printf("[¾Ë¸²] %s´ÔÀÌ ÀÔÀåÇÏ¼Ì½À´Ï´Ù.\n", nickname); break;
             case SERVER_EXIT:
             case ROOM_EXIT:
-            printf("[%s´ÔÀÌ ÅðÀåÇÏ¼Ì½À´Ï´Ù.]\n", nickname); break;
+            printf("[¾Ë¸²] %s´ÔÀÌ ÅðÀåÇÏ¼Ì½À´Ï´Ù.]\n", nickname); break;
             
         }
     }
