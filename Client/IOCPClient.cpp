@@ -41,9 +41,15 @@ bool IOCPClient::SetNickname(){
         printf("[연결됨] 대화에 사용할 닉네임을 입력하세요(최대 31글자)\n");
         scanf("%s", mNickname);
     } while(strlen(mNickname)==0);
-    char packet[36] = "11||";
-    strcat(packet, mNickname);
-    send(mSocket, packet, (int)strlen(packet), 0);
+    
+    SERVER_ENTER_PACKET* _packet = new SERVER_ENTER_PACKET();
+    strncpy(_packet->Sender, mNickname, strlen(mNickname) + 1);
+    _packet->Type = ROOM_ENTER;
+    _packet->Length = (UINT16)strlen(mNickname) + 1;
+
+    send(mSocket, (char*)_packet, _packet->Length + PACKET_HEADER_LENGTH, 0);
+    delete _packet;
+
     return true;
 }
 
@@ -81,6 +87,33 @@ void IOCPClient::parseContent(char* received, char* content, char* sender){
 }
 
 void IOCPClient::processRecvMsg(char* received, char* content, char* sender){
+    PACKET_HEADER* packetHeader = (PACKET_HEADER*)received;
+    switch(packetHeader->Type){
+        case SERVER_EXIT:
+        case ROOM_ENTER:
+        case ROOM_EXIT:
+        {
+            ROOM_EXIT_PACKET* _packet = (ROOM_EXIT_PACKET*)received;
+            // memcpy(sender, _packet->Sender, _packet->Length);
+            pos.RoomMessage(_packet->Sender, _packet->Type);
+            break;
+        }
+        case CHAT_BROADCAST:
+        case CHAT_MULTICAST:
+        {
+            CHAT_PACKET* _packet = (CHAT_PACKET*)received;
+            memcpy(content, _packet->Content, _packet->Length);
+            pos.Receive(_packet->Sender, content, _packet->Type);
+        }
+        case CHAT_UNICAST:{
+            // parseContent(received, content, sender);
+            // pos.Receive(sender, content, action); break;
+        }
+            
+        default: break;
+    }
+
+
     int action = received[0] - '0';
     action *= 10;
     action += received[1] - '0';
@@ -102,26 +135,64 @@ void IOCPClient::processRecvMsg(char* received, char* content, char* sender){
     }
 }
 
-int IOCPClient::processSendMsg(std::string& content, std::string& packet){
-    if(content[0]!='/') {
-        packet = "32|" + content + '|' + mNickname;
-        return CHAT_MULTICAST;
-    }
-    else if(content == "/quit") {
-        packet = "12||" + std::string(mNickname);
+int IOCPClient::processSendMsg(std::string& content){
+
+    if(content == "/quit") {
+        SERVER_EXIT_PACKET packet;
+        packet.Type = SERVER_EXIT;
+        strcpy(packet.Sender, mNickname);
+        packet.Length = strlen(mNickname);
+
+        int success = send(mSocket, (char*)&packet, packet.Length + PACKET_HEADER_LENGTH, 0);
+        if(success == SOCKET_ERROR) {mbIsWorkerRun = false; return 0;}
+
         return SERVER_EXIT;
     }
     else if(content == "/lobby") {
-        packet = "22||" + std::string(mNickname);
+        ROOM_EXIT_PACKET packet;
+        packet.Type = ROOM_EXIT;
+        strcpy(packet.Sender, mNickname);
+        packet.Length = strlen(mNickname);
+
+        int success = send(mSocket, (char*)&packet, packet.Length + PACKET_HEADER_LENGTH, 0);
+        if(success == SOCKET_ERROR) {mbIsWorkerRun = false; return 0;}
+
         return ROOM_EXIT;
     }
     else if(content.find("/전체 ")==0) {
         content = content.substr(6);
-        packet = "31|" + content + '|' + std::string(mNickname);
+
+        CHAT_PACKET packet;
+        packet.Type = CHAT_BROADCAST;
+        strcpy(packet.Sender, mNickname);
+        strcpy(packet.Content, content.c_str());
+        packet.Length = MAX_NICKNAME_LEN + content.length();
+
+        int success = send(mSocket, (char*)&packet, packet.Length + PACKET_HEADER_LENGTH, 0);
+        if(success == SOCKET_ERROR) {mbIsWorkerRun = false; return 0;}
+
+        pos.Receive(mNickname, content.c_str(), CHAT_BROADCAST);
+
+        printf("\n패킷 [%s] : %s\n", packet.Sender, packet.Content);
+            printf("값 체크 ㄱㄱ : 타입[%u] 길이[%u]\n", packet.Type, packet.Length);
+
         return CHAT_BROADCAST;
     }
     else{
-        packet = "32|" + content + '|' + mNickname;
+        CHAT_PACKET packet;
+        packet.Type = CHAT_MULTICAST;
+        strcpy(packet.Sender, mNickname);
+        strcpy(packet.Content, content.c_str());
+        packet.Length = MAX_NICKNAME_LEN + content.length();
+
+        int success = send(mSocket, (char*)&packet, packet.Length + PACKET_HEADER_LENGTH, 0);
+        if(success == SOCKET_ERROR) {mbIsWorkerRun = false; return 0;}
+        
+        pos.Receive(mNickname, content.c_str(), CHAT_MULTICAST);
+
+        printf("\n패킷 [%s] : %s\n", packet.Sender, packet.Content);
+            printf("값 체크 ㄱㄱ : 타입[%u] 길이[%u]\n", packet.Type, packet.Length);
+
         return CHAT_MULTICAST;
     }
 
@@ -150,7 +221,8 @@ DWORD IOCPClient::RecvThread(){
 }
 
 DWORD IOCPClient::SendThread(){
-    std::string content, packet;
+    std::string content;
+    
     while (mbIsWorkerRun) { 
         do{
             pos.SendBox(mNickname);
@@ -158,29 +230,8 @@ DWORD IOCPClient::SendThread(){
             if(!mbIsWorkerRun) return 0;
         } while(content.empty());
 
-        int action = processSendMsg(content, packet);
-        switch(action){
-            case SERVER_EXIT:
-                send(mSocket, packet.c_str(), (int)packet.length(), 0);
-                Close();
-                return 0;
-            case ROOM_EXIT:
-            {
-                int success = send(mSocket, packet.c_str(), (int)packet.length(), 0);
-                if(success == SOCKET_ERROR) {mbIsWorkerRun = false; return 0;}
-                break;
-            }
-            case CHAT_BROADCAST:
-            case CHAT_MULTICAST:
-            case CHAT_UNICAST:
-            {
-                int success = send(mSocket, packet.c_str(), (int)packet.length(), 0);
-                if(success == SOCKET_ERROR) {mbIsWorkerRun = false; return 0;}
-                pos.Receive(mNickname, content.c_str(), action);
-            }
-            default:
-                break;
-        }
+        int action = processSendMsg(content);
+
         content.clear();
     }
     return 0;

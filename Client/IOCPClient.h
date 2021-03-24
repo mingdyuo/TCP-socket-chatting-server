@@ -4,14 +4,16 @@
 #include <cstdio>
 #include <iostream>
 #include "Position.h"
-#include "parser.h"
+#include "Packet.h"
+
 
 
 class IOCPClient{
 private:
+    static const int MAX_NICKNAME_LEN = 32;
     SOCKET mSocket;
     bool mbIsWorkerRun;
-    char mNickname[32];
+    char mNickname[MAX_NICKNAME_LEN];
     INT16 mRoom;
 
     Position pos;
@@ -45,7 +47,7 @@ public:
 
     void parseContent(char* received, char* content, char* sender);
     void processRecvMsg(char* received, char* content, char* sender);
-    int processSendMsg(std::string& content, std::string& packet);
+    int processSendMsg(std::string& content);
     
 
    
