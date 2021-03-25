@@ -67,23 +67,10 @@ void IOCPClient::ShowHelpBox(){
 }
 
 bool IOCPClient::Close(){
-    printf("[알람] 연결이 종료되었습니다.\n");
+    printf("[알림] 연결이 종료되었습니다.\n");
     mbIsWorkerRun = false;
     closesocket(mSocket);
     return true;
-}
-
-void IOCPClient::parseContent(char* received, char* content, char* sender){
-    int idx = 3, nickIdx = 0;
-    for(;received[idx]!='|';++idx){
-        content[idx - 3] = received[idx];
-    }
-    content[idx - 3] = '\0';
-    ++idx;
-    for(;received[idx+nickIdx]!='\0';++nickIdx){
-        sender[nickIdx] = received[idx+nickIdx];
-    }
-    sender[nickIdx] = '\0';
 }
 
 void IOCPClient::processRecvMsg(char* received, char* content, char* sender){
@@ -93,8 +80,7 @@ void IOCPClient::processRecvMsg(char* received, char* content, char* sender){
         case ROOM_ENTER:
         case ROOM_EXIT:
         {
-            ROOM_EXIT_PACKET* _packet = (ROOM_EXIT_PACKET*)received;
-            // memcpy(sender, _packet->Sender, _packet->Length);
+            SYSTEM_PACKET* _packet = (SYSTEM_PACKET*)received;
             pos.RoomMessage(_packet->Sender, _packet->Type);
             break;
         }
@@ -104,38 +90,18 @@ void IOCPClient::processRecvMsg(char* received, char* content, char* sender){
             CHAT_PACKET* _packet = (CHAT_PACKET*)received;
             memcpy(content, _packet->Content, _packet->Length);
             pos.Receive(_packet->Sender, content, _packet->Type);
+            break;
         }
-        case CHAT_UNICAST:{
-            // parseContent(received, content, sender);
-            // pos.Receive(sender, content, action); break;
+        case CHAT_UNICAST:
+        {
+            UNICAST_PACKET* _packet = (UNICAST_PACKET*)received;
         }
             
         default: break;
     }
-
-
-    int action = received[0] - '0';
-    action *= 10;
-    action += received[1] - '0';
-
-    switch(action){
-        case SERVER_EXIT:
-        case ROOM_ENTER:
-        case ROOM_EXIT:
-            memcpy(sender, &received[4], sizeof(received) - 4);
-            pos.RoomMessage(sender, action);
-            break;
-        case CHAT_BROADCAST:
-        case CHAT_MULTICAST:
-        case CHAT_UNICAST:
-            parseContent(received, content, sender);
-            pos.Receive(sender, content, action); break;
-        default:
-            break;
-    }
 }
 
-int IOCPClient::processSendMsg(std::string& content){
+CODE_ IOCPClient::processSendMsg(std::string& content){
 
     if(content == "/quit") {
         SERVER_EXIT_PACKET packet;
@@ -144,7 +110,7 @@ int IOCPClient::processSendMsg(std::string& content){
         packet.Length = strlen(mNickname);
 
         int success = send(mSocket, (char*)&packet, packet.Length + PACKET_HEADER_LENGTH, 0);
-        if(success == SOCKET_ERROR) {mbIsWorkerRun = false; return 0;}
+        if(success == SOCKET_ERROR) {mbIsWorkerRun = false; return UNINITIALIZED;}
 
         return SERVER_EXIT;
     }
@@ -155,7 +121,7 @@ int IOCPClient::processSendMsg(std::string& content){
         packet.Length = strlen(mNickname);
 
         int success = send(mSocket, (char*)&packet, packet.Length + PACKET_HEADER_LENGTH, 0);
-        if(success == SOCKET_ERROR) {mbIsWorkerRun = false; return 0;}
+        if(success == SOCKET_ERROR) {mbIsWorkerRun = false; return UNINITIALIZED;}
 
         return ROOM_EXIT;
     }
@@ -169,12 +135,9 @@ int IOCPClient::processSendMsg(std::string& content){
         packet.Length = MAX_NICKNAME_LEN + content.length();
 
         int success = send(mSocket, (char*)&packet, packet.Length + PACKET_HEADER_LENGTH, 0);
-        if(success == SOCKET_ERROR) {mbIsWorkerRun = false; return 0;}
+        if(success == SOCKET_ERROR) {mbIsWorkerRun = false; return UNINITIALIZED;}
 
         pos.Receive(mNickname, content.c_str(), CHAT_BROADCAST);
-
-        printf("\n패킷 [%s] : %s\n", packet.Sender, packet.Content);
-            printf("값 체크 ㄱㄱ : 타입[%u] 길이[%u]\n", packet.Type, packet.Length);
 
         return CHAT_BROADCAST;
     }
@@ -186,16 +149,14 @@ int IOCPClient::processSendMsg(std::string& content){
         packet.Length = MAX_NICKNAME_LEN + content.length();
 
         int success = send(mSocket, (char*)&packet, packet.Length + PACKET_HEADER_LENGTH, 0);
-        if(success == SOCKET_ERROR) {mbIsWorkerRun = false; return 0;}
+        if(success == SOCKET_ERROR) {mbIsWorkerRun = false; return UNINITIALIZED;}
         
         pos.Receive(mNickname, content.c_str(), CHAT_MULTICAST);
-
-        printf("\n패킷 [%s] : %s\n", packet.Sender, packet.Content);
-            printf("값 체크 ㄱㄱ : 타입[%u] 길이[%u]\n", packet.Type, packet.Length);
 
         return CHAT_MULTICAST;
     }
 
+    return UNINITIALIZED;
     // 귓속말 처리 추가 해야 함
 }
 
@@ -208,7 +169,7 @@ DWORD IOCPClient::RecvThread(){
         memset(&received, 0, sizeof(received));
         int length = recv(mSocket, received, sizeof(received), 0);
         if(length <= 0) {
-            printf("연결이 끊어졌습니다.\n");
+            printf("서버와 연결이 끊어졌습니다.\n");
             Close();
             break;
         }
@@ -230,7 +191,12 @@ DWORD IOCPClient::SendThread(){
             if(!mbIsWorkerRun) return 0;
         } while(content.empty());
 
-        int action = processSendMsg(content);
+        CODE_ action = processSendMsg(content);
+
+        if(action == UNINITIALIZED){
+            Close();
+            break;
+        }
 
         content.clear();
     }
