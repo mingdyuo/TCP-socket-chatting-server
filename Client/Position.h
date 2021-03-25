@@ -1,5 +1,4 @@
-#include <windows.h>
-#include "parser.h"
+#include "Packet.h"
 #define BLACK 0 
 #define BLUE 1 
 #define GREEN 2 
@@ -25,16 +24,24 @@ enum IOOperation
 
 class Position{
 private:
-    COORD mSendPos;
-    COORD mRecvPos;
-    COORD mHelpPos;
-public:
-    Position(){
+    COORD       mSendPos;
+    COORD       mRecvPos;
+    COORD       mHelpPos;
+    COORD       mLobbyPos;
+
+    int         mRoomPtr;
+    static const int   mMaxRoomCount = 5;
+    
+    void initialize(){
         mSendPos.X = 0, mSendPos.Y = 20;
         mRecvPos.X = 0, mRecvPos.Y = 6;
         mHelpPos.X = 60, mHelpPos.Y = 7;
+        mLobbyPos.X = 0, mLobbyPos.Y = 4;
     }
     
+public:
+    Position():mRoomPtr(1){initialize();}
+
     void setColor(int action){
         int color;
         switch(action){
@@ -54,6 +61,61 @@ public:
         SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color); 
     }
 
+    void Lobby(){
+        mRoomPtr = 1;
+        system("cls");
+        gotoxy(mLobbyPos.X,0); printf("   / __      ___     // //  ___                       ___      __     //  ___   /  \n");
+        gotoxy(mLobbyPos.X,1); printf("  //   ) ) //___) ) // // //   ) )     //  / /  / / //   ) ) //  ) ) // //   ) /   \n");
+        gotoxy(mLobbyPos.X,2); printf(" //   / / //       // // //   / /     //  / /  / / //   / / //      // //   / /    \n");
+        gotoxy(mLobbyPos.X,3); printf("//   / / ((____   // // ((___/ /     ((__( (__/ / ((___/ / //      // ((___/ /     \n");
+
+        for(int i=1;i<=mMaxRoomCount;i++){
+            gotoxy(mLobbyPos.X,mLobbyPos.Y + i); printf("[    ] %d번 대화방 \n", i);    
+        }
+        gotoxy(mLobbyPos.X + 2,mLobbyPos.Y + mRoomPtr); printf("▶");
+    }
+
+    int LobbyControl(int input_){
+        const int UP    = 72;
+        const int DOWN  = 80;
+        const int ENTER = 13;
+
+        switch(input_){
+            case ENTER:
+                return mRoomPtr;
+                break;
+            case DOWN:
+                if(mRoomPtr < mMaxRoomCount) {
+                    gotoxy(mLobbyPos.X + 2,mLobbyPos.Y + mRoomPtr); printf("  ");
+                    mRoomPtr++;
+                    gotoxy(mLobbyPos.X + 2,mLobbyPos.Y + mRoomPtr); printf("▶");
+                }
+                break;
+            case UP:
+                if(mRoomPtr > 1) {
+                    gotoxy(mLobbyPos.X + 2,mLobbyPos.Y + mRoomPtr); printf("  ");
+                    mRoomPtr--;
+                    gotoxy(mLobbyPos.X + 2,mLobbyPos.Y + mRoomPtr); printf("▶");
+                }
+                break;
+
+        }
+        return 0;
+    }
+
+    void EnterRoom(int pRoomNo, char* pNickname){
+        initialize();
+        system("cls");
+        printf("      ┏━━┓┏━━┓┏━━┓ ┏┓\n");
+        printf("      ┗━┓┃┃┏┓┃┗━┓┃ ┃┃\n");
+        printf("      ┏━┛┃┃┃┃┃┏━┛┃ ┃┃\n");
+        printf("      ┃┏━┛┃┃┃┃┃┏━┛ ┃┃\n");
+        printf("      ┃┗━┓┃┗┛┃┃┗━┓ ┃┃\n");
+        printf("      ┗━━┛┗━━┛┗━━┛ ┗┛\n");
+        printf("[알림] %d번 대화방에 입장하셨습니다.\n", pRoomNo);
+
+        helpBox(pNickname);
+    }
 
     void SetSendPos(int nicknameLength){
         mSendPos.X = nicknameLength;
@@ -115,7 +177,7 @@ public:
             printf("[알림] %s님이 입장하셨습니다.\n", nickname); break;
             case SERVER_EXIT:
             case ROOM_EXIT:
-            printf("[알림] %s님이 퇴장하셨습니다.]\n", nickname); break;
+            printf("[알림] %s님이 퇴장하셨습니다.\n", nickname); break;
             
         }
     }

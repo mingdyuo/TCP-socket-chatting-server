@@ -36,7 +36,7 @@ typedef struct SYSTEM_PACKET : public PACKET_HEADER{
 struct ROOM_ENTER_PACKET : public SYSTEM_PACKET{
     int RoomNo;
 };
-
+const int ROOM_ENTER_PACKET_LENGTH = sizeof(ROOM_ENTER_PACKET);
 
 typedef struct CHAT_PACKET : public PACKET_HEADER{
     char Sender[MAX_NICKNAME_LEN];

@@ -44,14 +44,19 @@ public:
         if(bConnected == false) {
             return false;
         }
+
+        ++mUserCount;
+        printf("[알림] Client(%d) 연결 완료\n", index);
     }
 
     void CloseClient(stClientInfo* client){
         client->Close();
+        --mUserCount;
     }
 
     void CloseClient(int index_){
         mClientInfos[index_].Close();
+        --mUserCount;
     }
 
     char* MoveData(int index_, int ioSize_){
@@ -59,25 +64,28 @@ public:
         return mClientInfos[index_].GetSendBuf();
     }
 
-    void SetNickname(stClientInfo* client, char* nickname_){
-        client->SetNickname(nickname_);
-    }
-
     void BroadCast(const UINT32 senderClientIndex_, const UINT32 size_, char* pData_){
         for(int i=0;i<mMaxClientCount;i++){
             if(mClientInfos[i].IsConnected() == false || i == senderClientIndex_) continue;
-            mClientInfos[i].SendMsg(size_, pData_);
+            mClientInfos[i].SendMsg(size_, pData_, SEND);
         }
     }
 
-    void MultiCast(const UINT32 senderClientIndex_, const UINT32 size_, char* pData_){
+    void MultiCast(const UINT32 senderClientIndex_, const UINT32 size_, char* pData_, IOOperation IoType_ = SEND){
         int senderRoom = mClientInfos[senderClientIndex_].GetRoom();
         if(senderRoom == stClientInfo::LOBBY) return;
 
         for(int i=0;i<mMaxClientCount;i++){
-            if(mClientInfos[i].IsConnected() == false || i == senderClientIndex_ || mClientInfos[i].GetRoom() != senderRoom) continue;
+            if(mClientInfos[i].IsConnected() == false || mClientInfos[i].GetRoom() != senderRoom || senderClientIndex_ == i) continue;
 
-            mClientInfos[i].SendMsg(size_, pData_);
+            mClientInfos[i].SendMsg(size_, pData_, SEND);
+        }
+
+        if(IoType_ == CLOSE){
+            mClientInfos[senderClientIndex_].SendMsg(size_, pData_, CLOSE);
+        }
+        if(IoType_ == SELF){
+            mClientInfos[senderClientIndex_].SendMsg(size_, pData_, SEND);
         }
     }
 

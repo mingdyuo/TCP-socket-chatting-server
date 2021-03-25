@@ -14,13 +14,14 @@ public:
 
     IOCPServer(void):
     mListenSocket(INVALID_SOCKET), mIOCPHandle(INVALID_HANDLE_VALUE),
-    mbIsWorkerRun(false), mbIsAccepterRun(false), mClientMgr(NULL){}
+    mbIsWorkerRun(true), mbIsAccepterRun(true), mClientMgr(NULL){}
 
     virtual ~IOCPServer(void){ WSACleanup(); }
     
     virtual void OnReceive(const UINT32 clientIndex_, const UINT32 size_, char* pData_) {}
     virtual void OnSend(const UINT32 clientIndex_, const UINT32 size_) {}
     virtual void OnCreate(const UINT32 clientIndex_, const UINT32 size_, char* pData_) {}
+    virtual void OnClose(int clientIndex_){}
 
     bool InitSocket();
     bool BindAndListen(int nBindPort);    

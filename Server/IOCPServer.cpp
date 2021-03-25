@@ -86,7 +86,6 @@ bool IOCPServer::CreateThreads(){
 }
 
 
-// TODO
 bool IOCPServer::DestroyThreads(){
     mbIsWorkerRun = false;
     CloseHandle(mIOCPHandle);
@@ -99,6 +98,7 @@ bool IOCPServer::DestroyThreads(){
     closesocket(mListenSocket);
 
     WaitForSingleObject(mAccepterThread, INFINITE);
+    return true;
 }
 
 DWORD IOCPServer::AccepterThread(){
@@ -155,6 +155,7 @@ DWORD IOCPServer::WorkerThread(){
 
         stOverlappedEx* pOverlappedEx = (stOverlappedEx*)lpOverlapped;
 
+
         if(SEND == pOverlappedEx->m_eOperation){
             OnSend(pClientInfo->GetIndex(), dwIoSize);
             delete[] pOverlappedEx->m_wsaBuf.buf;
@@ -162,11 +163,14 @@ DWORD IOCPServer::WorkerThread(){
         }
         else if(RECV == pOverlappedEx->m_eOperation){
             OnReceive(pClientInfo->GetIndex(), dwIoSize, pClientInfo->RecvBuffer());
-            pClientInfo->BindRecv();
+            pClientInfo->BindRecv(RECV);
         }
         else if(ACCEPT == pOverlappedEx->m_eOperation){
             OnCreate(pClientInfo->GetIndex(), dwIoSize, pClientInfo->RecvBuffer());
-            pClientInfo->BindRecv();
+            pClientInfo->BindRecv(RECV);
+        }
+        else if(CLOSE == pOverlappedEx->m_eOperation){
+            OnClose(pClientInfo->GetIndex());
         }
 
     }

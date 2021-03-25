@@ -15,25 +15,15 @@ int main()
     iocpClient.ConnectServer(SERVER_PORT);
     iocpClient.SetNickname();
     iocpClient.CreateThreads(&sender, &recver);
+    iocpClient.Lobby();
 
-    system("cls");
-    printf("      ┏━━┓┏━━┓┏━━┓ ┏┓\n");
-    printf("      ┗━┓┃┃┏┓┃┗━┓┃ ┃┃\n");
-    printf("      ┏━┛┃┃┃┃┃┏━┛┃ ┃┃\n");
-    printf("      ┃┏━┛┃┃┃┃┃┏━┛ ┃┃\n");
-    printf("      ┃┗━┓┃┗┛┃┃┗━┓ ┃┃\n");
-    printf("      ┗━━┛┗━━┛┗━━┛ ┗┛\n");
-    printf("[알림] 대화방에 입장하셨습니다.\n", iocpClient.getNickname());
-
-
-    iocpClient.ShowHelpBox();
 
     WaitForSingleObject (sender, INFINITE);
     WaitForSingleObject (recver, INFINITE);
     
     iocpClient.Close();
 
-    printf("[알림] 클라이언트가 종료되었습니다. 아무키나 누르면 창을 종료합니다.\n");
+    printf("[알림] 클라이언트가 종료되었습니다. 엔터키를 눌러 창을 종료합니다.\n");
     getchar();
     return 0;
 }

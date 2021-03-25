@@ -14,7 +14,7 @@ private:
     SOCKET mSocket;
     bool mbIsWorkerRun;
     char mNickname[MAX_NICKNAME_LEN];
-    INT16 mRoom;
+    int mRoom;
 
     Position pos;
 
@@ -29,7 +29,7 @@ public:
     bool ConnectServer(int bBindPort);
     bool SetNickname();
     bool CreateThreads(HANDLE* sender, HANDLE* recver);
-    void ShowHelpBox();
+    bool Lobby();
     bool Close();
 
     DWORD RecvThread();
@@ -47,7 +47,7 @@ public:
 
     void parseContent(char* received, char* content, char* sender);
     void processRecvMsg(char* received, char* content, char* sender);
-    int processSendMsg(std::string& content);
+    CODE_ processSendMsg(std::string& content);
     
 
    
