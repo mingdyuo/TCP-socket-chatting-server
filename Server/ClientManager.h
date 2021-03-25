@@ -4,8 +4,9 @@
 #include <Ws2tcpip.h>
 #include <cstdio>
 #include "ClientInfo.h"
-#define MAX_SOCKBUF 1024	//패킷 크기
 
+#ifndef _CLIENT_MANAGER
+#define _CLIENT_MANAGER
 
 class ClientManager
 {
@@ -97,3 +98,5 @@ private:
     int mUserCount;
     
 };
+
+#endif

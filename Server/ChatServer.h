@@ -45,12 +45,10 @@ private:
             return;
         }
         else if(CHAT_BROADCAST == header->Type){
-            printf("CHAT_BROADCAST\n");
             mClientMgr->BroadCast(clientIndex_, size_, pData_);
             return;
         }
         else if(SERVER_EXIT == header->Type){
-            printf("SERVER_EXIT\n");
             mClientMgr->MultiCast(clientIndex_, size_, pData_, CLOSE);
             return;
         }
