@@ -10,8 +10,7 @@ struct stUserInfo
 public:
     static const int LOBBY = 0;
     static int id;
-    stUserInfo(): mRoom(0) 
-    {ZeroMemory(mNickname, 32);}
+    stUserInfo(): mRoom(0) {ZeroMemory(mNickname, sizeof(mNickname));}
     ~stUserInfo(){}
     
 
@@ -40,6 +39,5 @@ protected:
     int             mRoom;    
     char            mNickname[32];
 };
-
 
 #endif

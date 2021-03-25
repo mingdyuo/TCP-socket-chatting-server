@@ -62,7 +62,7 @@ public:
 
     char* MoveData(int index_, int ioSize_){
         mClientInfos[index_].SetSendBuf(ioSize_);
-        return mClientInfos[index_].GetSendBuf();
+        return mClientInfos[index_].SendBuffer();
     }
 
     void BroadCast(const UINT32 senderClientIndex_, const UINT32 size_, char* pData_){
@@ -92,7 +92,7 @@ public:
 
 
 private:
-    std::vector<stClientInfo> mClientInfos;
+    std::vector<stClientInfo>   mClientInfos;
 
     int mMaxClientCount;
     int mUserCount;
