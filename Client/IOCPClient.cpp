@@ -1,5 +1,5 @@
 #include "IOCPClient.h"
-
+#include "conio.h"
 
 bool IOCPClient::InitSocket(){
     WSADATA wsaData;
@@ -44,7 +44,7 @@ bool IOCPClient::SetNickname(){
     
     SERVER_ENTER_PACKET* _packet = new SERVER_ENTER_PACKET();
     strncpy(_packet->Sender, mNickname, strlen(mNickname) + 1);
-    _packet->Type = ROOM_ENTER;
+    _packet->Type = SERVER_ENTER;
     _packet->Length = (UINT16)strlen(mNickname) + 1;
 
     send(mSocket, (char*)_packet, _packet->Length + PACKET_HEADER_LENGTH, 0);
@@ -62,9 +62,51 @@ bool IOCPClient::CreateThreads(HANDLE* sender, HANDLE* recver){
     return true;
 }
 
-void IOCPClient::ShowHelpBox(){
-    pos.helpBox(mNickname);
+bool IOCPClient::Lobby(){
+    pos.Lobby();
+    const int UP    = 72;
+    const int DOWN  = 80;
+    const int ENTER = 13;
+
+    int key;
+    int roomNo = -1;
+    while(roomNo < 0){
+        key = getch(); 
+        if(key==224){ 
+            key=getch();
+            switch(key){
+                case DOWN:  
+                    pos.LobbyControl(DOWN);
+                    break;
+                case UP:  
+                    pos.LobbyControl(UP);
+                    break;
+                case ENTER:
+                    roomNo = pos.LobbyControl(ENTER);
+                    break;
+            }
+        }
+        else if (key == ENTER){
+            roomNo = pos.LobbyControl(ENTER);
+        }
+    }
+
+    ROOM_ENTER_PACKET packet;
+    packet.Type = ROOM_ENTER;
+    packet.RoomNo = roomNo;
+    strcpy(packet.Sender, mNickname);
+    packet.Length = strlen(mNickname);
+
+    int success = send(mSocket, (char*)&packet, ROOM_ENTER_PACKET_LENGTH, 0);
+    if(success == SOCKET_ERROR) {mbIsWorkerRun = false; return UNINITIALIZED;}
+
+    pos.EnterRoom(roomNo, mNickname);
+    mRoom = roomNo;
+    
+    return true;
 }
+
+
 
 bool IOCPClient::Close(){
     printf("[알림] 연결이 종료되었습니다.\n");
@@ -99,6 +141,7 @@ void IOCPClient::processRecvMsg(char* received, char* content, char* sender){
             
         default: break;
     }
+    pos.SendBox(mNickname);
 }
 
 CODE_ IOCPClient::processSendMsg(std::string& content){
@@ -120,6 +163,7 @@ CODE_ IOCPClient::processSendMsg(std::string& content){
         strcpy(packet.Sender, mNickname);
         packet.Length = strlen(mNickname);
 
+        mRoom = 0;
         int success = send(mSocket, (char*)&packet, packet.Length + PACKET_HEADER_LENGTH, 0);
         if(success == SOCKET_ERROR) {mbIsWorkerRun = false; return UNINITIALIZED;}
 
@@ -166,6 +210,7 @@ DWORD IOCPClient::RecvThread(){
     char content[1024];
     char sender[32];
     while (mbIsWorkerRun) { 
+        while(mRoom == 0) Sleep(500);
         memset(&received, 0, sizeof(received));
         int length = recv(mSocket, received, sizeof(received), 0);
         if(length <= 0) {
@@ -176,7 +221,7 @@ DWORD IOCPClient::RecvThread(){
         received[length] = '\0';
         
         processRecvMsg(received, content, sender);
-        pos.SendBox(mNickname);
+        // pos.SendBox(mNickname);
     }
     return 0;
 }
@@ -185,6 +230,7 @@ DWORD IOCPClient::SendThread(){
     std::string content;
     
     while (mbIsWorkerRun) { 
+        while(mRoom == 0) Sleep(500);
         do{
             pos.SendBox(mNickname);
             getline(std::cin, content);
@@ -196,6 +242,9 @@ DWORD IOCPClient::SendThread(){
         if(action == UNINITIALIZED){
             Close();
             break;
+        }
+        else if(action == ROOM_EXIT){
+            Lobby();
         }
 
         content.clear();

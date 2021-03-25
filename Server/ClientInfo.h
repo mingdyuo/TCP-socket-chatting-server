@@ -6,13 +6,17 @@
 #include <Ws2tcpip.h>
 #include <cstdio>
 
+#include "UserInfo.h"
+
 #define MAX_SOCKBUF 1024	//패킷 크기
 
 enum IOOperation
 {
 	RECV = 0,
 	SEND,
-	ACCEPT
+	ACCEPT,
+	CLOSE,
+	SELF
 };
 
 struct stOverlappedEx
@@ -53,6 +57,7 @@ struct stClientInfo : public stUserInfo
 		ZeroMemory(&m_stSendOverlappedEx, sizeof(stOverlappedEx));
         ZeroMemory(mRecvBuf, sizeof(mRecvBuf));
 		ZeroMemory(mSendBuf, sizeof(mRecvBuf));
+		ZeroMemory(mNickname, sizeof(mNickname));
     }
 
     void Close(){
@@ -79,37 +84,14 @@ struct stClientInfo : public stUserInfo
 		return true;
 	}
 
-    bool AcceptRecv(){
-        DWORD dwFlag = 0;
-		DWORD dwRecvNumBytes = 0;
-
-        m_stRecvOverlappedEx.m_wsaBuf.len = MAX_SOCKBUF;
-		m_stRecvOverlappedEx.m_wsaBuf.buf = mRecvBuf;
-		m_stRecvOverlappedEx.m_eOperation = ACCEPT;
-
-        int nRet = WSARecv(
-			m_socketClient,
-			&(m_stRecvOverlappedEx.m_wsaBuf),
-			1,
-			&dwRecvNumBytes,
-			&dwFlag,
-			(LPWSAOVERLAPPED) & (m_stRecvOverlappedEx),
-			NULL
-		);
-
-        if(nRet == SOCKET_ERROR && (WSAGetLastError() != ERROR_IO_PENDING)){
+    bool Connect(HANDLE iocpHandle_, SOCKET socket_){
+        m_socketClient = socket_;
+        if(BindIOCompletionPort(iocpHandle_) == false){
+			printf("[에러] BindIOCompletionPort() 함수 실패\n");
 			return false;
 		}
 		
-		return true;
-    }
-
-    bool Connect(HANDLE iocpHandle_, SOCKET socket_){
-        m_socketClient = socket_;
-        if(BindIOCompletionPort(iocpHandle_) == false)
-			return false;
-
-        if(false == AcceptRecv()){
+        if(false == BindRecv(ACCEPT)){
             printf("[에러] 클라이언트(%d) 연결 실패\n", mIndex);
             Close();
 			return false;
@@ -121,14 +103,16 @@ struct stClientInfo : public stUserInfo
 	void SetSendBuf(int ioSize_){
 		CopyMemory(mSendBuf, mRecvBuf, ioSize_);
 	}
+
+	char* GetSendBuf(){return mSendBuf;}
     
-    bool BindRecv(){
+    bool BindRecv(IOOperation ioType_){
 		DWORD dwFlag = 0;
 		DWORD dwRecvNumBytes = 0;
 
 		m_stRecvOverlappedEx.m_wsaBuf.len = MAX_SOCKBUF;
 		m_stRecvOverlappedEx.m_wsaBuf.buf = mRecvBuf;
-		m_stRecvOverlappedEx.m_eOperation = RECV;
+		m_stRecvOverlappedEx.m_eOperation = ioType_;
 
 		int nRet = WSARecv(
 			m_socketClient,
@@ -141,7 +125,7 @@ struct stClientInfo : public stUserInfo
 		);
 		
 		if(nRet == SOCKET_ERROR && (WSAGetLastError() != ERROR_IO_PENDING)){
-			printf("[알림] 클라이언트(%d) 연결 종료\n", mIndex);
+			printf("[알림] RECV_SOCKET_ERROR 클라이언트(%d) 연결 종료\n", mIndex);
 			Close();
 			return false;
 		}
@@ -149,14 +133,14 @@ struct stClientInfo : public stUserInfo
 		return true;
 	}
 
-    bool SendMsg(const UINT32 dataSize_, char* pMsg_){
+    bool SendMsg(const UINT32 dataSize_, char* pMsg_, IOOperation ioType_){
 		// TODO : 구조체 내 sende overlapped 사용하도록 변경해보자
 		stOverlappedEx* sendOverlappedEx = new stOverlappedEx;
 		ZeroMemory(sendOverlappedEx, sizeof(stOverlappedEx));
 		sendOverlappedEx->m_wsaBuf.len = dataSize_;
 		sendOverlappedEx->m_wsaBuf.buf = new char[dataSize_];
 		CopyMemory(sendOverlappedEx->m_wsaBuf.buf, pMsg_, dataSize_);
-		sendOverlappedEx->m_eOperation = SEND;
+		sendOverlappedEx->m_eOperation = ioType_;
 		
 		DWORD dwRecvNumBytes = 0;
 		int nRet = WSASend(m_socketClient,
@@ -170,7 +154,7 @@ struct stClientInfo : public stUserInfo
 
 		if (nRet == SOCKET_ERROR && (WSAGetLastError() != ERROR_IO_PENDING))
 		{
-			printf("[알림] 클라이언트(%d) 연결 종료\n", mIndex);
+			printf("[알림] SEND_SOCKET_ERROR 클라이언트(%d) 연결 종료\n", mIndex);
 			Close();
 			return false;
 		}

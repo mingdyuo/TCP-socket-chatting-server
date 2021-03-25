@@ -4,7 +4,6 @@
 #include <queue>
 #include <functional>
 #include <map>
-#include "UserManager.h"
 #include "Packet.h"
 
 

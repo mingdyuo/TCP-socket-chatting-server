@@ -6,16 +6,22 @@
 
 struct stUserInfo
 {
-private:
-    static const int LOBBY = 0;
 public:
+    static const int LOBBY = 0;
     static int id;
-    stUserInfo(): mId(id++), mRoom(-1) 
+    stUserInfo(): mRoom(0) 
     {ZeroMemory(mNickname, 32);}
     ~stUserInfo(){}
+    
 
     char* GetNickname(){return mNickname;}
-    void SetNickname(char* nickname){CopyMemory(mNickname, nickname, strlen(nickname));}
+    void SetNickname(char* nickname){
+        mRoom = 0;
+        mId = id++;
+        CopyMemory(mNickname, nickname, strlen(nickname));
+    }
+
+    int GetRoom(){return mRoom;}
     
     bool EnterRoom(int RoomNumber){
         if(mRoom!=LOBBY) return false;
