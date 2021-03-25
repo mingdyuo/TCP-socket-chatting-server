@@ -1,8 +1,9 @@
-#ifndef _STRUCT_USER_INFO
-#define _STRUCT_USER_INFO
 
 #include <cstdio>
 #include <windows.h>
+
+#ifndef _STRUCT_USER_INFO
+#define _STRUCT_USER_INFO
 
 struct stUserInfo
 {
