@@ -1,6 +1,7 @@
 #pragma once
 
 #include "IOCPServer.h"
+#include "ClientManager.h"
 
 class ChatServer : public IOCPServer
 {

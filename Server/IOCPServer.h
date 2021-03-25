@@ -4,7 +4,6 @@
 #include <vector>
 #include <cstring>
 #include "Packet.h"
-#include "ClientManager.h"
 
 #ifndef _IOCP_SERVER
 #define _IOCP_SERVER
@@ -19,21 +18,21 @@ public:
 
     virtual ~IOCPServer(void){ WSACleanup(); }
     
-    virtual void OnReceive(const UINT32 clientIndex_, const UINT32 size_, char* pData_) {}
-    virtual void OnSend(const UINT32 clientIndex_, const UINT32 size_) {}
-    virtual void OnCreate(const UINT32 clientIndex_, const UINT32 size_, char* pData_) {}
-    virtual void OnClose(int clientIndex_){}
+    virtual void    OnReceive(const UINT32 clientIndex_, const UINT32 size_, char* pData_) {}
+    virtual void    OnSend(const UINT32 clientIndex_, const UINT32 size_) {}
+    virtual void    OnCreate(const UINT32 clientIndex_, const UINT32 size_, char* pData_) {}
+    virtual void    OnClose(int clientIndex_){}
 
-    bool InitSocket();
-    bool BindAndListen(int nBindPort);    
-    bool StartServer();
-    virtual void SetClientInfos(const UINT32 maxClientCount){}
+    bool            InitSocket();
+    bool            BindAndListen(int nBindPort);    
+    bool            StartServer();
+    virtual void    SetClientInfos(const UINT32 maxClientCount){}
 
-    bool CreateThreads();
-    bool DestroyThreads();
+    bool            CreateThreads();
+    bool            DestroyThreads();
 
-    virtual DWORD AccepterThread(){return 0;}
-    virtual DWORD WorkerThread(){return 0;}
+    virtual DWORD   AccepterThread(){return 0;}
+    virtual DWORD   WorkerThread(){return 0;}
 
 protected:
     SOCKET                  mListenSocket;
