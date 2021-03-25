@@ -1,12 +1,13 @@
 #pragma once
 #pragma comment(lib, "ws2_32")
-// #include <winsock2.h>
-// #include <Ws2tcpip.h>
 #include "ClientInfo.h"
 #include <vector>
 #include <cstring>
 #include "Packet.h"
 #include "ClientManager.h"
+
+#ifndef _IOCP_SERVER
+#define _IOCP_SERVER
 
 class IOCPServer
 {
@@ -14,7 +15,7 @@ public:
 
     IOCPServer(void):
     mListenSocket(INVALID_SOCKET), mIOCPHandle(INVALID_HANDLE_VALUE),
-    mbIsWorkerRun(true), mbIsAccepterRun(true), mClientMgr(NULL){}
+    mbIsWorkerRun(true), mbIsAccepterRun(true){}
 
     virtual ~IOCPServer(void){ WSACleanup(); }
     
@@ -25,17 +26,16 @@ public:
 
     bool InitSocket();
     bool BindAndListen(int nBindPort);    
-    bool StartServer(const UINT32 maxClientCount);
+    bool StartServer();
+    virtual void SetClientInfos(const UINT32 maxClientCount){}
 
     bool CreateThreads();
     bool DestroyThreads();
-    virtual DWORD AccepterThread();
-    virtual DWORD WorkerThread();
+
+    virtual DWORD AccepterThread(){return 0;}
+    virtual DWORD WorkerThread(){return 0;}
 
 protected:
-    ClientManager*          mClientMgr;
-
-private:
     SOCKET                  mListenSocket;
 
     HANDLE                  mIOCPHandle;
@@ -45,9 +45,9 @@ private:
     bool                    mbIsWorkerRun;
     bool                    mbIsAccepterRun;
 
+private:
     static const int        WAIT_QUEUE_CNT = 5;
     static const int        MAX_WORKERTHREAD = 16;
-
 
     static DWORD WINAPI StaticAccepterThread(void* arg){
         IOCPServer* This = (IOCPServer*) arg;
@@ -59,3 +59,5 @@ private:
         return This->WorkerThread();
     }
 };
+
+#endif

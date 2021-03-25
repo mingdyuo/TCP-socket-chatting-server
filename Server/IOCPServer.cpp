@@ -39,9 +39,7 @@ bool IOCPServer::BindAndListen(int nBindPort){
 	return true;
 }
   
-bool IOCPServer::StartServer(const UINT32 maxClientCount){
-
-    mClientMgr  = new ClientManager(maxClientCount);
+bool IOCPServer::StartServer(){
 
     mIOCPHandle = CreateIoCompletionPort(
         INVALID_HANDLE_VALUE,
@@ -101,80 +99,5 @@ bool IOCPServer::DestroyThreads(){
     return true;
 }
 
-DWORD IOCPServer::AccepterThread(){
-    DWORD dwResult = 0;
-    SOCKADDR_IN stClientAddr;
-    int nAddrLen = sizeof(SOCKADDR_IN);
-    while(mbIsAccepterRun){
-        SOCKET newSocket = accept(
-            mListenSocket,
-            (SOCKADDR*)&stClientAddr,
-            &nAddrLen
-        );
 
-        if(INVALID_SOCKET == newSocket)
-            continue;
-
-        if(false == mClientMgr->CreateClient(mIOCPHandle, newSocket)){
-            return dwResult;
-        }
-    }
-    printf("[알림] Accepter thread 종료\n");
-    return dwResult;
-}
-
-
-
-DWORD IOCPServer::WorkerThread(){
-    DWORD dwResult = 0;
-    stClientInfo* pClientInfo = NULL;
-    BOOL bSuccess = TRUE;
-    DWORD dwIoSize = 0;
-    LPOVERLAPPED lpOverlapped = NULL;
-
-    while(mbIsWorkerRun){
-        bSuccess = GetQueuedCompletionStatus(
-            mIOCPHandle,
-            &dwIoSize,
-            (PULONG_PTR)&pClientInfo,
-            &lpOverlapped,
-            INFINITE
-        );
-
-        if(bSuccess==TRUE && dwIoSize==0 && lpOverlapped==NULL){
-            mbIsWorkerRun = false;
-            continue;
-        }
-
-        if(lpOverlapped==NULL) continue;
-
-        if(bSuccess == FALSE || (0 == dwIoSize && bSuccess == TRUE)){
-            mClientMgr->CloseClient(pClientInfo);
-            continue;
-        }
-
-        stOverlappedEx* pOverlappedEx = (stOverlappedEx*)lpOverlapped;
-
-
-        if(SEND == pOverlappedEx->m_eOperation){
-            OnSend(pClientInfo->GetIndex(), dwIoSize);
-            delete[] pOverlappedEx->m_wsaBuf.buf;
-            delete pOverlappedEx;
-        }
-        else if(RECV == pOverlappedEx->m_eOperation){
-            OnReceive(pClientInfo->GetIndex(), dwIoSize, pClientInfo->RecvBuffer());
-            pClientInfo->BindRecv(RECV);
-        }
-        else if(ACCEPT == pOverlappedEx->m_eOperation){
-            OnCreate(pClientInfo->GetIndex(), dwIoSize, pClientInfo->RecvBuffer());
-            pClientInfo->BindRecv(RECV);
-        }
-        else if(CLOSE == pOverlappedEx->m_eOperation){
-            OnClose(pClientInfo->GetIndex());
-        }
-
-    }
-    printf("[알림] Worker thread 종료\n");
-    return dwResult;
-}
 

@@ -11,7 +11,8 @@ int main()
 
 	chatServer.InitSocket();
 	chatServer.BindAndListen(SERVER_PORT);
-	chatServer.StartServer(MAX_CLIENT);
+	chatServer.SetClientInfos(MAX_CLIENT);
+	chatServer.StartServer();
 
 	printf("[알림] quit을 입력시 서버 종료합니다.\n");
 	while (true)

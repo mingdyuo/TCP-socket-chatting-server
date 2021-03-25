@@ -1,5 +1,7 @@
-#pragma once
 #include <windows.h>
+
+#ifndef _STRUCT_PACKET
+#define _STRUCT_PACKET
 
 enum CODE_ : UINT16 {
     UNINITIALIZED   = 0,
@@ -48,3 +50,5 @@ struct UNICAST_PACKET : public CHAT_PACKET{
 };
 
 #pragma pack(pop)
+
+#endif

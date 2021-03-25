@@ -1,5 +1,3 @@
-#ifndef _STRUCT_CLIENT_INFO
-#define _STRUCT_CLIENT_INFO
 
 #pragma comment(lib, "ws2_32")
 #include <winsock2.h>
@@ -7,6 +5,9 @@
 #include <cstdio>
 
 #include "UserInfo.h"
+
+#ifndef _STRUCT_CLIENT_INFO
+#define _STRUCT_CLIENT_INFO
 
 #define MAX_SOCKBUF 1024	//패킷 크기
 
