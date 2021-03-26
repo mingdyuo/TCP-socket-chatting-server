@@ -30,14 +30,14 @@ void ChatServer::ProcessRecvPacket(const UINT32 clientIndex_, const UINT32 size_
 
     if(SERVER_ENTER == header->Type){
         SERVER_ENTER_PACKET* recvPacket = (SERVER_ENTER_PACKET*)pData_;
-        bool bExist = mClientMgr->IsExistNickname(recvPacket->Sender);
+        int existIndex = mClientMgr->FindNickname(recvPacket->Sender);
 
         SERVER_MESSAGE_PACKET sendPacket;
         sendPacket.Type = SERVER_MESSAGE;
         sendPacket.Length = sizeof(UINT32);
 
         stClientInfo* client_ = mClientMgr->GetClientByIndex(clientIndex_);
-        if(bExist){
+        if(existIndex >=0 ){
             sendPacket.Message = NICKNAME_ALREADY_EXIST;
         }
         else{
@@ -49,8 +49,22 @@ void ChatServer::ProcessRecvPacket(const UINT32 clientIndex_, const UINT32 size_
 
     else if(CHAT_UNICAST == header->Type){
         UNICAST_PACKET* packet = (UNICAST_PACKET*)pData_;
-        // TODO : 닉네임으로 클라이언트 찾아서 전송하기
-        // 닉네임 : packet->Recver
+        stClientInfo* senderClient = mClientMgr->GetClientByIndex(clientIndex_);
+
+        int findIndex = mClientMgr->FindNickname(packet->Recver);
+        if(findIndex>-1){ // 존재하는경우
+            stClientInfo* recverClient = mClientMgr->GetClientByIndex(findIndex);
+            senderClient->SendMsg(size_, pData_, SEND);
+            recverClient->SendMsg(size_, pData_, SEND);
+        }
+        else{ // 존재하지 않음
+            SERVER_MESSAGE_PACKET sendPacket;
+            sendPacket.Type = SERVER_MESSAGE;
+            sendPacket.Length = sizeof(UINT32);
+            sendPacket.Message = NICKNAME_NOT_FOUND;
+
+            senderClient->SendMsg(sizeof(sendPacket), (char*)&sendPacket, SEND);
+        }
         return;
     }
     else if(CHAT_BROADCAST == header->Type){

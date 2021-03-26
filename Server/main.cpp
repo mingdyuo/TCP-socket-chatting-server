@@ -2,8 +2,8 @@
 #include <string>
 #include <iostream>
 
-const UINT16 SERVER_PORT = 9898;
-const UINT16 MAX_CLIENT = 100;		//총 접속할수 있는 클라이언트 수
+const int SERVER_PORT = 9898;
+const int MAX_CLIENT = 100;		//총 접속할수 있는 클라이언트 수
 
 int main()
 {

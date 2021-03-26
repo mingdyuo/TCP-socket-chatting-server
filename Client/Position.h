@@ -211,5 +211,22 @@ public:
         }
     }
 
+    void ServerMessage(int Message){
+
+        if(Message == NICKNAME_NOT_FOUND){
+            ++mRecvPos.Y;
+            if(mRecvPos.Y>=20) {
+                SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), mSendPos);
+                setColor(CHAT_MULTICAST); 
+                printf("%c[2K", 27);
+                ++mSendPos.Y;
+            }
+            SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), mRecvPos);
+            setColor(CHAT_UNICAST);
+            printf("[알림] 해당 유저가 존재하지 않습니다.\n"); 
+        }
+
+    }
+
 
 };

@@ -43,7 +43,7 @@ struct PACKET_HEADER{
 const UINT32 PACKET_HEADER_LENGTH = sizeof(PACKET_HEADER);
 
 const int MAX_NICKNAME_LEN = 32;
-const int MAX_CONTENT_LEN = 1024;
+const int MAX_CONTENT_LEN = 956;
 
 typedef struct SYSTEM_PACKET : public PACKET_HEADER{
     char Sender[MAX_NICKNAME_LEN];
@@ -58,6 +58,8 @@ typedef struct CHAT_PACKET : public PACKET_HEADER{
     char Sender[MAX_NICKNAME_LEN];
     char Content[MAX_CONTENT_LEN];
 }MULTICAST_PACKET, BROADCAST_PACKET;
+
+const int CHAT_PACKET_LENGTH = sizeof(CHAT_PACKET);
 
 struct UNICAST_PACKET : public CHAT_PACKET{
     char Recver[MAX_NICKNAME_LEN];

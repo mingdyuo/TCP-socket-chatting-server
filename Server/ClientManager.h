@@ -55,12 +55,12 @@ public:
         --mUserCount;
     }
 
-    bool IsExistNickname(char* nickname_){
+    int FindNickname(char* nickname_){
         for(int i=0;i<mMaxClientCount;i++){
             if(mClientInfos[i].IsConnected() == false) continue;
-            if(strcmp(nickname_, mClientInfos[i].GetNickname()) == 0) return true;
+            if(strcmp(nickname_, mClientInfos[i].GetNickname()) == 0) return i;
         }
-        return false;
+        return -1;
     }
 
 

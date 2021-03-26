@@ -168,6 +168,13 @@ void IOCPClient::processRecvMsg(char* received, char* content, char* sender){
         case CHAT_UNICAST:
         {
             UNICAST_PACKET* _packet = (UNICAST_PACKET*)received;
+            break;
+        }
+        case SERVER_MESSAGE:
+        {   
+            SERVER_MESSAGE_PACKET* _packet = (SERVER_MESSAGE_PACKET*)received;
+            pos.ServerMessage(_packet->Message);
+            break;
         }
             
         default: break;
@@ -216,6 +223,21 @@ eAction IOCPClient::processSendMsg(std::string& content){
 
         return CHAT_BROADCAST;
     }
+    else if (content[0] == '/'){
+        // TODO UNICAST 贸府
+        std::string recver = content.substr(1, content.find(' '));
+        UNICAST_PACKET packet;
+        packet.Type = CHAT_UNICAST;
+        strcpy(packet.Sender, mNickname);
+        strcpy(packet.Content, content.c_str());
+        strcpy(packet.Recver, recver.c_str());
+        packet.Length = CHAT_PACKET_LENGTH + recver.size();
+
+        int success = send(mSocket, (char*)&packet, packet.Length, 0);
+        if(success == SOCKET_ERROR) {mbIsWorkerRun = false; return UNINITIALIZED;}
+
+        return CHAT_UNICAST;
+    }
     else{
         CHAT_PACKET packet;
         packet.Type = CHAT_MULTICAST;
@@ -232,7 +254,6 @@ eAction IOCPClient::processSendMsg(std::string& content){
     }
 
     return UNINITIALIZED;
-    // 庇加富 贸府 眠啊 秦具 窃
 }
 
 
