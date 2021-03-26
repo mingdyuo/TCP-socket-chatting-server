@@ -22,6 +22,13 @@ enum IOOperation
 	SEND
 };
 
+enum eNicknameMessage{
+    TOO_LONG = 1,
+    ALREADY_EXIST,
+    TRIM_NEEDED,
+    CREATE_SUCCESS
+};
+
 class Position{
 private:
     COORD       mSendPos;
@@ -59,6 +66,27 @@ public:
                 color=WHITE+BLACK*16; break;
         }
         SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color); 
+    }
+
+    void NicknameBox(){
+        system("cls");
+        gotoxy(0,0); printf("사용할 닉네임을 입력하세요!\n");
+        gotoxy(0,1); printf("▶ \n"); gotoxy(3,1);
+    }
+
+    void NicknameErrorMessage(int error){
+        gotoxy(0,2); 
+        printf("%c[2K\n", 27);
+        gotoxy(0,2); 
+        switch(error){
+            case TOO_LONG:
+                printf("[!!!] 닉네임이 너무 길어요!\n"); break;
+            case ALREADY_EXIST:
+                printf("[!!!] 이미 존재하는 닉네임이예요!\n"); break;
+            case TRIM_NEEDED:
+                printf("[!!!] 닉네임에는 공백을 넣을 수 없어요!\n"); break;   
+        }
+        gotoxy(3,1); 
     }
 
     void Lobby(){
@@ -115,6 +143,7 @@ public:
         printf("[알림] %d번 대화방에 입장하셨습니다.\n", pRoomNo);
 
         helpBox(pNickname);
+        
     }
 
     void SetSendPos(int nicknameLength){

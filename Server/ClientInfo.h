@@ -15,7 +15,6 @@ enum IOOperation
 {
 	RECV = 0,
 	SEND,
-	ACCEPT,
 	CLOSE,
 	SELF
 };
@@ -57,7 +56,7 @@ struct stClientInfo : public stUserInfo
 
     bool BindIOCompletionPort(HANDLE iocpHandle_);
     bool Connect(HANDLE iocpHandle_, SOCKET socket_);
-    bool BindRecv(IOOperation ioType_);
+    bool BindRecv();
     bool SendMsg(const UINT32 dataSize_, char* pMsg_, IOOperation ioType_);
 
 

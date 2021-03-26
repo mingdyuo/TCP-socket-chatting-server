@@ -41,7 +41,7 @@ bool stClientInfo::Connect(HANDLE iocpHandle_, SOCKET socket_){
         return false;
     }
     
-    if(false == BindRecv(ACCEPT)){
+    if(false == BindRecv()){
         printf("[에러] 클라이언트(%d) 연결 실패\n", mIndex);
         Close();
         return false;
@@ -51,13 +51,13 @@ bool stClientInfo::Connect(HANDLE iocpHandle_, SOCKET socket_){
 }
 
 
-bool stClientInfo::BindRecv(IOOperation ioType_){
+bool stClientInfo::BindRecv(){
     DWORD dwFlag = 0;
     DWORD dwRecvNumBytes = 0;
 
     m_stRecvOverlappedEx.m_wsaBuf.len = MAX_SOCKBUF;
     m_stRecvOverlappedEx.m_wsaBuf.buf = mRecvBuf;
-    m_stRecvOverlappedEx.m_eOperation = ioType_;
+    m_stRecvOverlappedEx.m_eOperation = RECV;
 
     int nRet = WSARecv(
         m_socketClient,

@@ -31,6 +31,7 @@ public:
     bool CreateThreads(HANDLE* sender, HANDLE* recver);
     bool Lobby();
     bool Close();
+    int NicknameCheck(char* nickname);
 
     DWORD RecvThread();
     DWORD SendThread();
@@ -47,7 +48,7 @@ public:
 
     void parseContent(char* received, char* content, char* sender);
     void processRecvMsg(char* received, char* content, char* sender);
-    CODE_ processSendMsg(std::string& content);
+    eAction processSendMsg(std::string& content);
     
 
    

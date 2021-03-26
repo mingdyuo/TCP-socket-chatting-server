@@ -1,18 +1,34 @@
-#pragma once
 #include <windows.h>
 
-enum CODE_ : UINT16 {
+#ifndef _STRUCT_PACKET
+#define _STRUCT_PACKET
+
+enum eAction : UINT16 {
     UNINITIALIZED   = 0,
 
-	SERVER_ENTER   	= 11,
-	SERVER_EXIT    	= 12,
+	SERVER_ENTER   	    = 11,
+	SERVER_EXIT    	    = 12,
 
-	ROOM_ENTER 	   	= 21,
-	ROOM_EXIT		= 22,
+	ROOM_ENTER 	   	    = 21,
+	ROOM_EXIT		    = 22,
 
-	CHAT_BROADCAST 	= 31,
-	CHAT_MULTICAST 	= 32,
-	CHAT_UNICAST	= 33
+	CHAT_BROADCAST 	    = 31,
+	CHAT_MULTICAST 	    = 32,
+	CHAT_UNICAST	    = 33,
+
+    LIST_CURRENT_ROOM   = 41,
+    LIST_ALL_ROOM       = 42,
+    LIST_LOBBY          = 43,
+
+    SERVER_MESSAGE      = 51,
+};
+
+enum eMessage : UINT32 {
+    NICKNAME_ALREADY_EXIST  = 1,
+    NICKNAME_CREATED,
+    
+    NICKNAME_NOT_FOUND,
+    
 };
 
 
@@ -47,4 +63,10 @@ struct UNICAST_PACKET : public CHAT_PACKET{
     char Recver[MAX_NICKNAME_LEN];
 };
 
+struct SERVER_MESSAGE_PACKET : public PACKET_HEADER{
+    UINT32 Message;
+};
+
 #pragma pack(pop)
+
+#endif

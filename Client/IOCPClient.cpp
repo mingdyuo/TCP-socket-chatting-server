@@ -36,19 +36,50 @@ bool IOCPClient::ConnectServer(int bBindPort){
     return true;
 }
 
-bool IOCPClient::SetNickname(){
-    do {
-        printf("[연결됨] 대화에 사용할 닉네임을 입력하세요(최대 31글자)\n");
-        scanf("%s", mNickname);
-    } while(strlen(mNickname)==0);
-    
-    SERVER_ENTER_PACKET* _packet = new SERVER_ENTER_PACKET();
-    strncpy(_packet->Sender, mNickname, strlen(mNickname) + 1);
-    _packet->Type = SERVER_ENTER;
-    _packet->Length = (UINT16)strlen(mNickname) + 1;
+int IOCPClient::NicknameCheck(char* nickname){
+    char recved[15];
+    if(strlen(mNickname)>=31) {
+        fflush(stdin);
+        return TOO_LONG;
+    }
+    for(int i=0;i<strlen(mNickname);i++){
+        if(mNickname[i] == ' ') return TRIM_NEEDED;
+    }
+    SERVER_ENTER_PACKET _packet;
+    strncpy(_packet.Sender, mNickname, strlen(mNickname) + 1);
+    _packet.Type = SERVER_ENTER;
+    _packet.Length = (UINT16)strlen(mNickname) + 1;
 
-    send(mSocket, (char*)_packet, _packet->Length + PACKET_HEADER_LENGTH, 0);
-    delete _packet;
+    int success = send(mSocket, (char*)&_packet, _packet.Length + PACKET_HEADER_LENGTH, 0);
+    if(success == SOCKET_ERROR) {mbIsWorkerRun = false; return 0;}
+
+    int length = recv(mSocket, recved, sizeof(recved), 0);
+    if(length <= 0) {
+        printf("서버와 연결이 끊어졌습니다.\n");
+        Close();
+        return 0;
+    }
+    recved[length] = '\0';
+
+    SERVER_MESSAGE_PACKET* recvPacket = (SERVER_MESSAGE_PACKET*)recved;
+    if(recvPacket->Message == NICKNAME_ALREADY_EXIST) return ALREADY_EXIST;
+
+    return CREATE_SUCCESS;
+}
+
+bool IOCPClient::SetNickname(){
+    
+    int errorMsg = -1;
+    while(true){
+        pos.NicknameBox();
+        if(errorMsg > -1) pos.NicknameErrorMessage(errorMsg);
+        memset(mNickname, 0, sizeof(mNickname));
+        fflush(stdin);
+        scanf("%[^\n]s", mNickname);
+        if (strlen(mNickname) == 0) continue;
+        errorMsg = NicknameCheck(mNickname);
+        if (errorMsg == CREATE_SUCCESS) break;
+    }
 
     return true;
 }
@@ -141,10 +172,10 @@ void IOCPClient::processRecvMsg(char* received, char* content, char* sender){
             
         default: break;
     }
-    pos.SendBox(mNickname);
+    //pos.SendBox(mNickname);
 }
 
-CODE_ IOCPClient::processSendMsg(std::string& content){
+eAction IOCPClient::processSendMsg(std::string& content){
 
     if(content == "/quit") {
         SERVER_EXIT_PACKET packet;
@@ -221,7 +252,7 @@ DWORD IOCPClient::RecvThread(){
         received[length] = '\0';
         
         processRecvMsg(received, content, sender);
-        // pos.SendBox(mNickname);
+        pos.SendBox(mNickname);
     }
     return 0;
 }
@@ -237,9 +268,9 @@ DWORD IOCPClient::SendThread(){
             if(!mbIsWorkerRun) return 0;
         } while(content.empty());
 
-        CODE_ action = processSendMsg(content);
-
-        if(action == UNINITIALIZED){
+        eAction action = processSendMsg(content);
+        //pos.SendBox(mNickname);
+        if(action == UNINITIALIZED){        
             Close();
             break;
         }

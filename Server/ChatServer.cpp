@@ -12,13 +12,11 @@ void ChatServer::OnSend(const UINT32 clientIndex_, const UINT32 size_) {
 }
 
 void ChatServer::OnCreate(const UINT32 clientIndex_, const UINT32 size_, char* pData_) {
-    printf("[OnCreate] 클라이언트(%d) %d bytes\n", clientIndex_, size_);
-
     stClientInfo* client_ = mClientMgr->GetClientByIndex(clientIndex_);
     SERVER_ENTER_PACKET* packet = (SERVER_ENTER_PACKET*)pData_;
     client_->SetNickname(packet->Sender);
 
-    printf("[알림] 클라이언트(%d) 닉네임 생성 : [%s]\n", clientIndex_, client_->GetNickname());
+    printf("[OnCreate] 클라이언트(%d) 닉네임 생성 : [%s]\n", clientIndex_, client_->GetNickname());
 }
 
 void ChatServer::OnClose(int clientIndex_){
@@ -30,7 +28,26 @@ void ChatServer::OnClose(int clientIndex_){
 void ChatServer::ProcessRecvPacket(const UINT32 clientIndex_, const UINT32 size_, char* pData_){
     PACKET_HEADER* header = (PACKET_HEADER*)pData_;
 
-    if(CHAT_UNICAST == header->Type){
+    if(SERVER_ENTER == header->Type){
+        SERVER_ENTER_PACKET* recvPacket = (SERVER_ENTER_PACKET*)pData_;
+        bool bExist = mClientMgr->IsExistNickname(recvPacket->Sender);
+
+        SERVER_MESSAGE_PACKET sendPacket;
+        sendPacket.Type = SERVER_MESSAGE;
+        sendPacket.Length = sizeof(UINT32);
+
+        stClientInfo* client_ = mClientMgr->GetClientByIndex(clientIndex_);
+        if(bExist){
+            sendPacket.Message = NICKNAME_ALREADY_EXIST;
+        }
+        else{
+            sendPacket.Message = NICKNAME_CREATED;
+            OnCreate(clientIndex_, size_, pData_);
+        }
+        client_->SendMsg(sizeof(sendPacket), (char*)&sendPacket, SEND);
+    }
+
+    else if(CHAT_UNICAST == header->Type){
         UNICAST_PACKET* packet = (UNICAST_PACKET*)pData_;
         // TODO : 닉네임으로 클라이언트 찾아서 전송하기
         // 닉네임 : packet->Recver
@@ -54,7 +71,7 @@ void ChatServer::ProcessRecvPacket(const UINT32 clientIndex_, const UINT32 size_
         mClientMgr->MultiCast(clientIndex_, size_, pData_);
     }
     else if(ROOM_EXIT == header->Type){
-        mClientMgr->MultiCast(clientIndex_, size_, pData_, SELF);
+        mClientMgr->MultiCast(clientIndex_, size_, pData_);
         client_->ExitRoom();
     }
     else if(CHAT_MULTICAST == header->Type) {
@@ -81,6 +98,7 @@ DWORD ChatServer::AccepterThread(){
         if(false == mClientMgr->CreateClient(mIOCPHandle, newSocket)){
             return dwResult;
         }
+
     }
     printf("[알림] Accepter thread 종료\n");
     return dwResult;
@@ -88,9 +106,9 @@ DWORD ChatServer::AccepterThread(){
 
 DWORD ChatServer::WorkerThread(){
     DWORD dwResult = 0;
-    stClientInfo* pClientInfo = NULL;
-    BOOL bSuccess = TRUE;
     DWORD dwIoSize = 0;
+    BOOL bSuccess = TRUE;
+    stClientInfo* pClientInfo = NULL;
     LPOVERLAPPED lpOverlapped = NULL;
 
     while(mbIsWorkerRun){
@@ -123,11 +141,7 @@ DWORD ChatServer::WorkerThread(){
         }
         else if(RECV == pOverlappedEx->m_eOperation){
             OnReceive(pClientInfo->GetIndex(), dwIoSize, pClientInfo->RecvBuffer());
-            pClientInfo->BindRecv(RECV);
-        }
-        else if(ACCEPT == pOverlappedEx->m_eOperation){
-            OnCreate(pClientInfo->GetIndex(), dwIoSize, pClientInfo->RecvBuffer());
-            pClientInfo->BindRecv(RECV);
+            pClientInfo->BindRecv();
         }
         else if(CLOSE == pOverlappedEx->m_eOperation){
             OnClose(pClientInfo->GetIndex());

@@ -55,6 +55,15 @@ public:
         --mUserCount;
     }
 
+    bool IsExistNickname(char* nickname_){
+        for(int i=0;i<mMaxClientCount;i++){
+            if(mClientInfos[i].IsConnected() == false) continue;
+            if(strcmp(nickname_, mClientInfos[i].GetNickname()) == 0) return true;
+        }
+        return false;
+    }
+
+
     void CloseClient(int index_){
         mClientInfos[index_].Close();
         --mUserCount;
@@ -77,7 +86,8 @@ public:
         if(senderRoom == stClientInfo::LOBBY) return;
 
         for(int i=0;i<mMaxClientCount;i++){
-            if(mClientInfos[i].IsConnected() == false || mClientInfos[i].GetRoom() != senderRoom || senderClientIndex_ == i) continue;
+            if(mClientInfos[i].IsConnected() == false) continue;
+            if(mClientInfos[i].GetRoom() != senderRoom || senderClientIndex_ == i) continue;
 
             mClientInfos[i].SendMsg(size_, pData_, SEND);
         }
