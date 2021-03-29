@@ -155,6 +155,10 @@ public:
         SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE),pos);
     }
 
+    void gotoxy(COORD pos) {
+        SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE),pos);
+    }
+
     void helpBox(char* nickname){
         setColor(CHAT_MULTICAST);
         gotoxy(mHelpPos.X,mHelpPos.Y+0); printf("▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤\n");
@@ -172,34 +176,29 @@ public:
     
     void SendBox(char* nickname){
         setColor(CHAT_MULTICAST);
-        SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), mSendPos);
-        printf("%c[2K\n%c[2K\n%c[2K\n%c[2K", 27, 27, 27, 27);
-        SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), mSendPos);
-        printf("===============================\n[%s님]: ", nickname);
+        gotoxy(mSendPos); printf("%c[2K\n%c[2K\n%c[2K\n%c[2K", 27, 27, 27, 27);
+        gotoxy(mSendPos); printf("===============================\n[%s님]: ", nickname);
     }
 
     void Receive(char* nickname, const char* content, int action){
         ++mRecvPos.Y;
         if(mRecvPos.Y>=20) {
-            SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), mSendPos);
             setColor(CHAT_MULTICAST);
-            printf("%c[2K", 27);
+            gotoxy(mSendPos); printf("%c[2K", 27);
             ++mSendPos.Y;
         }
         setColor(action);
-        SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), mRecvPos);
-        printf("[%s님]: %s\n", nickname, content);
+        gotoxy(mRecvPos); printf("[%s님]: %s\n", nickname, content);
     }
 
     void RoomMessage(char* nickname, int action){
         ++mRecvPos.Y;
         if(mRecvPos.Y>=20) {
-            SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), mSendPos);
             setColor(CHAT_MULTICAST); 
-            printf("%c[2K", 27);
+            gotoxy(mSendPos); printf("%c[2K", 27);
             ++mSendPos.Y;
         }
-        SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), mRecvPos);
+        gotoxy(mRecvPos);
         setColor(action);
         switch(action){
             case ROOM_ENTER:
@@ -212,18 +211,16 @@ public:
     }
 
     void ServerMessage(int Message){
-
+        
         if(Message == NICKNAME_NOT_FOUND){
             ++mRecvPos.Y;
             if(mRecvPos.Y>=20) {
-                SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), mSendPos);
                 setColor(CHAT_MULTICAST); 
-                printf("%c[2K", 27);
+                gotoxy(mSendPos); printf("%c[2K", 27);
                 ++mSendPos.Y;
             }
-            SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), mRecvPos);
             setColor(CHAT_UNICAST);
-            printf("[알림] 해당 유저가 존재하지 않습니다.\n"); 
+            gotoxy(mRecvPos); printf("[귓속말] 해당 유저가 존재하지 않습니다.\n"); 
         }
 
     }

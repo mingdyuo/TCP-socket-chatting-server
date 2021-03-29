@@ -61,9 +61,13 @@ typedef struct CHAT_PACKET : public PACKET_HEADER{
 
 const int CHAT_PACKET_LENGTH = sizeof(CHAT_PACKET);
 
-struct UNICAST_PACKET : public CHAT_PACKET{
+struct UNICAST_PACKET : public PACKET_HEADER{
     char Recver[MAX_NICKNAME_LEN];
+    char Sender[MAX_NICKNAME_LEN];
+    char Content[MAX_CONTENT_LEN];
 };
+
+const int UNICAST_BASE_LENGTH = MAX_NICKNAME_LEN * 2 + PACKET_HEADER_LENGTH;
 
 struct SERVER_MESSAGE_PACKET : public PACKET_HEADER{
     UINT32 Message;

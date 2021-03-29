@@ -36,15 +36,17 @@ bool IOCPClient::ConnectServer(int bBindPort){
     return true;
 }
 
-int IOCPClient::NicknameCheck(char* nickname){
+int IOCPClient::NicknameCheck(const char* nickname){
     char recved[15];
-    if(strlen(mNickname)>=31) {
-        fflush(stdin);
+    if(strlen(nickname)>=31) {
         return TOO_LONG;
     }
-    for(int i=0;i<strlen(mNickname);i++){
-        if(mNickname[i] == ' ') return TRIM_NEEDED;
+    for(int i=0;i<strlen(nickname);i++){
+        if(nickname[i] == ' ') return TRIM_NEEDED;
     }
+
+    strcpy(mNickname, nickname);
+
     SERVER_ENTER_PACKET _packet;
     strncpy(_packet.Sender, mNickname, strlen(mNickname) + 1);
     _packet.Type = SERVER_ENTER;
@@ -70,15 +72,15 @@ int IOCPClient::NicknameCheck(char* nickname){
 bool IOCPClient::SetNickname(){
     
     int errorMsg = -1;
+    std::string nickname;
     while(true){
         pos.NicknameBox();
         if(errorMsg > -1) pos.NicknameErrorMessage(errorMsg);
-        memset(mNickname, 0, sizeof(mNickname));
-        fflush(stdin);
-        scanf("%[^\n]s", mNickname);
-        if (strlen(mNickname) == 0) continue;
-        errorMsg = NicknameCheck(mNickname);
+        getline(std::cin, nickname);
+        if (nickname.empty()) continue;
+        errorMsg = NicknameCheck(nickname.c_str());
         if (errorMsg == CREATE_SUCCESS) break;
+        nickname.clear();
     }
 
     return true;
@@ -148,6 +150,7 @@ bool IOCPClient::Close(){
 
 void IOCPClient::processRecvMsg(char* received, char* content, char* sender){
     PACKET_HEADER* packetHeader = (PACKET_HEADER*)received;
+    mMutex.Lock();
     switch(packetHeader->Type){
         case SERVER_EXIT:
         case ROOM_ENTER:
@@ -168,6 +171,8 @@ void IOCPClient::processRecvMsg(char* received, char* content, char* sender){
         case CHAT_UNICAST:
         {
             UNICAST_PACKET* _packet = (UNICAST_PACKET*)received;
+            memcpy(content, _packet->Content, strlen(_packet->Content) + 1);
+            pos.Receive(_packet->Sender, content, _packet->Type);
             break;
         }
         case SERVER_MESSAGE:
@@ -179,7 +184,7 @@ void IOCPClient::processRecvMsg(char* received, char* content, char* sender){
             
         default: break;
     }
-    //pos.SendBox(mNickname);
+    mMutex.Unlock();
 }
 
 eAction IOCPClient::processSendMsg(std::string& content){
@@ -219,21 +224,19 @@ eAction IOCPClient::processSendMsg(std::string& content){
         int success = send(mSocket, (char*)&packet, packet.Length + PACKET_HEADER_LENGTH, 0);
         if(success == SOCKET_ERROR) {mbIsWorkerRun = false; return UNINITIALIZED;}
 
-        pos.Receive(mNickname, content.c_str(), CHAT_BROADCAST);
-
         return CHAT_BROADCAST;
     }
     else if (content[0] == '/'){
-        // TODO UNICAST Ã³¸®
-        std::string recver = content.substr(1, content.find(' '));
+        std::string recver = content.substr(1, content.find(' ') - 1);
+        content = content.substr(content.find(' ') + 1);
         UNICAST_PACKET packet;
         packet.Type = CHAT_UNICAST;
         strcpy(packet.Sender, mNickname);
         strcpy(packet.Content, content.c_str());
         strcpy(packet.Recver, recver.c_str());
-        packet.Length = CHAT_PACKET_LENGTH + recver.size();
+        packet.Length = strlen(content.c_str());
 
-        int success = send(mSocket, (char*)&packet, packet.Length, 0);
+        int success = send(mSocket, (char*)&packet, UNICAST_BASE_LENGTH + packet.Length, 0);
         if(success == SOCKET_ERROR) {mbIsWorkerRun = false; return UNINITIALIZED;}
 
         return CHAT_UNICAST;
@@ -248,8 +251,6 @@ eAction IOCPClient::processSendMsg(std::string& content){
         int success = send(mSocket, (char*)&packet, packet.Length + PACKET_HEADER_LENGTH, 0);
         if(success == SOCKET_ERROR) {mbIsWorkerRun = false; return UNINITIALIZED;}
         
-        pos.Receive(mNickname, content.c_str(), CHAT_MULTICAST);
-
         return CHAT_MULTICAST;
     }
 
@@ -284,13 +285,15 @@ DWORD IOCPClient::SendThread(){
     while (mbIsWorkerRun) { 
         while(mRoom == 0) Sleep(500);
         do{
+            mMutex.Lock();
             pos.SendBox(mNickname);
+            mMutex.Unlock();
             getline(std::cin, content);
             if(!mbIsWorkerRun) return 0;
         } while(content.empty());
 
         eAction action = processSendMsg(content);
-        //pos.SendBox(mNickname);
+        
         if(action == UNINITIALIZED){        
             Close();
             break;

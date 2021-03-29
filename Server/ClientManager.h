@@ -1,4 +1,3 @@
-#pragma once
 #pragma comment(lib, "ws2_32")
 #include <winsock2.h>
 #include <Ws2tcpip.h>
@@ -76,28 +75,24 @@ public:
 
     void BroadCast(const UINT32 senderClientIndex_, const UINT32 size_, char* pData_){
         for(int i=0;i<mMaxClientCount;i++){
-            if(mClientInfos[i].IsConnected() == false || i == senderClientIndex_) continue;
-            mClientInfos[i].SendMsg(size_, pData_, SEND);
+            if(mClientInfos[i].IsConnected() == false ) continue;
+            mClientInfos[i].SendMsg(size_, pData_);
         }
     }
 
-    void MultiCast(const UINT32 senderClientIndex_, const UINT32 size_, char* pData_, IOOperation IoType_ = SEND){
+    void MultiCast(const UINT32 senderClientIndex_, const UINT32 size_, char* pData_, IOOperation ioType_ = SEND){
         int senderRoom = mClientInfos[senderClientIndex_].GetRoom();
         if(senderRoom == stClientInfo::LOBBY) return;
 
         for(int i=0;i<mMaxClientCount;i++){
-            if(mClientInfos[i].IsConnected() == false) continue;
-            if(mClientInfos[i].GetRoom() != senderRoom || senderClientIndex_ == i) continue;
+            if(mClientInfos[i].IsConnected() == false || mClientInfos[i].GetRoom() != senderRoom) continue;
+            if(ioType_ == CLOSE && i == senderClientIndex_) {
+                mClientInfos[i].SendMsg(size_, pData_, CLOSE);
+            }
 
-            mClientInfos[i].SendMsg(size_, pData_, SEND);
+            mClientInfos[i].SendMsg(size_, pData_);
         }
 
-        if(IoType_ == CLOSE){
-            mClientInfos[senderClientIndex_].SendMsg(size_, pData_, CLOSE);
-        }
-        if(IoType_ == SELF){
-            mClientInfos[senderClientIndex_].SendMsg(size_, pData_, SEND);
-        }
     }
 
 

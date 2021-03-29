@@ -50,7 +50,7 @@ void ChatServer::ProcessRecvPacket(const UINT32 clientIndex_, const UINT32 size_
     else if(CHAT_UNICAST == header->Type){
         UNICAST_PACKET* packet = (UNICAST_PACKET*)pData_;
         stClientInfo* senderClient = mClientMgr->GetClientByIndex(clientIndex_);
-
+        
         int findIndex = mClientMgr->FindNickname(packet->Recver);
         if(findIndex>-1){ // 존재하는경우
             stClientInfo* recverClient = mClientMgr->GetClientByIndex(findIndex);

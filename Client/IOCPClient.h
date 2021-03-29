@@ -5,7 +5,7 @@
 #include <iostream>
 #include "Position.h"
 #include "Packet.h"
-
+#include "CriticalSection.h"
 
 
 class IOCPClient{
@@ -17,6 +17,7 @@ private:
     int mRoom;
 
     Position pos;
+    CriticalSection mMutex;
 
 public:
     IOCPClient():mSocket(INVALID_SOCKET), mbIsWorkerRun(true), mRoom(0) {}
@@ -29,12 +30,16 @@ public:
     bool ConnectServer(int bBindPort);
     bool SetNickname();
     bool CreateThreads(HANDLE* sender, HANDLE* recver);
-    bool Lobby();
     bool Close();
-    int NicknameCheck(char* nickname);
+
+    bool Lobby();
+    int NicknameCheck(const char* nickname);
 
     DWORD RecvThread();
     DWORD SendThread();
+
+    void processRecvMsg(char* received, char* content, char* sender);
+    eAction processSendMsg(std::string& content);
 
     static DWORD WINAPI StaticRecvThread(LPVOID arg){
         IOCPClient* This = (IOCPClient*)arg;
@@ -45,11 +50,6 @@ public:
         IOCPClient* This = (IOCPClient*)arg;
         return This->SendThread();
     }
-
-    void parseContent(char* received, char* content, char* sender);
-    void processRecvMsg(char* received, char* content, char* sender);
-    eAction processSendMsg(std::string& content);
-    
 
    
 };

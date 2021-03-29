@@ -15,8 +15,7 @@ enum IOOperation
 {
 	RECV = 0,
 	SEND,
-	CLOSE,
-	SELF
+	CLOSE
 };
 
 struct stOverlappedEx
@@ -57,7 +56,7 @@ struct stClientInfo : public stUserInfo
     bool BindIOCompletionPort(HANDLE iocpHandle_);
     bool Connect(HANDLE iocpHandle_, SOCKET socket_);
     bool BindRecv();
-    bool SendMsg(const UINT32 dataSize_, char* pMsg_, IOOperation ioType_);
+    bool SendMsg(const UINT32 dataSize_, char* pMsg_, IOOperation ioType_ = SEND);
 
 
 private:
