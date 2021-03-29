@@ -1,8 +1,5 @@
 #pragma comment(lib, "ws2_32")
-#include <winsock2.h>
-#include <Ws2tcpip.h>
-#include <cstdio>
-#include "ClientInfo.h"
+#include "UserInfo.h"
 #include "CriticalSection.h"
 
 #ifndef _CLIENT_MANAGER
@@ -24,12 +21,12 @@ public:
     ClientManager(int maxClientCount){
         mMaxClientCount = maxClientCount;
         for(int i=0;i<mMaxClientCount;i++){
-            mClientInfos.push_back(stClientInfo(i));
+            mClientInfos.push_back(stUserInfo(i));
         }
     }
     ~ClientManager(){}
 
-    stClientInfo* GetClientByIndex(int index){
+    stUserInfo* GetClientByIndex(int index){
         return &mClientInfos[index];
     }
     
@@ -49,9 +46,10 @@ public:
         ++mUserCount;
         _UNLOCK(mMutex)
         printf("[알림] Client(%d) 연결 완료\n", index);
+        return true;
     }
 
-    void CloseClient(stClientInfo* client){
+    void CloseClient(stUserInfo* client){
         client->Close();
 
         _LOCK(mMutex)
@@ -90,7 +88,7 @@ public:
 
     void MultiCast(const UINT32 senderClientIndex_, const UINT32 size_, char* pData_, IOOperation ioType_ = SEND){
         int senderRoom = mClientInfos[senderClientIndex_].GetRoom();
-        if(senderRoom == stClientInfo::LOBBY) return;
+        if(senderRoom == stUserInfo::LOBBY) return;
 
         for(int i=0;i<mMaxClientCount;i++){
             if(mClientInfos[i].IsConnected() == false || mClientInfos[i].GetRoom() != senderRoom) continue;
@@ -105,7 +103,7 @@ public:
 
 
 private:
-    std::vector<stClientInfo>   mClientInfos;
+    std::vector<stUserInfo>   mClientInfos;
 
     int mMaxClientCount;
     int mUserCount;

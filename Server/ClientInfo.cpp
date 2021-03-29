@@ -6,7 +6,6 @@ void stClientInfo::Initialize(){
     ZeroMemory(&m_stSendOverlappedEx, sizeof(stOverlappedEx));
     ZeroMemory(mRecvBuf, sizeof(mRecvBuf));
     ZeroMemory(mSendBuf, sizeof(mRecvBuf));
-    ZeroMemory(mNickname, sizeof(mNickname));
 }
 
 void stClientInfo::Close(){

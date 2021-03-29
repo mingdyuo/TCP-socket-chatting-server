@@ -1,16 +1,17 @@
 
-#include <cstdio>
+#include "ClientInfo.h"
 #include <windows.h>
 
 #ifndef _STRUCT_USER_INFO
 #define _STRUCT_USER_INFO
 
-struct stUserInfo
+struct stUserInfo : public stClientInfo
 {
 public:
     static const int LOBBY = 0;
     static int id;
-    stUserInfo(): mRoom(0) {ZeroMemory(mNickname, sizeof(mNickname));}
+    stUserInfo(): mRoom(0), stClientInfo(-1) {ZeroMemory(mNickname, sizeof(mNickname));}
+    stUserInfo(UINT32 index): mRoom(0), stClientInfo(index) {ZeroMemory(mNickname, sizeof(mNickname));}
     ~stUserInfo(){}
     
 
@@ -34,7 +35,7 @@ public:
         return true;
     }
 
-protected:
+private:
     int             mId;
     int             mRoom;    
     char            mNickname[32];

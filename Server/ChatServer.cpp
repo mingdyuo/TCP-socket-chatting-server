@@ -12,7 +12,7 @@ void ChatServer::OnSend(const UINT32 clientIndex_, const UINT32 size_) {
 }
 
 void ChatServer::OnCreate(const UINT32 clientIndex_, const UINT32 size_, char* pData_) {
-    stClientInfo* client_ = mClientMgr->GetClientByIndex(clientIndex_);
+    stUserInfo* client_ = mClientMgr->GetClientByIndex(clientIndex_);
     SERVER_ENTER_PACKET* packet = (SERVER_ENTER_PACKET*)pData_;
     client_->SetNickname(packet->Sender);
 
@@ -36,7 +36,7 @@ void ChatServer::ProcessRecvPacket(const UINT32 clientIndex_, const UINT32 size_
         sendPacket.Type = SERVER_MESSAGE;
         sendPacket.Length = sizeof(UINT32);
 
-        stClientInfo* client_ = mClientMgr->GetClientByIndex(clientIndex_);
+        stUserInfo* client_ = mClientMgr->GetClientByIndex(clientIndex_);
         if(existIndex >=0 ){
             sendPacket.Message = NICKNAME_ALREADY_EXIST;
         }
@@ -49,11 +49,11 @@ void ChatServer::ProcessRecvPacket(const UINT32 clientIndex_, const UINT32 size_
 
     else if(CHAT_UNICAST == header->Type){
         UNICAST_PACKET* packet = (UNICAST_PACKET*)pData_;
-        stClientInfo* senderClient = mClientMgr->GetClientByIndex(clientIndex_);
+        stUserInfo* senderClient = mClientMgr->GetClientByIndex(clientIndex_);
         
         int findIndex = mClientMgr->FindNickname(packet->Recver);
         if(findIndex>-1){ // 존재하는경우
-            stClientInfo* recverClient = mClientMgr->GetClientByIndex(findIndex);
+            stUserInfo* recverClient = mClientMgr->GetClientByIndex(findIndex);
             senderClient->SendMsg(size_, pData_, SEND);
             recverClient->SendMsg(size_, pData_, SEND);
         }
@@ -77,7 +77,7 @@ void ChatServer::ProcessRecvPacket(const UINT32 clientIndex_, const UINT32 size_
     }
     
 
-    stClientInfo* client_ = mClientMgr->GetClientByIndex(clientIndex_);
+    stUserInfo* client_ = mClientMgr->GetClientByIndex(clientIndex_);
 
     if(ROOM_ENTER == header->Type){
         ROOM_ENTER_PACKET* packet = (ROOM_ENTER_PACKET*)pData_;
@@ -123,7 +123,7 @@ DWORD ChatServer::WorkerThread(){
     DWORD dwResult = 0;
     DWORD dwIoSize = 0;
     BOOL bSuccess = TRUE;
-    stClientInfo* pClientInfo = NULL;
+    stUserInfo* pClientInfo = NULL;
     LPOVERLAPPED lpOverlapped = NULL;
 
     while(mbIsWorkerRun){

@@ -4,8 +4,6 @@
 #include <Ws2tcpip.h>
 #include <cstdio>
 
-#include "UserInfo.h"
-
 #ifndef _STRUCT_CLIENT_INFO
 #define _STRUCT_CLIENT_INFO
 
@@ -25,9 +23,9 @@ struct stOverlappedEx
 	IOOperation m_eOperation;			// 작업 동작 종류
 };
 
-struct stClientInfo : public stUserInfo
+struct stClientInfo
 {
-
+public:
     stClientInfo(): mIndex(-1), m_socketClient(INVALID_SOCKET)
 	{
 		ZeroMemory(&m_stRecvOverlappedEx, sizeof(stOverlappedEx));
@@ -59,7 +57,7 @@ struct stClientInfo : public stUserInfo
     bool SendMsg(const UINT32 dataSize_, char* pMsg_, IOOperation ioType_ = SEND);
 
 
-private:
+protected:
     SOCKET			m_socketClient;			
 	stOverlappedEx	m_stRecvOverlappedEx;	
 	stOverlappedEx	m_stSendOverlappedEx;	
