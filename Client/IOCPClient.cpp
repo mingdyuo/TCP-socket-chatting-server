@@ -80,6 +80,7 @@ bool IOCPClient::SetNickname(){
         if (nickname.empty()) continue;
         errorMsg = NicknameCheck(nickname.c_str());
         if (errorMsg == CREATE_SUCCESS) break;
+        if (errorMsg == 0) return false;
         nickname.clear();
     }
 
@@ -293,7 +294,7 @@ DWORD IOCPClient::SendThread(){
         } while(content.empty());
 
         eAction action = processSendMsg(content);
-        
+
         if(action == UNINITIALIZED){        
             Close();
             break;

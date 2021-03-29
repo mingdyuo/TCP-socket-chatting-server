@@ -3,6 +3,7 @@
 #include <Ws2tcpip.h>
 #include <cstdio>
 #include "ClientInfo.h"
+#include "CriticalSection.h"
 
 #ifndef _CLIENT_MANAGER
 #define _CLIENT_MANAGER
@@ -44,14 +45,18 @@ public:
         if(bConnected == false) {
             return false;
         }
-
+        _LOCK(mMutex)
         ++mUserCount;
+        _UNLOCK(mMutex)
         printf("[알림] Client(%d) 연결 완료\n", index);
     }
 
     void CloseClient(stClientInfo* client){
         client->Close();
+
+        _LOCK(mMutex)
         --mUserCount;
+        _UNLOCK(mMutex)
     }
 
     int FindNickname(char* nickname_){
@@ -65,7 +70,10 @@ public:
 
     void CloseClient(int index_){
         mClientInfos[index_].Close();
+        
+        _LOCK(mMutex)
         --mUserCount;
+        _UNLOCK(mMutex)
     }
 
     char* MoveData(int index_, int ioSize_){
@@ -101,6 +109,8 @@ private:
 
     int mMaxClientCount;
     int mUserCount;
+
+    CriticalSection mMutex;
     
 };
 

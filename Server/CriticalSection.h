@@ -29,4 +29,6 @@ public:
 
 };
 
+#define _LOCK(mCs) mCs.Lock();
+#define _UNLOCK(mCs) mCs.Unlock();
 #endif

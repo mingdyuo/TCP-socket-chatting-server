@@ -78,7 +78,7 @@ bool stClientInfo::BindRecv(){
     return true;
 }
 
-bool stClientInfo::SendMsg(const UINT32 dataSize_, char* pMsg_, IOOperation ioType_ = SEND){
+bool stClientInfo::SendMsg(const UINT32 dataSize_, char* pMsg_, IOOperation ioType_){
     stOverlappedEx* sendOverlappedEx = new stOverlappedEx;
     ZeroMemory(sendOverlappedEx, sizeof(stOverlappedEx));
     sendOverlappedEx->m_wsaBuf.len = dataSize_;

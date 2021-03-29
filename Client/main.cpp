@@ -6,16 +6,31 @@
 void ErrorHandling(char *message);
 static const int SERVER_PORT = 9898;
 
+void ErrorExit(char* msg){
+    printf("%s\n", msg);
+    exit(1);
+}
  
 int main()
 {
     IOCPClient iocpClient;
     HANDLE sender, recver;
-    iocpClient.InitSocket();
-    iocpClient.ConnectServer(SERVER_PORT);
-    iocpClient.SetNickname();
-    iocpClient.CreateThreads(&sender, &recver);
-    iocpClient.Lobby();
+    bool bSuccess = true;
+
+    bSuccess = iocpClient.InitSocket();
+    if(!bSuccess) ErrorExit("소켓 초기화 실패");
+
+    bSuccess = iocpClient.ConnectServer(SERVER_PORT);
+    if(!bSuccess) ErrorExit("서버 연결 실패");
+
+    bSuccess = iocpClient.SetNickname();
+    if(!bSuccess) ErrorExit("닉네임 세팅 실패");
+
+    bSuccess = iocpClient.CreateThreads(&sender, &recver);
+    if(!bSuccess) ErrorExit("스레드 생성 실패");
+
+    bSuccess = iocpClient.Lobby();
+    if(!bSuccess) ErrorExit("로비 이동 실패");
 
 
     WaitForSingleObject (sender, INFINITE);

@@ -110,7 +110,8 @@ DWORD ChatServer::AccepterThread(){
             continue;
 
         if(false == mClientMgr->CreateClient(mIOCPHandle, newSocket)){
-            return dwResult;
+            closesocket(newSocket);
+            continue;
         }
 
     }
