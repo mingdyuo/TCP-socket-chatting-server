@@ -46,5 +46,7 @@
 
 내용
 
-- 
+- 클래스 구조 변경해보기
+
+  `template` 사용해서 `ClientManager`에서는 `ClientInfo`를 상속한 어떤 구조체던지 사용할 수 있도록
 
