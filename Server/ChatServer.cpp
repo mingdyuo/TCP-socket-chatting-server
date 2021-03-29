@@ -1,5 +1,6 @@
 #include "ChatServer.h"
 
+
 void ChatServer::OnReceive(const UINT32 clientIndex_, const UINT32 size_, char* pData_) {
     printf("[OnReceive] 클라이언트(%d) %d bytes\n", clientIndex_, size_);
 

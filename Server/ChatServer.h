@@ -1,7 +1,8 @@
 #pragma once
 
 #include "IOCPServer.h"
-#include "ClientManager.h"
+#include "ChatClientManager.h"
+#include "UserInfo.h"
 
 class ChatServer : public IOCPServer
 {
@@ -18,13 +19,13 @@ public:
     virtual DWORD WorkerThread();
 
     virtual void SetClientInfos(const UINT32 maxClientCount){
-        mClientMgr = new ClientManager(maxClientCount);
+        mClientMgr = new ChatClientManager<stUserInfo>(maxClientCount);
     }
 
 
 private:
     void ProcessRecvPacket(const UINT32 clientIndex_, const UINT32 size_, char* pData_);
 
-    ClientManager*          mClientMgr;
+    ChatClientManager<stUserInfo>*          mClientMgr;
 
 };

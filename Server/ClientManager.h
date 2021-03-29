@@ -1,14 +1,15 @@
 #pragma comment(lib, "ws2_32")
-#include "UserInfo.h"
+// #include "UserInfo.h"
 #include "CriticalSection.h"
 
 #ifndef _CLIENT_MANAGER
 #define _CLIENT_MANAGER
 
+template <typename ClientT>
 class ClientManager
 {
 
-private:
+protected:
     int getEmptyClient(){
         for(int i=0;i<mMaxClientCount;i++){
             if(mClientInfos[i].IsConnected() == false) return i;
@@ -18,15 +19,15 @@ private:
 
 public:
 
-    ClientManager(int maxClientCount){
+    ClientManager<ClientT>(int maxClientCount){
         mMaxClientCount = maxClientCount;
         for(int i=0;i<mMaxClientCount;i++){
-            mClientInfos.push_back(stUserInfo(i));
+            mClientInfos.push_back(ClientT(i));
         }
     }
     ~ClientManager(){}
 
-    stUserInfo* GetClientByIndex(int index){
+    ClientT* GetClientByIndex(int index){
         return &mClientInfos[index];
     }
     
@@ -49,7 +50,7 @@ public:
         return true;
     }
 
-    void CloseClient(stUserInfo* client){
+    void CloseClient(ClientT* client){
         client->Close();
 
         _LOCK(mMutex)
@@ -57,13 +58,6 @@ public:
         _UNLOCK(mMutex)
     }
 
-    int FindNickname(char* nickname_){
-        for(int i=0;i<mMaxClientCount;i++){
-            if(mClientInfos[i].IsConnected() == false) continue;
-            if(strcmp(nickname_, mClientInfos[i].GetNickname()) == 0) return i;
-        }
-        return -1;
-    }
 
 
     void CloseClient(int index_){
@@ -74,36 +68,11 @@ public:
         _UNLOCK(mMutex)
     }
 
-    char* MoveData(int index_, int ioSize_){
-        mClientInfos[index_].SetSendBuf(ioSize_);
-        return mClientInfos[index_].SendBuffer();
-    }
-
-    void BroadCast(const UINT32 senderClientIndex_, const UINT32 size_, char* pData_){
-        for(int i=0;i<mMaxClientCount;i++){
-            if(mClientInfos[i].IsConnected() == false ) continue;
-            mClientInfos[i].SendMsg(size_, pData_);
-        }
-    }
-
-    void MultiCast(const UINT32 senderClientIndex_, const UINT32 size_, char* pData_, IOOperation ioType_ = SEND){
-        int senderRoom = mClientInfos[senderClientIndex_].GetRoom();
-        if(senderRoom == stUserInfo::LOBBY) return;
-
-        for(int i=0;i<mMaxClientCount;i++){
-            if(mClientInfos[i].IsConnected() == false || mClientInfos[i].GetRoom() != senderRoom) continue;
-            if(ioType_ == CLOSE && i == senderClientIndex_) {
-                mClientInfos[i].SendMsg(size_, pData_, CLOSE);
-            }
-
-            mClientInfos[i].SendMsg(size_, pData_);
-        }
-
-    }
 
 
-private:
-    std::vector<stUserInfo>   mClientInfos;
+
+protected:
+    std::vector<ClientT>   mClientInfos;
 
     int mMaxClientCount;
     int mUserCount;
