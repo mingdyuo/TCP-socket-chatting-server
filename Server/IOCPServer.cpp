@@ -1,4 +1,5 @@
 #include "IOCPServer.h"
+#include <process.h>
 
 bool IOCPServer::InitSocket(){
     WSADATA wsaData;
@@ -64,7 +65,7 @@ bool IOCPServer::StartServer(){
 }
 
 bool IOCPServer::CreateThreads(){
-    HANDLE mAccepterThread = CreateThread(NULL, 0, StaticAccepterThread, (void*) this, 0, NULL);
+    HANDLE mAccepterThread = (HANDLE)_beginthreadex(NULL, 0, StaticAccepterThread, this, 0, NULL);
     if(mAccepterThread == NULL){
         printf("[에러] createAccepterThread() 함수 실패");
     }
@@ -72,7 +73,7 @@ bool IOCPServer::CreateThreads(){
     HANDLE hThread;
     printf("[알림] Accepter Thread 생성 완료\n");
     for(int i=0;i<MAX_WORKERTHREAD;i++){
-        hThread = CreateThread(NULL, 0, StaticWorkerThread, (void*) this, 0, NULL);
+        hThread = (HANDLE)_beginthreadex(NULL, 0, StaticWorkerThread, this, 0, NULL);
         if(hThread==NULL) {
             printf("[에러] %d번째 스레드 생성중 오류 발생\n", i);
             return false;
@@ -80,7 +81,7 @@ bool IOCPServer::CreateThreads(){
         mIOWorkerThreads.push_back(hThread);
     }
     printf("[알림] WorkerThread 생성 완료\n");
-    return hThread;
+    return true;
 }
 
 
@@ -90,12 +91,14 @@ bool IOCPServer::DestroyThreads(){
 
     for(size_t i = 0; i < mIOWorkerThreads.size();++i){
         WaitForSingleObject(mIOWorkerThreads[i], INFINITE);
+        CloseHandle(mIOWorkerThreads[i]);
     }
 
     mbIsAccepterRun = false;
     closesocket(mListenSocket);
 
     WaitForSingleObject(mAccepterThread, INFINITE);
+    CloseHandle(mAccepterThread);
     return true;
 }
 

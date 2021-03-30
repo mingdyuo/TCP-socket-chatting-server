@@ -15,8 +15,8 @@ public:
     virtual void OnCreate(const UINT32 clientIndex_, const UINT32 size_, char* pData_);
     virtual void OnClose(int clientIndex_);
 
-    virtual DWORD AccepterThread();
-    virtual DWORD WorkerThread();
+    virtual unsigned AccepterThread();
+    virtual unsigned WorkerThread();
 
     virtual void SetClientInfos(const UINT32 maxClientCount){
         mClientMgr = new ChatClientManager<stUserInfo>(maxClientCount);

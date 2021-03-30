@@ -31,8 +31,8 @@ public:
     bool            CreateThreads();
     bool            DestroyThreads();
 
-    virtual DWORD   AccepterThread(){return 0;}
-    virtual DWORD   WorkerThread(){return 0;}
+    virtual unsigned AccepterThread(){return 0;}
+    virtual unsigned WorkerThread(){return 0;}
 
 protected:
     SOCKET                  mListenSocket;
@@ -48,12 +48,12 @@ private:
     static const int        WAIT_QUEUE_CNT = 5;
     static const int        MAX_WORKERTHREAD = 16;
 
-    static DWORD WINAPI StaticAccepterThread(void* arg){
+    static unsigned __stdcall StaticAccepterThread(void* arg){
         IOCPServer* This = (IOCPServer*) arg;
         return This->AccepterThread();
     };
 
-    static DWORD WINAPI StaticWorkerThread(LPVOID arg){
+    static unsigned __stdcall StaticWorkerThread(void* arg){
         IOCPServer* This = (IOCPServer*) arg;
         return This->WorkerThread();
     }

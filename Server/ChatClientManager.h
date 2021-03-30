@@ -13,7 +13,7 @@ public:
     ChatClientManager(int maxClientCount): ClientManager<ClientT>(maxClientCount){}
 
     int FindNickname(char* nickname_){
-        for(int i=0;i<mMaxClientCount;i++){
+        for(int i=0;i<mCurrentCapacity;i++){
             if(mClientInfos[i].IsConnected() == false) continue;
             if(strcmp(nickname_, mClientInfos[i].GetNickname()) == 0) return i;
         }
@@ -26,7 +26,7 @@ public:
     }
 
     void BroadCast(const UINT32 senderClientIndex_, const UINT32 size_, char* pData_){
-        for(int i=0;i<mMaxClientCount;i++){
+        for(int i=0;i<mCurrentCapacity;i++){
             if(mClientInfos[i].IsConnected() == false ) continue;
             mClientInfos[i].SendMsg(size_, pData_);
         }
@@ -36,7 +36,7 @@ public:
         int senderRoom = mClientInfos[senderClientIndex_].GetRoom();
         if(senderRoom == ClientT::LOBBY) return;
 
-        for(int i=0;i<mMaxClientCount;i++){
+        for(int i=0;i<mCurrentCapacity;i++){
             if(mClientInfos[i].IsConnected() == false || mClientInfos[i].GetRoom() != senderRoom) continue;
             if(ioType_ == CLOSE && i == senderClientIndex_) {
                 mClientInfos[i].SendMsg(size_, pData_, CLOSE);

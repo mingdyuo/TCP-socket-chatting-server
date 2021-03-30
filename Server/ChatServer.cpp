@@ -96,8 +96,8 @@ void ChatServer::ProcessRecvPacket(const UINT32 clientIndex_, const UINT32 size_
 }
 
 
-DWORD ChatServer::AccepterThread(){
-    DWORD dwResult = 0;
+unsigned ChatServer::AccepterThread(){
+    unsigned uResult = 0;
     SOCKADDR_IN stClientAddr;
     int nAddrLen = sizeof(SOCKADDR_IN);
     while(mbIsAccepterRun){
@@ -117,11 +117,11 @@ DWORD ChatServer::AccepterThread(){
 
     }
     printf("[알림] Accepter thread 종료\n");
-    return dwResult;
+    return uResult;
 }
 
-DWORD ChatServer::WorkerThread(){
-    DWORD dwResult = 0;
+unsigned ChatServer::WorkerThread(){
+    unsigned uResult = 0;
     DWORD dwIoSize = 0;
     BOOL bSuccess = TRUE;
     stUserInfo* pClientInfo = NULL;
@@ -165,6 +165,6 @@ DWORD ChatServer::WorkerThread(){
 
     }
     printf("[알림] Worker thread 종료\n");
-    return dwResult;
+    return uResult;
 }
 

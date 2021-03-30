@@ -11,7 +11,18 @@ class ClientManager
 
 protected:
     int getEmptyClient(){
-        for(int i=0;i<mMaxClientCount;i++){
+        if(mClientCount == mMaxClientCount)
+            return mMaxClientCount;
+        
+        if(mClientCount == mCurrentCapacity){
+            int newCapacity = min(mCurrentCapacity*2, mMaxClientCount);
+            mClientInfos.reserve(newCapacity);
+            for(int i = mCurrentCapacity;i < newCapacity;i++){
+                mClientInfos.push_back(ClientT(i));
+            }
+            mCurrentCapacity = newCapacity;
+        }
+        for(int i=0;i<mCurrentCapacity;i++){
             if(mClientInfos[i].IsConnected() == false) return i;
         }
         return mMaxClientCount;
@@ -21,7 +32,9 @@ public:
 
     ClientManager<ClientT>(int maxClientCount){
         mMaxClientCount = maxClientCount;
-        for(int i=0;i<mMaxClientCount;i++){
+        mCurrentCapacity = mMaxClientCount / 4;
+        mClientInfos.reserve(mCurrentCapacity);
+        for(int i=0;i<mCurrentCapacity;i++){
             mClientInfos.push_back(ClientT(i));
         }
     }
@@ -39,12 +52,11 @@ public:
         }
 
         bool bConnected = mClientInfos[index].Connect(iocpHandle_, socket_);
-
         if(bConnected == false) {
             return false;
         }
         _LOCK(mMutex)
-        ++mUserCount;
+        ++mClientCount;
         _UNLOCK(mMutex)
         printf("[알림] Client(%d) 연결 완료\n", index);
         return true;
@@ -54,7 +66,7 @@ public:
         client->Close();
 
         _LOCK(mMutex)
-        --mUserCount;
+        --mClientCount;
         _UNLOCK(mMutex)
     }
 
@@ -64,7 +76,7 @@ public:
         mClientInfos[index_].Close();
         
         _LOCK(mMutex)
-        --mUserCount;
+        --mClientCount;
         _UNLOCK(mMutex)
     }
 
@@ -75,7 +87,8 @@ protected:
     std::vector<ClientT>   mClientInfos;
 
     int mMaxClientCount;
-    int mUserCount;
+    int mCurrentCapacity;
+    int mClientCount;
 
     CriticalSection mMutex;
     

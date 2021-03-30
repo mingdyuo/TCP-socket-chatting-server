@@ -2,23 +2,25 @@
 
 ### 해야 하는 것들
 
-- 패킷 매니저를 스레드로 하나 만들어서 처리하기
+- **패킷 매니저를 스레드로 하나 만들어서 처리하기**
 
-  queue를 가지고 있으면서 거기에 Enque, deque, 패킷처리
+  **queue를 가지고 있으면서 거기에 Enque, deque, 패킷처리**
 
-- 데이터를 꽉 채운 큰 패킷 보냈을 때 처리하기
+- **데이터를 꽉 채운 큰 패킷 보냈을 때 처리하기**
 
 - 링버퍼 구현해보기
 
 - Critical section 찾아서 lock 설정하기
 
-- 클래스 구조 변경해보기
+- 클래스 구조 변경해보기 😎
 
 - 함수 포인터를 mapping하여 사용해보기
 
 - `acceptex()`와 `accept()`의 차이를 알고 사용하기
 
-- `vector`에서 메모리 재할당을 사용해보자 → `resize()`
+- `vector`에서 메모리 재할당을 사용해보자 → `resize()` 😎
+
+- 스레드 생성 함수를 `_beginthreadex`로 변경해보자
 
 ### 기타 조언
 
@@ -48,5 +50,12 @@
 
 - 클래스 구조 변경해보기
 
-  `template` 사용해서 `ClientManager`에서는 `ClientInfo`를 상속한 어떤 구조체던지 사용할 수 있도록
+  `template` 사용해서 `ClientManager`에서는 `ClientInfo`를 상속한 어떤 구조체든지 사용할 수 있도록
 
+### 03월 30일 화요일
+
+- `mClientInfos`라는 클라이언트 저장 벡터의 크기를 서버 시작 시 `maxClientCount`의 4분의 1만 생성하도록 함. 그리고 클라이언트가 그것보다 더 많이 들어오면 새로 생성.
+
+  생성 개수 순서는 1/4, 1/2, 1배 이렇게 생성된다.
+
+- send하는 부분에서 `new`, `delete`의 동적 할당을 하므로 스레드 함수를 `CreateThread`에서 `_beginthreadex`로 변경

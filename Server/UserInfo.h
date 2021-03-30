@@ -10,8 +10,8 @@ struct stUserInfo : public stClientInfo
 public:
     static const int LOBBY = 0;
     static int id;
-    stUserInfo(): mRoom(0), stClientInfo(-1) {ZeroMemory(mNickname, sizeof(mNickname));}
-    stUserInfo(UINT32 index): mRoom(0), stClientInfo(index) {ZeroMemory(mNickname, sizeof(mNickname));}
+    stUserInfo(): mRoom(0), stClientInfo(-1), mId(-1) {ZeroMemory(mNickname, sizeof(mNickname));}
+    stUserInfo(UINT32 index): mRoom(0), mId(-1), stClientInfo(index) {ZeroMemory(mNickname, sizeof(mNickname));}
     ~stUserInfo(){}
     
 
