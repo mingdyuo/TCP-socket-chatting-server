@@ -65,9 +65,10 @@ bool IOCPServer::StartServer(){
 }
 
 bool IOCPServer::CreateThreads(){
-    HANDLE mAccepterThread = (HANDLE)_beginthreadex(NULL, 0, StaticAccepterThread, this, 0, NULL);
+    mAccepterThread = (HANDLE)_beginthreadex(NULL, 0, StaticAccepterThread, this, 0, NULL);
     if(mAccepterThread == NULL){
-        printf("[에러] createAccepterThread() 함수 실패");
+        printf("[에러] createAccepterThread() 함수 실패\n");
+        return false;
     }
 
     HANDLE hThread;

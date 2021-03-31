@@ -30,7 +30,7 @@ protected:
 
 public:
 
-    ClientManager<ClientT>(int maxClientCount){
+    ClientManager(int maxClientCount):mClientCount(0){
         mMaxClientCount = maxClientCount;
         mCurrentCapacity = mMaxClientCount / 4;
         mClientInfos.reserve(mCurrentCapacity);
@@ -61,6 +61,8 @@ public:
         printf("[알림] Client(%d) 연결 완료\n", index);
         return true;
     }
+
+
 
     void CloseClient(ClientT* client){
         client->Close();

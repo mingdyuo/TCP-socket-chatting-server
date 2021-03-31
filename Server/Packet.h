@@ -73,6 +73,8 @@ struct SERVER_MESSAGE_PACKET : public PACKET_HEADER{
     UINT32 Message;
 };
 
+const int SERVER_MESSAGE_PACKET_LENGTH = sizeof(SERVER_MESSAGE_PACKET);
+
 #pragma pack(pop)
 
 #endif

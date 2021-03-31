@@ -10,8 +10,8 @@ struct stUserInfo : public stClientInfo
 public:
     static const int LOBBY = 0;
     static int id;
-    stUserInfo(): mRoom(0), stClientInfo(-1), mId(-1) {ZeroMemory(mNickname, sizeof(mNickname));}
-    stUserInfo(UINT32 index): mRoom(0), mId(-1), stClientInfo(index) {ZeroMemory(mNickname, sizeof(mNickname));}
+    stUserInfo(): mRoom(LOBBY), mPrevRoom(LOBBY), stClientInfo(-1), mId(-1) {ZeroMemory(mNickname, sizeof(mNickname));}
+    stUserInfo(UINT32 index): mRoom(LOBBY), mPrevRoom(LOBBY), mId(-1), stClientInfo(index) {ZeroMemory(mNickname, sizeof(mNickname));}
     ~stUserInfo(){}
     
 
@@ -23,6 +23,7 @@ public:
     }
 
     int GetRoom(){return mRoom;}
+    int GetPrevRoom(){return mPrevRoom;}
     
     bool EnterRoom(int RoomNumber){
         if(mRoom!=LOBBY) return false;
@@ -31,13 +32,15 @@ public:
     }
     bool ExitRoom(){
         if(mRoom==LOBBY) return false;
-        mRoom = LOBBY;
+        mPrevRoom   = mRoom;
+        mRoom       = LOBBY;
         return true;
     }
 
 private:
     int             mId;
     int             mRoom;    
+    int             mPrevRoom;
     char            mNickname[32];
 };
 

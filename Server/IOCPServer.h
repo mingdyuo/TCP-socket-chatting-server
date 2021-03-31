@@ -46,7 +46,7 @@ protected:
 
 private:
     static const int        WAIT_QUEUE_CNT = 5;
-    static const int        MAX_WORKERTHREAD = 16;
+    static const int        MAX_WORKERTHREAD = 14;
 
     static unsigned __stdcall StaticAccepterThread(void* arg){
         IOCPServer* This = (IOCPServer*) arg;

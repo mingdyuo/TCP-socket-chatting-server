@@ -64,7 +64,7 @@ protected:
     char			mRecvBuf[MAX_SOCKBUF]; 
 	char			mSendBuf[MAX_SOCKBUF]; 
 
-    int             mIndex;
+    int             mIndex; 				//< Vector index managed by Client Manager
 };
 
 #endif

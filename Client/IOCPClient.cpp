@@ -134,7 +134,9 @@ bool IOCPClient::Lobby(){
     int success = send(mSocket, (char*)&packet, ROOM_ENTER_PACKET_LENGTH, 0);
     if(success == SOCKET_ERROR) {mbIsWorkerRun = false; return UNINITIALIZED;}
 
+    mMutex.Lock();
     pos.EnterRoom(roomNo, mNickname);
+    mMutex.Unlock();
     mRoom = roomNo;
     
     return true;
