@@ -1,5 +1,7 @@
 #include "IOCPClient.h"
 #include "conio.h"
+#include <algorithm>
+#include <vector>
 
 bool IOCPClient::InitSocket(){
     WSADATA wsaData;
@@ -45,12 +47,11 @@ int IOCPClient::NicknameCheck(const char* nickname){
         if(nickname[i] == ' ') return TRIM_NEEDED;
     }
 
-    strcpy(mNickname, nickname);
 
     SERVER_ENTER_PACKET _packet;
-    strncpy(_packet.Sender, mNickname, strlen(mNickname) + 1);
+    strncpy(_packet.Sender, nickname, strlen(nickname) + 1);
     _packet.Type = SERVER_ENTER;
-    _packet.Length = (UINT16)strlen(mNickname) + 1;
+    _packet.Length = (UINT16)strlen(nickname) + 1;
 
     int success = send(mSocket, (char*)&_packet, _packet.Length + PACKET_HEADER_LENGTH, 0);
     if(success == SOCKET_ERROR) {mbIsWorkerRun = false; return 0;}
@@ -66,6 +67,7 @@ int IOCPClient::NicknameCheck(const char* nickname){
     SERVER_MESSAGE_PACKET* recvPacket = (SERVER_MESSAGE_PACKET*)recved;
     if(recvPacket->Message == NICKNAME_ALREADY_EXIST) return ALREADY_EXIST;
 
+    strcpy(mNickname, nickname);
     return CREATE_SUCCESS;
 }
 
@@ -114,9 +116,6 @@ bool IOCPClient::Lobby(){
                     break;
                 case UP:  
                     pos.LobbyControl(UP);
-                    break;
-                case ENTER:
-                    roomNo = pos.LobbyControl(ENTER);
                     break;
             }
         }
@@ -188,6 +187,10 @@ void IOCPClient::processRecvMsg(char* received, char* content, char* sender){
         default: break;
     }
     mMutex.Unlock();
+}
+
+void IOCPClient::processSendMsg(int index, std::string& content){
+
 }
 
 eAction IOCPClient::processSendMsg(std::string& content){
@@ -284,6 +287,7 @@ DWORD IOCPClient::RecvThread(){
 
 DWORD IOCPClient::SendThread(){
     std::string content;
+    //std::vector<std::string> strBuf;
     
     while (mbIsWorkerRun) { 
         while(mRoom == 0) Sleep(500);
@@ -295,17 +299,32 @@ DWORD IOCPClient::SendThread(){
             if(!mbIsWorkerRun) return 0;
         } while(content.empty());
 
-        eAction action = processSendMsg(content);
+        // if(content.length() > 600){
+        //     int startPtr = 0, endPtr = 700;
+        //     while(endPtr!=startPtr){
+        //         strBuf.push_back(content.substr(startPtr, endPtr));
+        //         startPtr = endPtr;
+        //         endPtr = std::min(endPtr + 700, (int)content.size());
+        //     }
+        //     for(int i=0;i<strBuf.size();i++){
+        //         processSendMsg(i, content);
+        //     }
+        // }
+        // else{
+        // }
+            eAction action = processSendMsg(content);
 
-        if(action == UNINITIALIZED){        
-            Close();
-            break;
-        }
-        else if(action == ROOM_EXIT){
-            Lobby();
-        }
+            if(action == UNINITIALIZED){        
+                Close();
+                break;
+            }
+            else if(action == ROOM_EXIT){
+                Lobby();
+            }
+
 
         content.clear();
+        //strBuf.clear();
     }
     return 0;
 }

@@ -40,10 +40,11 @@ void PacketManager<ClientT>::EnqueuePacket(PacketInfo& packetInfo_){
 
 template <typename ClientT>
 PacketInfo PacketManager<ClientT>::DequeuePacket(){
+    _LOCK(mCs)
     if(mPacketQueue.empty()){
+        _UNLOCK(mCs)
         return PacketInfo();
     }
-    _LOCK(mCs)
     PacketInfo packet = mPacketQueue.front();
     mPacketQueue.pop();
     _UNLOCK(mCs)

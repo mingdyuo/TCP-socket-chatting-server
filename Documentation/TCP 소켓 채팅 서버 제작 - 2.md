@@ -1,22 +1,24 @@
-## 3월 마지막주 & 4월 첫째주
+## 3월 마지막주 && 4월 첫째주
 
 ### 해야 하는 것들
 
-- **패킷 매니저를 스레드로 하나 만들어서 처리하기 **😎
+- 패킷 매니저를 스레드로 하나 만들어서 처리하기 😎
 
-  **queue를 가지고 있으면서 거기에 Enque, deque, 패킷처리 **😎
+  queue를 가지고 있으면서 거기에 Enque, deque, 패킷처리 😎
 
   패킷 매니저 스레드 하나에서만 send를 호출하도록 해보자 😎
 
 - **데이터를 꽉 채운 큰 패킷 보냈을 때 처리하기**
 
+  버퍼 오버런 학습
+
 - 링버퍼 구현해보기
 
-- Critical section 찾아서 lock 설정하기
+- Critical section 찾아서 lock 설정하기 
 
 - `stUserinfo` & `stClientInfo` 클래스 구조 변경해보기 😎
 
-- 함수 포인터를 mapping하여 사용해보기
+- 함수 포인터를 mapping하여 사용해보기 😎
 
 - accept 스레드를 사용하지 말고 `AcceptEx()`로 변경해보기
 
@@ -25,6 +27,8 @@
 - `vector`에서 메모리 재할당을 사용해보자 → `resize()` 😎
 
 - 스레드 생성 함수를 `_beginthreadex`로 변경해보자 😎
+
+- TCP 연결 종료에 대해 좀더 알아보자
 
 ### 기타 조언
 
@@ -50,8 +54,6 @@
 
 ### 03월 29일 월요일
 
-내용
-
 - 클래스 구조 변경해보기
 
   `template` 사용해서 `ClientManager`에서는 `ClientInfo`를 상속한 어떤 구조체든지 사용할 수 있도록
@@ -73,3 +75,5 @@
 ### 04월 01일 목요일
 
 - Packet Manager 헤더와 템플릿 멤버함수 분리
+- 학습 : `AcceptEx`, TCP 윈속2 버퍼 구조, Locked page, non-paged pool
+

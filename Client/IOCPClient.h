@@ -9,7 +9,7 @@
 
 
 class IOCPClient{
-private:
+protected:
     static const int MAX_NICKNAME_LEN = 32;
     SOCKET mSocket;
     bool mbIsWorkerRun;
@@ -40,6 +40,8 @@ public:
 
     void processRecvMsg(char* received, char* content, char* sender);
     eAction processSendMsg(std::string& content);
+
+    void processSendMsg(int index, std::string& content);
 
     static DWORD WINAPI StaticRecvThread(LPVOID arg){
         IOCPClient* This = (IOCPClient*)arg;
