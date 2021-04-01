@@ -14,7 +14,6 @@ public:
 
     virtual void OnReceive(const UINT32 clientIndex_, const UINT32 size_, char* pData_);
     virtual void OnSend(const UINT32 clientIndex_, const UINT32 size_);
-    virtual void OnCreate(const UINT32 clientIndex_, const UINT32 size_, char* pData_);
     virtual void OnClose(int clientIndex_);
 
     virtual unsigned AccepterThread();
@@ -23,6 +22,20 @@ public:
     virtual void SetClientInfos(const UINT32 maxClientCount){
         mClientMgr = new ChatClientManager<stUserInfo>(maxClientCount);
         mPacketMgr = new PacketManager<stUserInfo>(mClientMgr);
+    }
+
+    bool Initialize(int serverPort){
+        if(false == InitSocket()){
+            printf("소켓 초기화 실패\n");
+            return false;
+        }
+
+        if(false == BindAndListen(serverPort)){
+            printf("소켓 바인딩 실패\n");
+            return false;
+        }
+
+        return true;
     }
 
     bool Run(int maxClient){    //< Function called in main

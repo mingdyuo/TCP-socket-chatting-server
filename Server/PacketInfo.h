@@ -25,9 +25,7 @@ struct PacketInfo
     void Set(UINT32 clinetIndex_, UINT32 dataSize_, char* pData_){
         ClientIndex = clinetIndex_;
         DataSize = dataSize_;
-
-        pPacketData = new char[dataSize_];
-        CopyMemory(pPacketData, pData_, dataSize_);
+        pPacketData = pData_;
     }
 
     void Release(){

@@ -64,9 +64,12 @@
 
 - send하는 부분에서 `new`, `delete`의 동적 할당을 하므로 스레드 함수를 `CreateThread`에서 `_beginthreadex`로 변경
 
-### 3월 31일 수요일
+### 03월 31일 수요일
 
 - Packet Manager 클래스 생성, 단일로 send 만 하는 역할 하는 스레드로 작동
 - Packet Info 구조체 만들어서 관리
 - 패킷 매니저에서 각 패킷의 유저 행동 종류에 따라서 다른 함수로 처리하도록 매핑
-- 
+
+### 04월 01일 목요일
+
+- Packet Manager 헤더와 템플릿 멤버함수 분리

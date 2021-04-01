@@ -14,16 +14,14 @@ int main()
 	const int MAX_CLIENT 	= 500;
 
 	ChatServer chatServer;
-	bool bSuccess = true;
 
-	bSuccess = chatServer.InitSocket();
-	if(!bSuccess) ErrorExit("소켓 초기화 실패");
+	if(false == chatServer.Initialize(SERVER_PORT)){
+		ErrorExit("서버 초기화 실패\n");
+	}
 
-	bSuccess = chatServer.BindAndListen(SERVER_PORT);
-	if(!bSuccess) ErrorExit("소켓 바인딩 실패");
-
-	bSuccess = chatServer.Run(MAX_CLIENT);
-	if(!bSuccess) ErrorExit("IOCP 서버 시작 실패");
+	if(false == chatServer.Run(MAX_CLIENT)){
+		ErrorExit("IOCP 서버 시작 실패\n");
+	}
 
 	printf("[알림] quit을 입력시 서버 종료합니다.\n");
 	while (true)

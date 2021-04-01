@@ -4,66 +4,21 @@
 void ChatServer::OnReceive(const UINT32 clientIndex_, const UINT32 size_, char* pData_) {
 
     PacketInfo packetInfo;
-    packetInfo.ClientIndex = clientIndex_;
-    packetInfo.DataSize = size_;
-    packetInfo.pPacketData = pData_;
+    packetInfo.Set(clientIndex_, size_, pData_);
 
     printf("[OnReceive] 클라이언트(%d) %d bytes\n", packetInfo.ClientIndex, packetInfo.DataSize);
-    //< packetMgr->class(pData_);
     mPacketMgr->ClassifyPacket(packetInfo);
 
-    // ProcessRecvPacket(clientIndex_, size_, movedData);
 }
 
 void ChatServer::OnSend(const UINT32 clientIndex_, const UINT32 size_) {
     printf("[OnSend] 클라이언트(%d) %d bytes\n", clientIndex_, size_);
 }
 
-void ChatServer::OnCreate(const UINT32 clientIndex_, const UINT32 size_, char* pData_) {
-    stUserInfo* client_ = mClientMgr->GetClientByIndex(clientIndex_);
-    SERVER_ENTER_PACKET* packet = (SERVER_ENTER_PACKET*)pData_;
-    client_->SetNickname(packet->Sender);
-
-    printf("[OnCreate] 클라이언트(%d) 닉네임 생성 : [%s]\n", clientIndex_, client_->GetNickname());
-}
 
 void ChatServer::OnClose(int clientIndex_){
     printf("[OnClose] 클라이언트(%d) 연결 종료\n", clientIndex_);
     mClientMgr->CloseClient(clientIndex_);
-}
-
-
-void ChatServer::ProcessRecvPacket(const UINT32 clientIndex_, const UINT32 size_, char* pData_){
-    PACKET_HEADER* header = (PACKET_HEADER*)pData_;
-
-    // if(SERVER_ENTER == header->Type){
-
-    // }
-
-    // else if(CHAT_UNICAST == header->Type){
-    //     
-    // }
-    // else if(CHAT_BROADCAST == header->Type){
-
-    // }
-    // else if(SERVER_EXIT == header->Type){
-    // }
-    
-
-    // stUserInfo* client_ = mClientMgr->GetClientByIndex(clientIndex_);
-
-    // if(ROOM_ENTER == header->Type){
-    //     ROOM_ENTER_PACKET* packet = (ROOM_ENTER_PACKET*)pData_;
-    //     client_->EnterRoom(packet->RoomNo);
-    //     mClientMgr->MultiCast(clientIndex_, size_, pData_);
-    // }
-    // else if(ROOM_EXIT == header->Type){
-    //     mClientMgr->MultiCast(clientIndex_, size_, pData_);
-    //     client_->ExitRoom();
-    // }
-    // else if(CHAT_MULTICAST == header->Type) {
-    // }
-    
 }
 
 
@@ -131,6 +86,8 @@ unsigned ChatServer::WorkerThread(){
             pClientInfo->BindRecv();
         }
         else if(CLOSE == pOverlappedEx->m_eOperation){
+            delete[] pOverlappedEx->m_wsaBuf.buf;
+            delete pOverlappedEx;
             OnClose(pClientInfo->GetIndex());
         }
 
