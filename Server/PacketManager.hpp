@@ -1,5 +1,11 @@
 #include "PacketManager.h"
 
+/*
+    1. Packet Thread Run
+    2. Packet queue - Enqueue
+    3. Packet queue - Dequeue
+*/
+
 template <typename ClientT>
 void PacketManager<ClientT>::Run(){
     while(mbIsPacketRun){
@@ -52,13 +58,16 @@ PacketInfo PacketManager<ClientT>::DequeuePacket(){
     return packet;
 }
 
+/*
+    Process functions mapped by eAction value
+*/
 
 template <typename ClientT>
 void PacketManager<ClientT>::PROCESS_SERVER_ENTER(PacketInfo& packetInfo_){
     SERVER_ENTER_PACKET* recvPacket = (SERVER_ENTER_PACKET*)packetInfo_.pPacketData;
     int existIndex = mClientMgr->FindNickname(recvPacket->Sender);
 
-    if(existIndex < 0 )
+    if(existIndex < 0 )     //< No duplicate nickname
         mClientMgr->SetNickname(packetInfo_);
 
     packetInfo_.pPacketData = new char[SERVER_MESSAGE_PACKET_LENGTH];
@@ -84,9 +93,10 @@ void PacketManager<ClientT>::PROCESS_CHAT_UNICAST(PacketInfo& packetInfo_)
     int findIndex = mClientMgr->FindNickname(packet->Recver);
     
     if(findIndex > -1){     //< If target user exist
-        EnqueuePacket(packetInfo_);
-        packetInfo_.ClientIndex = findIndex;
-        EnqueuePacket(packetInfo_);
+        PacketInfo copied = PacketInfo(packetInfo_);
+        EnqueuePacket(copied);
+        copied.ClientIndex = findIndex;
+        EnqueuePacket(copied);
     }
     else{                   //< Target user doesn't exist
         SERVER_MESSAGE_PACKET* sendPacket = new SERVER_MESSAGE_PACKET();
@@ -104,21 +114,22 @@ void PacketManager<ClientT>::PROCESS_CHAT_UNICAST(PacketInfo& packetInfo_)
 template <typename ClientT>
 void PacketManager<ClientT>::PROCESS_SERVER_EXIT(PacketInfo& packetInfo_)
 {
-    packetInfo_.SendType = SENDTYPE_MULTI;
-    packetInfo_.isClose = true;
-    EnqueuePacket(packetInfo_);
+    PacketInfo copied = PacketInfo(packetInfo_);
+    copied.SendType = SENDTYPE_MULTI;
+    copied.isClose = true;
+    EnqueuePacket(copied);
 }
 
 template <typename ClientT>
 void PacketManager<ClientT>::PROCESS_ROOM_ENTER(PacketInfo& packetInfo_)
 {
-
     ROOM_ENTER_PACKET* packet = (ROOM_ENTER_PACKET*)packetInfo_.pPacketData;
     ClientT* client_ = mClientMgr->GetClientByIndex(packetInfo_.ClientIndex);
     client_->EnterRoom(packet->RoomNo);
 
-    packetInfo_.SendType = SENDTYPE_MULTI;
-    EnqueuePacket(packetInfo_);
+    PacketInfo copied = PacketInfo(packetInfo_);
+    copied.SendType = SENDTYPE_MULTI;
+    EnqueuePacket(copied);
 }
 
 template <typename ClientT>
@@ -127,21 +138,23 @@ void PacketManager<ClientT>::PROCESS_ROOM_EXIT(PacketInfo& packetInfo_)
     ClientT* client_ = mClientMgr->GetClientByIndex(packetInfo_.ClientIndex);
     client_->ExitRoom(); 
 
-    packetInfo_.SendType = SENDTYPE_MULTI;
-    EnqueuePacket(packetInfo_);
+    PacketInfo copied = PacketInfo(packetInfo_);
+    copied.SendType = SENDTYPE_MULTI;
+    EnqueuePacket(copied);
 }
 
 template <typename ClientT>
 void PacketManager<ClientT>::PROCESS_CHAT_BROADCAST(PacketInfo& packetInfo_)
 {
-    BROADCAST_PACKET* packet = (BROADCAST_PACKET*)packetInfo_.pPacketData;
-    packetInfo_.SendType = SENDTYPE_BROAD;
-    EnqueuePacket(packetInfo_);
+    PacketInfo copied = PacketInfo(packetInfo_);
+    copied.SendType = SENDTYPE_BROAD;
+    EnqueuePacket(copied);
 }
 
 template <typename ClientT>
 void PacketManager<ClientT>::PROCESS_CHAT_MULTICAST(PacketInfo& packetInfo_)
 {
-    packetInfo_.SendType = SENDTYPE_MULTI;
-    EnqueuePacket(packetInfo_);
+    PacketInfo copied = PacketInfo(packetInfo_);
+    copied.SendType = SENDTYPE_MULTI;
+    EnqueuePacket(copied);
 }

@@ -21,16 +21,10 @@ public:
         return -1;
     }
 
-
     void SetNickname(const PacketInfo& packetInfo_){
         SERVER_ENTER_PACKET* packet = (SERVER_ENTER_PACKET*)packetInfo_.pPacketData;
         mClientInfos[packetInfo_.ClientIndex].SetNickname(packet->Sender);
         printf("[알림] Client(%d) 닉네임 생성 완료 [%s]\n", packetInfo_.ClientIndex, packet->Sender);
-    }
-
-    char* MoveData(int index_, int ioSize_){
-        mClientInfos[index_].SetSendBuf(ioSize_);
-        return mClientInfos[index_].SendBuffer();
     }
 
     void UniCast(const PacketInfo& packetInfo_){
@@ -54,6 +48,7 @@ public:
             if(mClientInfos[i].IsConnected() == false || mClientInfos[i].GetRoom() != senderRoom) continue;
             if(ioType_ == CLOSE && i == senderIndex) {
                 mClientInfos[i].SendMsg(packetInfo_.DataSize, packetInfo_.pPacketData, CLOSE);
+                continue;
             }
 
             mClientInfos[i].SendMsg(packetInfo_.DataSize, packetInfo_.pPacketData);

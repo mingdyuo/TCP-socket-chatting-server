@@ -26,7 +26,7 @@ public:
     bool            InitSocket();
     bool            BindAndListen(int nBindPort);    
     bool            StartServer();
-    virtual void    SetClientInfos(const UINT32 maxClientCount){}
+    virtual void    InitializeManagers(const UINT32 maxClientCount){}
 
     bool            CreateThreads();
     bool            DestroyThreads();

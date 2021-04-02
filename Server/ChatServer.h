@@ -10,7 +10,12 @@ class ChatServer : public IOCPServer
 {
 public:
     ChatServer(){ }
-    virtual ~ChatServer(void){ WSACleanup(); }
+    virtual ~ChatServer(void)
+    { 
+        WSACleanup(); 
+        delete mClientMgr;
+        delete mPacketMgr;
+    }
 
     virtual void OnReceive(const UINT32 clientIndex_, const UINT32 size_, char* pData_);
     virtual void OnSend(const UINT32 clientIndex_, const UINT32 size_);
@@ -19,7 +24,7 @@ public:
     virtual unsigned AccepterThread();
     virtual unsigned WorkerThread();
 
-    virtual void SetClientInfos(const UINT32 maxClientCount){
+    virtual void InitializeManagers(const UINT32 maxClientCount){
         mClientMgr = new ChatClientManager<stUserInfo>(maxClientCount);
         mPacketMgr = new PacketManager<stUserInfo>(mClientMgr);
     }
@@ -39,7 +44,7 @@ public:
     }
 
     bool Run(int maxClient){    //< Function called in main
-        SetClientInfos(maxClient);
+        InitializeManagers(maxClient);
 
         if(false == mPacketMgr->PacketThread())
             return false;   

@@ -1,5 +1,3 @@
-#pragma comment(lib, "ws2_32")
-// #include "UserInfo.h"
 #include "CriticalSection.h"
 
 #ifndef _CLIENT_MANAGER
@@ -13,7 +11,8 @@ protected:
     int getEmptyClient(){
         if(mClientCount == mMaxClientCount)
             return mMaxClientCount;
-        
+
+        _LOCK(mFindMutex)
         if(mClientCount == mCurrentCapacity){
             int newCapacity = min(mCurrentCapacity*2, mMaxClientCount);
             mClientInfos.reserve(newCapacity);
@@ -22,9 +21,15 @@ protected:
             }
             mCurrentCapacity = newCapacity;
         }
+        
         for(int i=0;i<mCurrentCapacity;i++){
-            if(mClientInfos[i].IsConnected() == false) return i;
+            if(mClientInfos[i].IsConnected() == false) {
+                _UNLOCK(mFindMutex)
+                return i;
+            }
         }
+
+        _UNLOCK(mFindMutex)
         return mMaxClientCount;
     }
 
@@ -47,52 +52,57 @@ public:
     bool CreateClient(HANDLE iocpHandle_, SOCKET socket_){
         int index = getEmptyClient();
         if(index == mMaxClientCount) {
-            printf("[에러] Client Full\n");
+            printf("[알림] Client Full\n");
             return false;
         }
 
-        bool bConnected = mClientInfos[index].Connect(iocpHandle_, socket_);
-        if(bConnected == false) {
+        if(false == mClientInfos[index].Connect(iocpHandle_, socket_)) {
             return false;
         }
-        _LOCK(mMutex)
+
+        _LOCK(mCountMutex)
         ++mClientCount;
-        _UNLOCK(mMutex)
-        printf("[알림] Client(%d) 연결 완료\n", index);
+        _UNLOCK(mCountMutex)
+        printf("[알림] Client(%d) 연결 완료 / 현재 연결된 클라이언트 수 : %d\n", index, mClientCount);
         return true;
     }
 
 
 
     void CloseClient(ClientT* client){
+        if(client->IsConnected() == false) return;
         client->Close();
 
-        _LOCK(mMutex)
+        _LOCK(mCountMutex)
         --mClientCount;
-        _UNLOCK(mMutex)
+        _UNLOCK(mCountMutex)
+        printf("[알림] Client(%d) 연결 종료 / 현재 연결된 클라이언트 수 : %d\n", client->GetIndex(), mClientCount);
     }
 
 
 
     void CloseClient(int index_){
+        if(mClientInfos[index_].IsConnected() == false) return;
         mClientInfos[index_].Close();
         
-        _LOCK(mMutex)
+        _LOCK(mCountMutex)
         --mClientCount;
-        _UNLOCK(mMutex)
+        _UNLOCK(mCountMutex)
+        printf("[알림] Client(%d) 연결 종료 / 현재 연결된 클라이언트 수 : %d\n", index_, mClientCount);
     }
 
 
 
 
 protected:
-    std::vector<ClientT>   mClientInfos;
+    std::vector<ClientT>    mClientInfos;
 
-    int mMaxClientCount;
-    int mCurrentCapacity;
-    int mClientCount;
+    int                     mMaxClientCount;
+    int                     mCurrentCapacity;
+    int                     mClientCount;
 
-    CriticalSection mMutex;
+    CriticalSection         mCountMutex;
+    CriticalSection         mFindMutex;
     
 };
 

@@ -21,6 +21,15 @@ struct PacketInfo
     char*       pPacketData;
 
     PacketInfo(): DataSize(0), SendType(SENDTYPE_UNINTIALIZED), isClose(false) {}
+    PacketInfo(const PacketInfo& origin):
+        ClientIndex(origin.ClientIndex), 
+        DataSize(origin.DataSize), 
+        SendType(origin.SendType), 
+        isClose(origin.isClose) 
+        {
+            pPacketData = new char[origin.DataSize];
+		    CopyMemory(pPacketData, origin.pPacketData, DataSize);
+        }
 
     void Set(UINT32 clinetIndex_, UINT32 dataSize_, char* pData_){
         ClientIndex = clinetIndex_;
