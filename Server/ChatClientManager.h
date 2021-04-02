@@ -21,10 +21,11 @@ public:
         return -1;
     }
 
+
     void SetNickname(const PacketInfo& packetInfo_){
         SERVER_ENTER_PACKET* packet = (SERVER_ENTER_PACKET*)packetInfo_.pPacketData;
         mClientInfos[packetInfo_.ClientIndex].SetNickname(packet->Sender);
-        
+        printf("[알림] Client(%d) 닉네임 생성 완료 [%s]\n", packetInfo_.ClientIndex, packet->Sender);
     }
 
     char* MoveData(int index_, int ioSize_){

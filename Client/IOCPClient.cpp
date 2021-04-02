@@ -193,6 +193,44 @@ void IOCPClient::processSendMsg(int index, std::string& content){
 
 }
 
+eAction IOCPClient::BroadCast(std::string& content){
+    CHAT_PACKET packet;
+    packet.Type = CHAT_BROADCAST;
+    strcpy(packet.Sender, mNickname);
+    strcpy(packet.Content, content.c_str());
+    packet.Length = MAX_NICKNAME_LEN + content.length();
+
+    int success = send(mSocket, (char*)&packet, packet.Length + PACKET_HEADER_LENGTH, 0);
+    if(success == SOCKET_ERROR) {mbIsWorkerRun = false; return UNINITIALIZED;}
+    return CHAT_BROADCAST;
+}
+
+eAction IOCPClient::MultiCast(std::string& content){
+    CHAT_PACKET packet;
+    packet.Type = CHAT_MULTICAST;
+    strcpy(packet.Sender, mNickname);
+    strcpy(packet.Content, content.c_str());
+    packet.Length = MAX_NICKNAME_LEN + content.length();
+
+    int success = send(mSocket, (char*)&packet, packet.Length + PACKET_HEADER_LENGTH, 0);
+    if(success == SOCKET_ERROR) {mbIsWorkerRun = false; return UNINITIALIZED;}
+    return CHAT_MULTICAST;
+}
+
+void splitContent(std::string& content, std::vector<std::string>& strVector){
+
+    const int limitSize = 600;
+    if(content.length() > limitSize){
+        int endPtr = limitSize;
+        while(!content.empty()){
+            endPtr = content.length() < limitSize? content.length(): limitSize;
+            strVector.push_back(content.substr(0, endPtr));
+            content.erase(0, limitSize);
+        }
+    }
+
+}
+
 eAction IOCPClient::processSendMsg(std::string& content){
 
     if(content == "/quit") {
@@ -219,16 +257,18 @@ eAction IOCPClient::processSendMsg(std::string& content){
         return ROOM_EXIT;
     }
     else if(content.find("/ÀüÃ¼ ")==0) {
-        content = content.substr(6);
-
-        CHAT_PACKET packet;
-        packet.Type = CHAT_BROADCAST;
-        strcpy(packet.Sender, mNickname);
-        strcpy(packet.Content, content.c_str());
-        packet.Length = MAX_NICKNAME_LEN + content.length();
-
-        int success = send(mSocket, (char*)&packet, packet.Length + PACKET_HEADER_LENGTH, 0);
-        if(success == SOCKET_ERROR) {mbIsWorkerRun = false; return UNINITIALIZED;}
+        if(content.size()>600){
+            std::vector<std::string> strBufs;
+            splitContent(content, strBufs);
+            strBufs[0] = strBufs[0].substr(6);
+            for(int i=0;i<strBufs.size();i++){
+                if(UNINITIALIZED == BroadCast(strBufs[i])) return UNINITIALIZED;
+            }
+        }
+        else{
+            content = content.substr(6);
+            if(UNINITIALIZED == BroadCast(content)) return UNINITIALIZED;
+        }
 
         return CHAT_BROADCAST;
     }
@@ -248,15 +288,16 @@ eAction IOCPClient::processSendMsg(std::string& content){
         return CHAT_UNICAST;
     }
     else{
-        CHAT_PACKET packet;
-        packet.Type = CHAT_MULTICAST;
-        strcpy(packet.Sender, mNickname);
-        strcpy(packet.Content, content.c_str());
-        packet.Length = MAX_NICKNAME_LEN + content.length();
-
-        int success = send(mSocket, (char*)&packet, packet.Length + PACKET_HEADER_LENGTH, 0);
-        if(success == SOCKET_ERROR) {mbIsWorkerRun = false; return UNINITIALIZED;}
-        
+        if(content.size()>600){
+            std::vector<std::string> strBufs;
+            splitContent(content, strBufs);
+            for(int i=0;i<strBufs.size();i++){
+                if(UNINITIALIZED == MultiCast(strBufs[i])) return UNINITIALIZED;
+            }
+        }
+        else if(UNINITIALIZED == MultiCast(content)){
+            return UNINITIALIZED;
+        }
         return CHAT_MULTICAST;
     }
 
@@ -287,7 +328,7 @@ DWORD IOCPClient::RecvThread(){
 
 DWORD IOCPClient::SendThread(){
     std::string content;
-    //std::vector<std::string> strBuf;
+    std::vector<std::string> strBuf;
     
     while (mbIsWorkerRun) { 
         while(mRoom == 0) Sleep(500);
@@ -299,28 +340,17 @@ DWORD IOCPClient::SendThread(){
             if(!mbIsWorkerRun) return 0;
         } while(content.empty());
 
-        // if(content.length() > 600){
-        //     int startPtr = 0, endPtr = 700;
-        //     while(endPtr!=startPtr){
-        //         strBuf.push_back(content.substr(startPtr, endPtr));
-        //         startPtr = endPtr;
-        //         endPtr = std::min(endPtr + 700, (int)content.size());
-        //     }
-        //     for(int i=0;i<strBuf.size();i++){
-        //         processSendMsg(i, content);
-        //     }
-        // }
-        // else{
-        // }
-            eAction action = processSendMsg(content);
+        
 
-            if(action == UNINITIALIZED){        
-                Close();
-                break;
-            }
-            else if(action == ROOM_EXIT){
-                Lobby();
-            }
+        eAction action = processSendMsg(content);
+
+        if(action == UNINITIALIZED){        
+            Close();
+            break;
+        }
+        else if(action == ROOM_EXIT){
+            Lobby();
+        }
 
 
         content.clear();

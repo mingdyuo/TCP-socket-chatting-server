@@ -55,7 +55,6 @@ struct ROOM_ENTER_PACKET : public SYSTEM_PACKET{
 const int ROOM_ENTER_PACKET_LENGTH = sizeof(ROOM_ENTER_PACKET);
 
 typedef struct CHAT_PACKET : public PACKET_HEADER{
-    UINT16 index;
     char Sender[MAX_NICKNAME_LEN];
     char Content[MAX_CONTENT_LEN];
 }MULTICAST_PACKET, BROADCAST_PACKET;
@@ -63,7 +62,6 @@ typedef struct CHAT_PACKET : public PACKET_HEADER{
 const int CHAT_PACKET_LENGTH = sizeof(CHAT_PACKET);
 
 struct UNICAST_PACKET : public PACKET_HEADER{
-    UINT16 index;
     char Recver[MAX_NICKNAME_LEN];
     char Sender[MAX_NICKNAME_LEN];
     char Content[MAX_CONTENT_LEN];

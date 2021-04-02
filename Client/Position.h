@@ -176,9 +176,11 @@ public:
     
     void SendBox(char* nickname){
         setColor(CHAT_MULTICAST);
-        gotoxy(mSendPos); printf("%c[2K\n%c[2K\n%c[2K\n%c[2K", 27, 27, 27, 27);
-        gotoxy(mSendPos); printf("===============================\n[%s┤╘]: ", nickname);
+        gotoxy(mSendPos); printf("%c[2K\n%c[2K\n%c[2K\n%c[2K\n%c[2K\n%c[2K", 27, 27, 27, 27, 27 , 27);
+        gotoxy(mSendPos); printf("быбыбыбыбыбыбыбыбыбыбыбыбыбыбыбыбыбыбыбыбыбыбыбыбы\n[%s┤╘]: ", nickname);
     }
+
+    static const int chatBoxSize = 50;
 
     void Receive(char* nickname, const char* content, int action){
         ++mRecvPos.Y;
@@ -188,7 +190,35 @@ public:
             ++mSendPos.Y;
         }
         setColor(action);
-        gotoxy(mRecvPos); printf("[%s┤╘]: %s\n", nickname, content);
+
+        if(strlen(content)<chatBoxSize){
+            gotoxy(mRecvPos); printf("[%s┤╘]: %s\n", nickname, content);
+        }
+        else{
+            gotoxy(mRecvPos); printf("[%s┤╘]: ", nickname);
+            int start = 0, end = chatBoxSize - strlen(nickname) - 6;
+            setColor(action);
+            while(true){
+                setColor(action);
+                for(int i=start;i<end;i++){
+                    printf("%c",content[i]);
+                }
+                start = end;
+                end = end + chatBoxSize < strlen(content)? end+chatBoxSize:strlen(content);
+
+                setColor(CHAT_MULTICAST); 
+                printf("\n\r                                  ");
+                // printf("\n%c[2K", 27);
+
+                if(start == end) break;
+
+                ++mRecvPos.Y; gotoxy(mRecvPos);
+                if(mRecvPos.Y>=20) {
+                    ++mSendPos.Y;
+                }
+            }
+            
+        }
     }
 
     void RoomMessage(char* nickname, int action){

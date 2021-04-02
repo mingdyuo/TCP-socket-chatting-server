@@ -41,6 +41,9 @@ public:
     void processRecvMsg(char* received, char* content, char* sender);
     eAction processSendMsg(std::string& content);
 
+    eAction BroadCast(std::string& conten);
+    eAction MultiCast(std::string& content);
+
     void processSendMsg(int index, std::string& content);
 
     static DWORD WINAPI StaticRecvThread(LPVOID arg){

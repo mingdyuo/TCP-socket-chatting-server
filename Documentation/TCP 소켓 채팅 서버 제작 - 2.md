@@ -77,3 +77,15 @@
 - Packet Manager 헤더와 템플릿 멤버함수 분리
 - 학습 : `AcceptEx`, TCP 윈속2 버퍼 구조, Locked page, non-paged pool
 
+### 04월 02일 금요일
+
+- 큰 패킷 클라이언트 단에서 쪼개서 보내기 
+
+- 문제 : 받을 때 한글이 이상하게 뜬다 근데 잘 됬다가 잘 안됬다가 왔다갔다함
+
+  ![image](https://user-images.githubusercontent.com/41130448/113376265-410d9800-93ac-11eb-9ce9-265fdc03bcd9.png)
+
+- 문제 : 늦게 보낸게 먼저 전송됨 (아마 패킷 classify하고 처리하는 과정에서 크기 때문에 속도차가 나기 때문이 아닐까,,,)
+
+  ![image](https://user-images.githubusercontent.com/41130448/113375980-9f864680-93ab-11eb-8428-f5f4d239cbc2.png)
+

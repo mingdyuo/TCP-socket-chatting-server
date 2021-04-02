@@ -58,18 +58,14 @@ void PacketManager<ClientT>::PROCESS_SERVER_ENTER(PacketInfo& packetInfo_){
     SERVER_ENTER_PACKET* recvPacket = (SERVER_ENTER_PACKET*)packetInfo_.pPacketData;
     int existIndex = mClientMgr->FindNickname(recvPacket->Sender);
 
+    if(existIndex < 0 )
+        mClientMgr->SetNickname(packetInfo_);
+
     packetInfo_.pPacketData = new char[SERVER_MESSAGE_PACKET_LENGTH];
     SERVER_MESSAGE_PACKET* sendPacket = (SERVER_MESSAGE_PACKET*)packetInfo_.pPacketData;
     sendPacket->Type = SERVER_MESSAGE;
     sendPacket->Length = SERVER_MESSAGE_PACKET_LENGTH;
-
-    if(existIndex >=0 ){
-        sendPacket->Message = NICKNAME_ALREADY_EXIST;
-    }
-    else{
-        sendPacket->Message = NICKNAME_CREATED;
-        mClientMgr->SetNickname(packetInfo_);
-    }
+    sendPacket->Message = existIndex < 0 ? NICKNAME_CREATED : NICKNAME_ALREADY_EXIST;
 
     packetInfo_.DataSize = SERVER_MESSAGE_PACKET_LENGTH;
     packetInfo_.SendType    = SENDTYPE_UNI;
@@ -138,6 +134,7 @@ void PacketManager<ClientT>::PROCESS_ROOM_EXIT(PacketInfo& packetInfo_)
 template <typename ClientT>
 void PacketManager<ClientT>::PROCESS_CHAT_BROADCAST(PacketInfo& packetInfo_)
 {
+    BROADCAST_PACKET* packet = (BROADCAST_PACKET*)packetInfo_.pPacketData;
     packetInfo_.SendType = SENDTYPE_BROAD;
     EnqueuePacket(packetInfo_);
 }
