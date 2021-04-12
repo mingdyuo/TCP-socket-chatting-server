@@ -2,6 +2,7 @@
 #include <winsock2.h>
 #include <cstdio>
 #include <string>
+#include <algorithm>
 #include "Packet.h"
 
 #ifndef _STRUCT_CLIENT_INFO
@@ -61,6 +62,8 @@ public:
 			// 닉네임 생성 & 입장 처리
 		SERVER_ENTER_PACKET serverPacket;
 		serverPacket.Length = (UINT16)strlen(name.c_str()) + 1;
+
+		
 		strncpy(serverPacket.Sender, name.c_str(), serverPacket.Length);
 		serverPacket.Type = SERVER_ENTER;
 

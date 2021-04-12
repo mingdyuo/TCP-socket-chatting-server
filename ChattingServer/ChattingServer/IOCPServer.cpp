@@ -68,26 +68,30 @@ bool IOCPServer::CreateThreads(){
     mAccepterThread = thread(&IOCPServer::AccepterThread, this);
     printf("[알림] Accepter Thread 생성 완료\n");
 
-    for(int i=0;i<MAX_WORKERTHREAD;i++){
-        mIOWorkerThreads.push_back(thread(&IOCPServer::WorkerThread, this));
+    for (int i = 0; i < MAX_WORKERTHREAD; i++)
+    {
+        mIOWorkerThreads.emplace_back(thread(&IOCPServer::WorkerThread, this));
     }
     printf("[알림] WorkerThread 생성 완료\n");
     return true;
 }
 
 
-bool IOCPServer::DestroyThreads(){
+bool IOCPServer::DestroyThreads()
+{
     mbIsWorkerRun = false;
-    CloseHandle(mIOCPHandle);
-
-    for(size_t i = 0; i < mIOWorkerThreads.size();++i){
+    for (size_t i = 0; i < mIOWorkerThreads.size(); ++i)
+    {
         mIOWorkerThreads[i].join();
     }
 
-    mbIsAccepterRun = false;
+    CloseHandle(mIOCPHandle);
+
     closesocket(mListenSocket);
 
+    mbIsAccepterRun = false;
     mAccepterThread.join();
+
     return true;
 }
 

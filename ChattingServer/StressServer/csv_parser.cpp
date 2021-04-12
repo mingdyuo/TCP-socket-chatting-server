@@ -1,40 +1,50 @@
 #include "csv_parser.h"
 
 
-bool parseCsv(vector<string>& strs, const string filePath)
+bool parseCsv(std::vector<std::string>& strs, const std::string filePath)
 {
-	ifstream file(filePath);
+	std::ifstream file(filePath);
 
 	if (file.fail())
 	{
-		return (cout << "띠용 ! 파일이 없어요.\n") && 0;
+		std::cout << "띠용 ! 파일이 없어요.\n";
+		return false;
 	}
 
 	if(file.good())
-		csv_read_row(file, strs);
+		strs = readCsv(file);
 
 	file.close();
 
 	return true;
 }
 
- void csv_read_row(istream& in, vector<string>& items)
+std::vector<std::string> readCsv(std::istream& in)
 {
-	stringstream ss;
+	std::stringstream ss;
+	std::vector<std::string> items;
 
 	while (in.good()) {
 		char c = in.get();
 
 		if (c == '\r' || c == '\n')
 		{
-			if (in.eof()) return;
-			if (in.peek() == '\n') { in.get(); }
+			if (in.eof())
+			{
+				return items;
+			}
+			else if (in.peek() == '\n') 
+			{ 
+				in.get(); 
+			}
+
 			items.push_back(ss.str());
 			ss.str("");
 		}
-		else {
+		else 
+		{
 			ss << c;
 		}
 	}
-	return;
+	return items;
 }

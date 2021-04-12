@@ -7,7 +7,7 @@ unsigned StressServer::ConnecterThread()
 
     while (mbIsConnecterRun)
     {
-        CreateClient(nicknames);
+        CreateClient(mNicknames);
 
         Sleep(5);
     }
@@ -48,13 +48,13 @@ unsigned StressServer::WorkerThread()
 
         if (SEND == pOverlappedEx->m_eOperation) {
             printf("[SEND(%d)] %d bytes\t", pClientInfo->GetIndex(), dwIoSize);
-            if (endline++ % 4 == 0) printf("\n");
+            if (mEndline++ % 4 == 0) printf("\n");
             delete[] pOverlappedEx->m_wsaBuf.buf;
             delete pOverlappedEx;
         }
         else if (RECV == pOverlappedEx->m_eOperation) {
             printf("[RECV(%d)] %d bytes\t", pClientInfo->GetIndex(), dwIoSize);
-            if (endline++ % 4 == 0) printf("\n");
+            if (mEndline++ % 4 == 0) printf("\n");
             pClientInfo->BindRecv();
         }
     }
@@ -79,8 +79,8 @@ unsigned StressServer::SenderThread()
 
         CHAT_PACKET packet;
         strcpy(packet.Sender, (sender->GetNickname()).c_str());
-        strcpy(packet.Content, contents[contentIndex].c_str());
-        packet.Length = MAX_NICKNAME_LEN + strlen(contents[contentIndex].c_str());
+        strcpy(packet.Content, mContents[contentIndex].c_str());
+        packet.Length = MAX_NICKNAME_LEN + strlen(mContents[contentIndex].c_str());
 
         packet.Type = (castType == 0) ? CHAT_BROADCAST : CHAT_MULTICAST;
 
@@ -88,7 +88,7 @@ unsigned StressServer::SenderThread()
 
         senderIndex++;
         contentIndex++;
-        if (contentIndex >= contents.size()) contentIndex = 0;
+        if (contentIndex >= mContents.size()) contentIndex = 0;
 
         Sleep(30);
     }
@@ -107,7 +107,7 @@ bool StressServer::CreateClient(const std::vector<std::string>& names)
     newClient->InitPacket(names[mClientCount % names.size()]);
 
     printf("[CONCT] %d counts\t", mClientCount);
-    if (endline++ % 4 == 0) printf("\n");
+    if (mEndline++ % 4 == 0) printf("\n");
 
     mClientCount++;
 

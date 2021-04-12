@@ -12,20 +12,22 @@
 class StressServer : public IOCPServer
 {
 public:
-    StressServer() : mClientCount(0), endline(1) {
-        if (!parseCsv(this->nicknames, "nickname_data.csv")) 
+    StressServer() : mClientCount(0), mEndline(1) {
+        if (!parseCsv(this->mNicknames, "nickname_data.csv")) 
         {
             printf("[에러] 랜덤 닉네임 불러오기 실패\n");
         }
-        if (!parseCsv(this->contents, "random_content.csv")) 
+        if (!parseCsv(this->mContents, "random_content.csv")) 
         {
             printf("[에러] 랜덤 전송 내용 불러오기 실패\n");
         }
     }
+
     virtual ~StressServer(void)
     {
         WSACleanup();
-        for (int i = 0;i < mClients.size();i++) {
+        for (int i = 0;i < mClients.size();i++) 
+        {
             if (mClients[i] == NULL) continue;
             mClients[i]->Close();
             delete mClients[i];
@@ -41,13 +43,14 @@ public:
 
 private:
     const int SERVER_PORT = 9898;
+
     std::vector<stClientInfo*> mClients;
 
-    std::vector<std::string> contents;
-    std::vector<std::string> nicknames;
+    std::vector<std::string> mContents;
+    std::vector<std::string> mNicknames;
 
     int mClientCount;
-    int endline;
+    int mEndline;
 };
 
 

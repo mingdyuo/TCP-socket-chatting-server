@@ -40,18 +40,23 @@ bool IOCPClient::ConnectServer(int bBindPort){
 
 int IOCPClient::NicknameCheck(const char* nickname){
     char recved[15];
-    if(strlen(nickname)>=31) {
+    if(strlen(nickname)>=31) 
+    {
         return TOO_LONG;
     }
+
     for(int i=0;i<strlen(nickname);i++){
-        if(nickname[i] == ' ') return TRIM_NEEDED;
+        if (nickname[i] == ' ') 
+        {
+            return TRIM_NEEDED;
+        }
     }
 
 
     SERVER_ENTER_PACKET _packet;
-    strncpy(_packet.Sender, nickname, strlen(nickname) + 1);
     _packet.Type = SERVER_ENTER;
     _packet.Length = (UINT16)strlen(nickname) + 1;
+    std::copy(nickname, nickname + _packet.Length, _packet.Sender);
 
     int success = send(mSocket, (char*)&_packet, _packet.Length + PACKET_HEADER_LENGTH, 0);
     if(success == SOCKET_ERROR) {mbIsWorkerRun = false; return 0;}
@@ -67,7 +72,7 @@ int IOCPClient::NicknameCheck(const char* nickname){
     SERVER_MESSAGE_PACKET* recvPacket = (SERVER_MESSAGE_PACKET*)recved;
     if(recvPacket->Message == NICKNAME_ALREADY_EXIST) return ALREADY_EXIST;
 
-    strcpy(mNickname, nickname);
+    std::copy(nickname, nickname + strlen(nickname) + 1, mNickname);
     return CREATE_SUCCESS;
 }
 
@@ -127,8 +132,9 @@ bool IOCPClient::Lobby(){
     ROOM_ENTER_PACKET packet;
     packet.Type = ROOM_ENTER;
     packet.RoomNo = roomNo;
-    strcpy(packet.Sender, mNickname);
-    packet.Length = strlen(mNickname);
+    packet.Length = strlen(mNickname) + 1;
+    std::copy(mNickname, mNickname + packet.Length, packet.Sender);
+    // strcpy(packet.Sender, mNickname);
 
     int success = send(mSocket, (char*)&packet, ROOM_ENTER_PACKET_LENGTH, 0);
     if(success == SOCKET_ERROR) {mbIsWorkerRun = false; return UNINITIALIZED;}
