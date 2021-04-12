@@ -1,25 +1,25 @@
-#include "ChatServer.h"
+#include "StressServer.h"
 #include <string>
 #include <iostream>
 
 
-void ErrorExit(char* msg){
-    printf("%s\n", msg);
-    exit(1);
+void ErrorExit(const char* msg) {
+	printf("%s\n", msg);
+	exit(1);
 }
 
 int main()
 {
-	const int SERVER_PORT 	= 9898;
-	const int MAX_CLIENT 	= 500;
+	const int SERVER_PORT = 9898;
+	const int MAX_CLIENT = 500;
 
-	ChatServer chatServer;
+	StressServer stressServer;
 
-	if(false == chatServer.Initialize(SERVER_PORT)){
+	if (false == stressServer.InitSocket()) {
 		ErrorExit("서버 초기화 실패\n");
 	}
 
-	if(false == chatServer.Run(MAX_CLIENT)){
+	if (false == stressServer.StartServer()) {
 		ErrorExit("IOCP 서버 시작 실패\n");
 	}
 
@@ -35,9 +35,10 @@ int main()
 		}
 	}
 
-	chatServer.CloseServer();
+	stressServer.DestroyThreads();
 	printf("[알림] 서버가 종료되었습니다. 엔터키를 누르면 창을 종료합니다.\n");
-	getchar();
+	char c = getchar();
+	c = getchar();
 	return 0;
 }
 

@@ -3,10 +3,9 @@
 #define MAX_SOCKBUF 1024
 #define KEY_ESC 27
 
-void ErrorHandling(char *message);
 static const int SERVER_PORT = 9898;
 
-void ErrorExit(char* msg){
+void ErrorExit(const char* msg){
     printf("%s\n", msg);
     exit(1);
 }

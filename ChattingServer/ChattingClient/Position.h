@@ -200,6 +200,7 @@ public:
             setColor(action);
             while(true){
                 setColor(action);
+                if (content[end-1] < 0) end--;
                 for(int i=start;i<end;i++){
                     printf("%c",content[i]);
                 }

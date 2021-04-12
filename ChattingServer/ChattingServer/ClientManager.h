@@ -1,5 +1,5 @@
 #include "CriticalSection.h"
-
+#include <queue>
 #ifndef _CLIENT_MANAGER
 #define _CLIENT_MANAGER
 
@@ -9,28 +9,29 @@ class ClientManager
 
 protected:
     int getEmptyClient(){
-        if(mClientCount == mMaxClientCount)
-            return mMaxClientCount;
-
         _LOCK(mFindMutex)
+        if (mClientCount == mMaxClientCount) {
+            _UNLOCK(mFindMutex)
+            return mMaxClientCount;
+        }
+
         if(mClientCount == mCurrentCapacity){
             int newCapacity = min(mCurrentCapacity*2, mMaxClientCount);
             mClientInfos.reserve(newCapacity);
             for(int i = mCurrentCapacity;i < newCapacity;i++){
-                mClientInfos.push_back(ClientT(i));
+                ClientT* newClient = new ClientT(i);
+                mEmptyClients.push(i);
+                mClientInfos.push_back(newClient);
             }
             mCurrentCapacity = newCapacity;
         }
         
-        for(int i=0;i<mCurrentCapacity;i++){
-            if(mClientInfos[i].IsConnected() == false) {
-                _UNLOCK(mFindMutex)
-                return i;
-            }
-        }
+
+        int mEmptyIndex = mEmptyClients.front();
+        mEmptyClients.pop();
 
         _UNLOCK(mFindMutex)
-        return mMaxClientCount;
+        return mEmptyIndex;
     }
 
 public:
@@ -40,13 +41,15 @@ public:
         mCurrentCapacity = mMaxClientCount / 4;
         mClientInfos.reserve(mCurrentCapacity);
         for(int i=0;i<mCurrentCapacity;i++){
-            mClientInfos.push_back(ClientT(i));
+            ClientT* newClient = new ClientT(i);
+            mEmptyClients.push(i);
+            mClientInfos.push_back(newClient);
         }
     }
     ~ClientManager(){}
 
     ClientT* GetClientByIndex(int index){
-        return &mClientInfos[index];
+        return mClientInfos[index];
     }
     
     bool CreateClient(HANDLE iocpHandle_, SOCKET socket_){
@@ -56,7 +59,7 @@ public:
             return false;
         }
 
-        if(false == mClientInfos[index].Connect(iocpHandle_, socket_)) {
+        if(false == mClientInfos[index]->Connect(iocpHandle_, socket_)) {
             return false;
         }
 
@@ -82,8 +85,8 @@ public:
 
 
     void CloseClient(int index_){
-        if(mClientInfos[index_].IsConnected() == false) return;
-        mClientInfos[index_].Close();
+        if(mClientInfos[index_]->IsConnected() == false) return;
+        mClientInfos[index_]->Close();
         
         _LOCK(mCountMutex)
         --mClientCount;
@@ -95,7 +98,8 @@ public:
 
 
 protected:
-    std::vector<ClientT>    mClientInfos;
+    std::vector<ClientT*>   mClientInfos;
+    std::queue<int>         mEmptyClients;
 
     int                     mMaxClientCount;
     int                     mCurrentCapacity;
