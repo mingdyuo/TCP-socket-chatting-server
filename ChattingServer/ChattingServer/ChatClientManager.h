@@ -14,7 +14,7 @@ public:
     ChatClientManager(int maxClientCount): ClientManager<ClientT>(maxClientCount){}
 
     int FindNickname(char* nickname_){
-        return -1; // 잠시 닉네임 중복 허용 시켜놓겠음
+        return -1; // 주석처리 하지 않을 시 닉네임 중복 허용 (스트레스 서버 테스트)
 
         for(int i=0;i<ClientManager<ClientT>::mCurrentCapacity;i++){
             if(ClientManager<ClientT>::mClientInfos[i]->IsConnected() == false) continue;
