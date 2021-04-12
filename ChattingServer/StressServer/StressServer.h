@@ -26,6 +26,7 @@ public:
     {
         WSACleanup();
         for (int i = 0;i < mClients.size();i++) {
+            if (mClients[i] == NULL) continue;
             mClients[i]->Close();
             delete mClients[i];
         }

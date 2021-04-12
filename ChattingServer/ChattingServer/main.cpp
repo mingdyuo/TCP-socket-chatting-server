@@ -11,7 +11,7 @@ void ErrorExit(const char* msg){
 int main()
 {
 	const int SERVER_PORT 	= 9898;
-	const int MAX_CLIENT 	= 2000;
+	const int MAX_CLIENT 	= 10000;
 
 	ChatServer chatServer;
 

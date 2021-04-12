@@ -11,7 +11,7 @@ unsigned StressServer::ConnecterThread()
     {
         CreateClient(nicknames);
 
-        Sleep(15);
+        Sleep(5);
     }
     printf("[알림] Accepter thread 종료\n");
     return 0;
@@ -75,7 +75,7 @@ unsigned StressServer::SenderThread()
     while (mbIsSenderRun) { // 패킷 생성해서 보내기
         if (mClientCount == 0) continue;
 
-        castType = rand() % 4;
+        castType = rand() % 8;
         senderIndex = rand() % mClientCount; // 임의로 송신자 선택
         stClientInfo* sender = mClients[senderIndex];
 
@@ -92,7 +92,7 @@ unsigned StressServer::SenderThread()
         contentIndex++;
         if (contentIndex >= contents.size()) contentIndex = 0;
 
-        Sleep(10);
+        Sleep(30);
     }
 
     return uResult;
