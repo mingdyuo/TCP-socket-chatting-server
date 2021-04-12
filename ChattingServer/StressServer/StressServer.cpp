@@ -3,8 +3,6 @@
 
 unsigned StressServer::ConnecterThread()
 {
-    printf("엔터를 누르면 시작합니다.\n");
-
     getchar();
 
     while (mbIsConnecterRun)
@@ -94,7 +92,7 @@ unsigned StressServer::SenderThread()
 
         Sleep(30);
     }
-
+    printf("[알림] Sender thread 종료\n");
     return uResult;
 }
 

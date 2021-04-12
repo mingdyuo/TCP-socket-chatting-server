@@ -3,7 +3,12 @@
 #include "ClientInfo.h"
 #include <vector>
 #include <cstring>
+#include <thread>
 #include "Packet.h"
+
+using std::thread;
+using std::vector;
+
 
 #ifndef _IOCP_SERVER
 #define _IOCP_SERVER
@@ -31,15 +36,16 @@ public:
     bool            CreateThreads();
     bool            DestroyThreads();
 
-    virtual unsigned AccepterThread(){return 0;}
-    virtual unsigned WorkerThread(){return 0;}
+    virtual unsigned AccepterThread(){ return 0;}
+    virtual unsigned WorkerThread(){ return 0;}
 
 protected:
     SOCKET                  mListenSocket;
 
     HANDLE                  mIOCPHandle;
-    HANDLE                  mAccepterThread;
-    std::vector<HANDLE>     mIOWorkerThreads;
+    thread                  mAccepterThread;
+    vector<thread>          mIOWorkerThreads;
+
 
     bool                    mbIsWorkerRun;
     bool                    mbIsAccepterRun;
@@ -48,15 +54,6 @@ private:
     static const int        WAIT_QUEUE_CNT = 5;
     static const int        MAX_WORKERTHREAD = 14;
 
-    static unsigned __stdcall StaticAccepterThread(void* arg){
-        IOCPServer* This = (IOCPServer*) arg;
-        return This->AccepterThread();
-    };
-
-    static unsigned __stdcall StaticWorkerThread(void* arg){
-        IOCPServer* This = (IOCPServer*) arg;
-        return This->WorkerThread();
-    }
 };
 
 #endif

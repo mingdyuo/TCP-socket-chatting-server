@@ -150,14 +150,12 @@
     <ClInclude Include="ChatServer.h" />
     <ClInclude Include="ClientInfo.h" />
     <ClInclude Include="ClientManager.h" />
-    <ClInclude Include="CriticalSection.h" />
     <ClInclude Include="IOCPServer.h" />
     <ClInclude Include="Packet.h" />
     <ClInclude Include="PacketInfo.h" />
     <ClInclude Include="PacketManager.h" />
     <ClInclude Include="PacketManager.hpp" />
     <ClInclude Include="UserInfo.h" />
-    <ClInclude Include="[PENDING]ThreadManager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

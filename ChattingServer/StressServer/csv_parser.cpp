@@ -1,9 +1,6 @@
 #include "csv_parser.h"
 
 
-
-
-
 bool parseCsv(vector<string>& strs, const string filePath)
 {
 	ifstream file(filePath);

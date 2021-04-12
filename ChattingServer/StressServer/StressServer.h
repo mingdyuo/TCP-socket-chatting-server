@@ -47,8 +47,7 @@ private:
     std::vector<std::string> nicknames;
 
     int mClientCount;
-    CriticalSection mMutex;
-    //CriticalSection mCsvMutex;
     int endline;
 };
+
 

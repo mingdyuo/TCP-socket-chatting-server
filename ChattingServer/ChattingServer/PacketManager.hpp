@@ -38,28 +38,28 @@ void PacketManager<ClientT>::Run(){
 
 template <typename ClientT>
 void PacketManager<ClientT>::EnqueuePacket(PacketInfo& packetInfo_){
-    _LOCK(mCs)
+    __LOCKQUEUE
     mPacketQueue.push(packetInfo_);
-    _UNLOCK(mCs)
+    __UNLOCKQUEUE
 }
 
 
 template <typename ClientT>
 PacketInfo PacketManager<ClientT>::DequeuePacket(){
-    _LOCK(mCs)
+    __LOCKQUEUE
     if(mPacketQueue.empty()){
-        _UNLOCK(mCs)
+        __UNLOCKQUEUE
         return PacketInfo();
     }
     PacketInfo packet = mPacketQueue.front();
     mPacketQueue.pop();
-    _UNLOCK(mCs)
+    __UNLOCKQUEUE
 
     return packet;
 }
 
 /*
-    Process functions mapped by eAction value
+    Packet process functions mapped by eAction value
 */
 
 template <typename ClientT>

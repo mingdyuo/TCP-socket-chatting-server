@@ -22,7 +22,8 @@ int main()
 		ErrorExit("IOCP 서버 시작 실패\n");
 	}
 
-	printf("[알림] quit을 입력시 서버 종료합니다.\n");
+	printf("[알림] Enter 입력시 스트레스 서버 시작합니다.\n");
+	printf("[알림] quit을 입력시 스트레스 서버 종료합니다.\n");
 	while (true)
 	{
 		std::string inputCmd;

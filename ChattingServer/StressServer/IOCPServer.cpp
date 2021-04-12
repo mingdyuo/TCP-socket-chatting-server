@@ -42,47 +42,31 @@ bool IOCPServer::StartServer() {
 }
 
 bool IOCPServer::CreateThreads() {
-    mConnecterThread = (HANDLE)_beginthreadex(NULL, 0, StaticConnecterThread, this, 0, NULL);
-    if (mConnecterThread == NULL) {
-        printf("[에러] createAccepterThread() 함수 실패\n");
-        return false;
-    }
+    mConnecterThread = thread(&IOCPServer::ConnecterThread, this);
 
-    mSenderThread = (HANDLE)_beginthreadex(NULL, 0, StaticSenderThread, this, 0, NULL);
-    if (mSenderThread == NULL) {
-        printf("[에러] createSenderThread() 함수 실패\n");
-        return false;
-    }
+    mSenderThread = thread(&IOCPServer::SenderThread, this);
 
-    HANDLE hThread;
     for (int i = 0;i < MAX_WORKERTHREAD;i++) {
-        hThread = (HANDLE)_beginthreadex(NULL, 0, StaticWorkerThread, this, 0, NULL);
-        if (hThread == NULL) {
-            printf("[에러] %d번째 스레드 생성중 오류 발생\n", i);
-            return false;
-        }
-        mIOWorkerThreads.push_back(hThread);
+        mIOWorkerThreads.push_back(thread(&IOCPServer::WorkerThread, this));
     }
     return true;
 }
 
 
 bool IOCPServer::DestroyThreads() {
-    mbIsWorkerRun = false;
     CloseHandle(mIOCPHandle);
 
+    mbIsWorkerRun = false;
     for (size_t i = 0; i < mIOWorkerThreads.size();++i) {
-        WaitForSingleObject(mIOWorkerThreads[i], INFINITE);
-        CloseHandle(mIOWorkerThreads[i]);
+        mIOWorkerThreads[i].join();
     }
 
-    mbIsConnecterRun = false;
-    WaitForSingleObject(mSenderThread, INFINITE);
-    CloseHandle(mSenderThread);
-    //closesocket(mListenSocket);
+    mbIsSenderRun = false;
+    mSenderThread.join();
 
-    WaitForSingleObject(mConnecterThread, INFINITE);
-    CloseHandle(mConnecterThread);
+    mbIsConnecterRun = false;
+    mConnecterThread.join();
+    
     return true;
 }
 

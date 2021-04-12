@@ -20,7 +20,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ClientInfo.h" />
-    <ClInclude Include="CriticalSection.h" />
     <ClInclude Include="csv_parser.h" />
     <ClInclude Include="IOCPServer.h" />
     <ClInclude Include="Packet.h" />

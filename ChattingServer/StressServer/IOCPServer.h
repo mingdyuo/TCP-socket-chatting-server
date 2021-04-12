@@ -4,6 +4,10 @@
 #include <vector>
 #include <cstring>
 #include "Packet.h"
+#include <thread>
+
+using std::vector;
+using std::thread;
 
 #ifndef _IOCP_SERVER
 #define _IOCP_SERVER
@@ -13,7 +17,7 @@ class IOCPServer
 public:
 
     IOCPServer(void) :
-        mListenSocket(INVALID_SOCKET), mIOCPHandle(INVALID_HANDLE_VALUE),
+        mIOCPHandle(INVALID_HANDLE_VALUE),
         mbIsWorkerRun(true), mbIsConnecterRun(true), mbIsSenderRun(true) {}
 
     virtual ~IOCPServer(void) { WSACleanup(); }
@@ -34,12 +38,11 @@ public:
     virtual unsigned SenderThread() { return 0; }
 
 protected:
-    SOCKET                  mListenSocket;
-
     HANDLE                  mIOCPHandle;
-    HANDLE                  mConnecterThread;
-    HANDLE                  mSenderThread;
-    std::vector<HANDLE>     mIOWorkerThreads;
+
+    thread                  mConnecterThread;
+    thread                  mSenderThread;
+    vector<thread>          mIOWorkerThreads;
 
     bool                    mbIsWorkerRun;
     bool                    mbIsConnecterRun;
@@ -49,20 +52,6 @@ private:
     static const int        WAIT_QUEUE_CNT = 5;
     static const int        MAX_WORKERTHREAD = 14;
 
-    static unsigned __stdcall StaticConnecterThread(void* arg) {
-        IOCPServer* This = (IOCPServer*)arg;
-        return This->ConnecterThread();
-    };
-
-    static unsigned __stdcall StaticWorkerThread(void* arg) {
-        IOCPServer* This = (IOCPServer*)arg;
-        return This->WorkerThread();
-    }
-
-    static unsigned __stdcall StaticSenderThread(void* arg) {
-        IOCPServer* This = (IOCPServer*)arg;
-        return This->SenderThread();
-    }
 };
 
 #endif

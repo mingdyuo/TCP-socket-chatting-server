@@ -4,8 +4,10 @@
 #include <map>
 #include "Packet.h"
 #include "PacketInfo.h"
-#include "CriticalSection.h"
 #include <queue>
+#include <thread>
+#include <mutex>
+using std::thread;
 
 
 #ifndef PACKET_MANAGER_
@@ -37,19 +39,15 @@ public:
 
     bool PacketThread()
     {
-        mPacketThread = (HANDLE)_beginthreadex(NULL, 0, StaticPacketThread, this, 0, NULL);
-        if(mPacketThread == NULL){
-            printf("[에러] packetThread 생성 실패\n");
-            return false;
-        }
+        mPacketThread = thread(&PacketManager::Run, this);
+        
         return true;
     }
 
     void Close()
     {
         mbIsPacketRun = false;
-        WaitForSingleObject(mPacketThread, INFINITE);
-        CloseHandle(mPacketThread);
+        mPacketThread.join();
         printf("[알림] PacketThread 종료\n");
     }
 
@@ -87,15 +85,18 @@ private:
     
 
     bool                        mbIsPacketRun;
-    HANDLE                      mPacketThread;
+    thread                      mPacketThread;
 
     ChatClientManager<ClientT>* mClientMgr;
     std::queue<PacketInfo>      mPacketQueue;
     MAP_FUNC_LIST               mPacketFunctionMap;
 
-    CriticalSection             mCs;
+    std::mutex                  mMutex;
 
 };
+
+#define __LOCKQUEUE     mMutex.lock();
+#define __UNLOCKQUEUE   mMutex.unlock();
 
 #endif
 

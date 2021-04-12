@@ -65,21 +65,11 @@ bool IOCPServer::StartServer(){
 }
 
 bool IOCPServer::CreateThreads(){
-    mAccepterThread = (HANDLE)_beginthreadex(NULL, 0, StaticAccepterThread, this, 0, NULL);
-    if(mAccepterThread == NULL){
-        printf("[에러] createAccepterThread() 함수 실패\n");
-        return false;
-    }
-
-    HANDLE hThread;
+    mAccepterThread = thread(&IOCPServer::AccepterThread, this);
     printf("[알림] Accepter Thread 생성 완료\n");
+
     for(int i=0;i<MAX_WORKERTHREAD;i++){
-        hThread = (HANDLE)_beginthreadex(NULL, 0, StaticWorkerThread, this, 0, NULL);
-        if(hThread==NULL) {
-            printf("[에러] %d번째 스레드 생성중 오류 발생\n", i);
-            return false;
-        }
-        mIOWorkerThreads.push_back(hThread);
+        mIOWorkerThreads.push_back(thread(&IOCPServer::WorkerThread, this));
     }
     printf("[알림] WorkerThread 생성 완료\n");
     return true;
@@ -91,15 +81,13 @@ bool IOCPServer::DestroyThreads(){
     CloseHandle(mIOCPHandle);
 
     for(size_t i = 0; i < mIOWorkerThreads.size();++i){
-        WaitForSingleObject(mIOWorkerThreads[i], INFINITE);
-        CloseHandle(mIOWorkerThreads[i]);
+        mIOWorkerThreads[i].join();
     }
 
     mbIsAccepterRun = false;
     closesocket(mListenSocket);
 
-    WaitForSingleObject(mAccepterThread, INFINITE);
-    CloseHandle(mAccepterThread);
+    mAccepterThread.join();
     return true;
 }
 
