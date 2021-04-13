@@ -3,7 +3,8 @@
 #include <iostream>
 
 
-void ErrorExit(const char* msg){
+void ErrorExit(const char* msg)
+{
     printf("%s\n", msg);
     exit(1);
 }
@@ -11,15 +12,17 @@ void ErrorExit(const char* msg){
 int main()
 {
 	const int SERVER_PORT 	= 9898;
-	const int MAX_CLIENT 	= 10000;
+	const int MAX_CLIENT 	= 20000;
 
 	ChatServer chatServer;
 
-	if(false == chatServer.Initialize(SERVER_PORT)){
+	if(false == chatServer.Initialize(SERVER_PORT))
+	{
 		ErrorExit("서버 초기화 실패\n");
 	}
 
-	if(false == chatServer.Run(MAX_CLIENT)){
+	if(false == chatServer.Run(MAX_CLIENT))
+	{
 		ErrorExit("IOCP 서버 시작 실패\n");
 	}
 

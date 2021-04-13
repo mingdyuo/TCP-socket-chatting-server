@@ -205,13 +205,13 @@ public:
                     printf("%c",content[i]);
                 }
                 start = end;
-                end = end + chatBoxSize < strlen(content)? end+chatBoxSize:strlen(content);
+                end = end + chatBoxSize < strlen(content) ? end + chatBoxSize : strlen(content);
 
                 setColor(CHAT_MULTICAST); 
                 printf("\n\r                                  ");
                 // printf("\n%c[2K", 27);
 
-                if(start == end) break;
+                if(start >= end) break;
 
                 ++mRecvPos.Y; gotoxy(mRecvPos);
                 if(mRecvPos.Y>=20) {

@@ -1,6 +1,7 @@
 #include "ClientInfo.h"
 
-void stClientInfo::Initialize(){
+void stClientInfo::Initialize()
+{
     m_socketClient = INVALID_SOCKET;
     ZeroMemory(&m_stRecvOverlappedEx, sizeof(stOverlappedEx));
     ZeroMemory(&m_stSendOverlappedEx, sizeof(stOverlappedEx));
@@ -8,7 +9,11 @@ void stClientInfo::Initialize(){
     ZeroMemory(mSendBuf, sizeof(mRecvBuf));
 }
 
-void stClientInfo::Close(){
+void stClientInfo::Close()
+{
+    if (m_socketClient == INVALID_SOCKET)
+        return;
+    
     struct linger stLinger = {0, 0};
     shutdown(m_socketClient, SD_BOTH);
     setsockopt(m_socketClient, SOL_SOCKET, SO_LINGER, (char*)&stLinger, sizeof(stLinger));
@@ -17,7 +22,8 @@ void stClientInfo::Close(){
 }
 
 
-bool stClientInfo::BindIOCompletionPort(HANDLE iocpHandle_){
+bool stClientInfo::BindIOCompletionPort(HANDLE iocpHandle_)
+{
     HANDLE hIOCP = CreateIoCompletionPort(
         (HANDLE)m_socketClient,
         iocpHandle_,
@@ -25,7 +31,8 @@ bool stClientInfo::BindIOCompletionPort(HANDLE iocpHandle_){
         0
     );
 
-    if(hIOCP == INVALID_HANDLE_VALUE){
+    if(hIOCP == INVALID_HANDLE_VALUE)
+    {
         printf("[에러] CreateIoCompletionPort()함수 실패: %d\n", GetLastError());
         return false;
     }
@@ -33,14 +40,17 @@ bool stClientInfo::BindIOCompletionPort(HANDLE iocpHandle_){
     return true;
 }
 
-bool stClientInfo::Connect(HANDLE iocpHandle_, SOCKET socket_){
+bool stClientInfo::Connect(HANDLE iocpHandle_, SOCKET socket_)
+{
     m_socketClient = socket_;
-    if(BindIOCompletionPort(iocpHandle_) == false){
+    if(BindIOCompletionPort(iocpHandle_) == false)
+    {
         printf("[에러] BindIOCompletionPort() 함수 실패\n");
         return false;
     }
     
-    if(false == BindRecv()){
+    if(false == BindRecv())
+    {
         printf("[에러] 클라이언트(%d) 연결 실패\n", mIndex);
         Close();
         return false;
@@ -50,7 +60,8 @@ bool stClientInfo::Connect(HANDLE iocpHandle_, SOCKET socket_){
 }
 
 
-bool stClientInfo::BindRecv(){
+bool stClientInfo::BindRecv()
+{
     DWORD dwFlag = 0;
     DWORD dwRecvNumBytes = 0;
 
@@ -68,7 +79,8 @@ bool stClientInfo::BindRecv(){
         NULL
     );
     
-    if(nRet == SOCKET_ERROR && (WSAGetLastError() != ERROR_IO_PENDING)){
+    if(nRet == SOCKET_ERROR && (WSAGetLastError() != ERROR_IO_PENDING))
+    {
         printf("[알림] RECV_SOCKET_ERROR 클라이언트(%d) 연결 종료\n", mIndex);
         Close();
         return false;
@@ -77,7 +89,8 @@ bool stClientInfo::BindRecv(){
     return true;
 }
 
-bool stClientInfo::SendMsg(const UINT32 dataSize_, char* pMsg_, IOOperation ioType_){
+bool stClientInfo::SendMsg(const UINT32 dataSize_, char* pMsg_, IOOperation ioType_)
+{
     stOverlappedEx* sendOverlappedEx = new stOverlappedEx;
     ZeroMemory(sendOverlappedEx, sizeof(stOverlappedEx));
     sendOverlappedEx->m_wsaBuf.len = dataSize_;

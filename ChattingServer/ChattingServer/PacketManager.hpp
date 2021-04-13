@@ -7,8 +7,10 @@
 */
 
 template <typename ClientT>
-void PacketManager<ClientT>::Run(){
-    while(mbIsPacketRun){
+void PacketManager<ClientT>::Run()
+{
+    while(mbIsPacketRun)
+    {
         PacketInfo packetData = DequeuePacket();
 
         if(packetData.DataSize == 0)
@@ -37,7 +39,8 @@ void PacketManager<ClientT>::Run(){
 
 
 template <typename ClientT>
-void PacketManager<ClientT>::EnqueuePacket(PacketInfo& packetInfo_){
+void PacketManager<ClientT>::EnqueuePacket(PacketInfo& packetInfo_)
+{
     __LOCKQUEUE
     mPacketQueue.push(packetInfo_);
     __UNLOCKQUEUE
@@ -45,9 +48,11 @@ void PacketManager<ClientT>::EnqueuePacket(PacketInfo& packetInfo_){
 
 
 template <typename ClientT>
-PacketInfo PacketManager<ClientT>::DequeuePacket(){
+PacketInfo PacketManager<ClientT>::DequeuePacket()
+{
     __LOCKQUEUE
-    if(mPacketQueue.empty()){
+    if(mPacketQueue.empty())
+    {
         __UNLOCKQUEUE
         return PacketInfo();
     }
@@ -63,12 +68,16 @@ PacketInfo PacketManager<ClientT>::DequeuePacket(){
 */
 
 template <typename ClientT>
-void PacketManager<ClientT>::PROCESS_SERVER_ENTER(PacketInfo& packetInfo_){
+void PacketManager<ClientT>::PROCESS_SERVER_ENTER(PacketInfo& packetInfo_)
+{
     SERVER_ENTER_PACKET* recvPacket = (SERVER_ENTER_PACKET*)packetInfo_.pPacketData;
     int existIndex = mClientMgr->FindNickname(recvPacket->Sender);
 
-    if(existIndex < 0 )     //< No duplicate nickname
+    if (existIndex < 0)     //< No duplicate nickname
+    {
         mClientMgr->SetNickname(packetInfo_);
+    }
+
 
     packetInfo_.pPacketData = new char[SERVER_MESSAGE_PACKET_LENGTH];
     SERVER_MESSAGE_PACKET* sendPacket = (SERVER_MESSAGE_PACKET*)packetInfo_.pPacketData;
@@ -92,13 +101,15 @@ void PacketManager<ClientT>::PROCESS_CHAT_UNICAST(PacketInfo& packetInfo_)
     
     int findIndex = mClientMgr->FindNickname(packet->Recver);
     
-    if(findIndex > -1){     //< If target user exist
+    if(findIndex > -1)      //< If target user exist
+    {
         PacketInfo copied = PacketInfo(packetInfo_);
         EnqueuePacket(copied);
         copied.ClientIndex = findIndex;
         EnqueuePacket(copied);
     }
-    else{                   //< Target user doesn't exist
+    else                   //< Target user doesn't exist
+    {
         SERVER_MESSAGE_PACKET* sendPacket = new SERVER_MESSAGE_PACKET();
         sendPacket->Type = SERVER_MESSAGE;
         sendPacket->Length = SERVER_MESSAGE_PACKET_LENGTH;

@@ -1,10 +1,10 @@
 # TCP-socket-chatting-server
 
-- 윈속 TCP를 사용하여 채팅 서버를 구현한 프로젝트입니다.
+- 윈속 라이브러리를 사용하여 채팅 서버를 구현한 프로젝트입니다.
 
 - 소켓 입출력 모델로는 IOCP를 사용하였습니다.
 
-- 초기에 C++98로 작성하였다가, C++11로 수정하고 있는 과정입니다.
+- 초기에 C++98로 작성하였으며, C++11로 수정하는 작업을 진행하고 있습니다.
 
   (Visual Studio는 2005 버전에서 초기 작성하였고, 2019 버전으로 이동)
 
@@ -51,6 +51,8 @@
 
      `ClientManager`를 상속받은 클래스는 `ClientInfo`를 상속받은 구조체를 이용할 수 있습니다.
 
+     `ClientManager`는 클라이언트의 서버 접속을 관리하고, `ChatClientManager`는 채팅 서버 내의 클라이언트 동작을 관리합니다.
+
   3. `ClientInfo` ← `UserInfo`
 
      `ClientInfo`는 클라이언트의 소켓 정보를 관리합니다.
@@ -65,7 +67,7 @@
 
   2. `enum eMessage : UINT32 { }`
 
-     클라이언트와 주고받는 패킷 중 `SERVER_MESSAGE_PACKET`에 포함되는 값이며, 닉네임 생성 요청 시 서버의 응답을 의미합니다.
+     클라이언트와 주고받는 패킷의 종류 중 `SERVER_MESSAGE_PACKET`에 포함되는 값이며, 닉네임 생성 요청 시 클라이언트에게 전송하는 서버의 응답을 의미합니다.
 
   3. `PACKET_HEADER`
 
@@ -114,9 +116,14 @@
 ## 스트레스 서버
 
 - 채팅 서버의 부하를 테스트 하기 위해서 만들었습니다.
+
 - IOCP 모델을 베이스로 해서 소켓 입출력을 처리하였습니다.
+
 - [여기](https://github.com/mingdyuo/TCP-socket-chatting-server/blob/main/Documentation/TCP%20%EC%86%8C%EC%BC%93%20%EC%B1%84%ED%8C%85%20%EC%84%9C%EB%B2%84%20%EC%A0%9C%EC%9E%91%20-%204%20%EC%8A%A4%ED%8A%B8%EB%A0%88%EC%8A%A4%20%EC%84%9C%EB%B2%84.md)서 제작 과정을 볼 수 있습니다.
+
 - 스트레스 서버 테스트를 하기 위해서는 `ChattingServer` 프로젝트의 `ChatClientManager.h`의 `int FindNickname(char*)` 함수에서 첫 줄에 있는 `return -1;`이 주석처리 되어 있지 않아야 합니다.
+
+  (닉네임 중복 체크 기능 비활성화)
 
 <br>
 

@@ -5,13 +5,13 @@ unsigned StressServer::ConnecterThread()
 {
     getchar();
 
-    while (mbIsConnecterRun)
+    while (mbIsConnecterRun && mClientCount < MAX_CLIENT)
     {
         CreateClient(mNicknames);
 
-        Sleep(5);
+        Sleep(SLEEP_INTERVAL_CREATE);
     }
-    printf("[알림] Accepter thread 종료\n");
+    printf("[알림] Connecter thread 종료\n");
     return 0;
 }
 
@@ -70,15 +70,15 @@ unsigned StressServer::SenderThread()
 
     srand((unsigned int)time(NULL));
 
-    while (mbIsSenderRun) { // 패킷 생성해서 보내기
+    while (mbIsSenderRun)  // 패킷 생성해서 보내기
+    {
         if (mClientCount == 0) continue;
 
         castType = rand() % 8;
         senderIndex = rand() % mClientCount; // 임의로 송신자 선택
-        stClientInfo* sender = mClients[senderIndex];
 
         CHAT_PACKET packet;
-        strcpy(packet.Sender, (sender->GetNickname()).c_str());
+        strcpy(packet.Sender, (mClients[senderIndex]->GetNickname()).c_str());
         strcpy(packet.Content, mContents[contentIndex].c_str());
         packet.Length = MAX_NICKNAME_LEN + strlen(mContents[contentIndex].c_str());
 
@@ -90,7 +90,7 @@ unsigned StressServer::SenderThread()
         contentIndex++;
         if (contentIndex >= mContents.size()) contentIndex = 0;
 
-        Sleep(30);
+        Sleep(SLEEP_INTERVAL_SEND);
     }
     printf("[알림] Sender thread 종료\n");
     return uResult;
@@ -98,15 +98,15 @@ unsigned StressServer::SenderThread()
 
 bool StressServer::CreateClient(const std::vector<std::string>& names)
 {
-
-    stClientInfo* newClient = new stClientInfo(mClients.size());
-    mClients.push_back(newClient);
+    auto newClient = std::make_unique<stClientInfo>(mClients.size());
 
     newClient->Create(mIOCPHandle, SERVER_PORT);
 
     newClient->InitPacket(names[mClientCount % names.size()]);
 
-    printf("[CONCT] %d counts\t", mClientCount);
+    mClients.push_back(std::move(newClient));
+
+    printf("[CONNECT] %d counts\t", mClientCount);
     if (mEndline++ % 4 == 0) printf("\n");
 
     mClientCount++;

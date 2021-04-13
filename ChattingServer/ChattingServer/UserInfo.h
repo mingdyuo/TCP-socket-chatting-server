@@ -16,7 +16,8 @@ public:
     
 
     char* GetNickname(){return mNickname;}
-    void SetNickname(char* nickname){
+    void SetNickname(char* nickname)
+    {
         mRoom = 0;
         mId = id++;
         CopyMemory(mNickname, nickname, strlen(nickname));
@@ -25,12 +26,14 @@ public:
     int GetRoom(){return mRoom;}
     int GetPrevRoom(){return mPrevRoom;}
     
-    bool EnterRoom(int RoomNumber){
+    bool EnterRoom(int RoomNumber)
+    {
         if(mRoom!=LOBBY) return false;
         mRoom = RoomNumber;
         return true;
     }
-    bool ExitRoom(){
+    bool ExitRoom()
+    {
         if(mRoom==LOBBY) return false;
         mPrevRoom   = mRoom;
         mRoom       = LOBBY;

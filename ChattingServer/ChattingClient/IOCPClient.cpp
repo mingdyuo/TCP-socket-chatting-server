@@ -134,7 +134,6 @@ bool IOCPClient::Lobby(){
     packet.RoomNo = roomNo;
     packet.Length = strlen(mNickname) + 1;
     std::copy(mNickname, mNickname + packet.Length, packet.Sender);
-    // strcpy(packet.Sender, mNickname);
 
     int success = send(mSocket, (char*)&packet, ROOM_ENTER_PACKET_LENGTH, 0);
     if(success == SOCKET_ERROR) {mbIsWorkerRun = false; return UNINITIALIZED;}
@@ -172,14 +171,14 @@ void IOCPClient::processRecvMsg(char* received, char* content, char* sender){
         case CHAT_MULTICAST:
         {
             CHAT_PACKET* _packet = (CHAT_PACKET*)received;
-            memcpy(content, _packet->Content, _packet->Length);
+            std::copy_n(_packet->Content, _packet->Length, content);
             pos.Receive(_packet->Sender, content, _packet->Type);
             break;
         }
         case CHAT_UNICAST:
         {
             UNICAST_PACKET* _packet = (UNICAST_PACKET*)received;
-            memcpy(content, _packet->Content, strlen(_packet->Content) + 1);
+            std::copy_n(_packet->Content,strlen(_packet->Content) + 1,content);
             pos.Receive(_packet->Sender, content, _packet->Type);
             break;
         }
@@ -202,20 +201,27 @@ void IOCPClient::processSendMsg(int index, std::string& content){
 eAction IOCPClient::BroadCast(std::string& content){
     CHAT_PACKET packet;
     packet.Type = CHAT_BROADCAST;
-    strcpy(packet.Sender, mNickname);
-    strcpy(packet.Content, content.c_str());
+    std::copy(mNickname, mNickname + strlen(mNickname) + 1, packet.Sender);
+    std::copy(content.begin(), content.begin() + content.size(), packet.Content);
     packet.Length = MAX_NICKNAME_LEN + content.length();
 
     int success = send(mSocket, (char*)&packet, packet.Length + PACKET_HEADER_LENGTH, 0);
-    if(success == SOCKET_ERROR) {mbIsWorkerRun = false; return UNINITIALIZED;}
+
+    if(success == SOCKET_ERROR) 
+    {
+        mbIsWorkerRun = false; 
+        return UNINITIALIZED;
+    }
+
     return CHAT_BROADCAST;
 }
 
 eAction IOCPClient::MultiCast(std::string& content){
     CHAT_PACKET packet;
     packet.Type = CHAT_MULTICAST;
-    strcpy(packet.Sender, mNickname);
-    strcpy(packet.Content, content.c_str());
+    std::copy(mNickname, mNickname + strlen(mNickname) + 1, packet.Sender);
+    std::copy(content.begin(), content.begin() + content.size(), packet.Content);
+    
     packet.Length = MAX_NICKNAME_LEN + content.length();
 
     int success = send(mSocket, (char*)&packet, packet.Length + PACKET_HEADER_LENGTH, 0);
@@ -242,8 +248,8 @@ eAction IOCPClient::processSendMsg(std::string& content){
     if(content == "/quit") {
         SERVER_EXIT_PACKET packet;
         packet.Type = SERVER_EXIT;
-        strcpy(packet.Sender, mNickname);
-        packet.Length = strlen(mNickname);
+        std::copy_n(mNickname, strlen(mNickname) + 1, packet.Sender);
+        packet.Length = strlen(mNickname) + 1;
 
         int success = send(mSocket, (char*)&packet, packet.Length + PACKET_HEADER_LENGTH, 0);
         if(success == SOCKET_ERROR) {mbIsWorkerRun = false; return UNINITIALIZED;}
@@ -253,8 +259,8 @@ eAction IOCPClient::processSendMsg(std::string& content){
     else if(content == "/lobby") {
         ROOM_EXIT_PACKET packet;
         packet.Type = ROOM_EXIT;
-        strcpy(packet.Sender, mNickname);
-        packet.Length = strlen(mNickname);
+        std::copy_n(mNickname, strlen(mNickname) + 1, packet.Sender);
+        packet.Length = strlen(mNickname) + 1;
 
         mRoom = 0;
         int success = send(mSocket, (char*)&packet, packet.Length + PACKET_HEADER_LENGTH, 0);
@@ -283,9 +289,9 @@ eAction IOCPClient::processSendMsg(std::string& content){
         content = content.substr(content.find(' ') + 1);
         UNICAST_PACKET packet;
         packet.Type = CHAT_UNICAST;
-        strcpy(packet.Sender, mNickname);
-        strcpy(packet.Content, content.c_str());
-        strcpy(packet.Recver, recver.c_str());
+        std::copy_n(mNickname, strlen(mNickname) + 1, packet.Sender);
+        std::copy(content.begin(), content.begin() + content.size() + 1, packet.Content);
+        std::copy(recver.begin(), recver.begin() + recver.size() + 1, packet.Recver);
         packet.Length = strlen(content.c_str());
 
         int success = send(mSocket, (char*)&packet, UNICAST_BASE_LENGTH + packet.Length, 0);

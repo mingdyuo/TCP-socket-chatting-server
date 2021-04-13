@@ -1,17 +1,20 @@
 #include "IOCPServer.h"
 #include <process.h>
 
-bool IOCPServer::InitSocket(){
+bool IOCPServer::InitSocket()
+{
     WSADATA wsaData;
 
-    if(WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) {
+    if(WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) 
+    {
         printf("[에러] WSAStartup()함수 실패 : %d\n", WSAGetLastError());
         return false;
     }
 
     mListenSocket = WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP, NULL, NULL, WSA_FLAG_OVERLAPPED);
 
-    if(mListenSocket == INVALID_SOCKET){
+    if(mListenSocket == INVALID_SOCKET)
+    {
         printf("[에러] socket()함수 실패 : %d\n", WSAGetLastError());
         return false;
     }
@@ -20,18 +23,21 @@ bool IOCPServer::InitSocket(){
     return true;
 }
 
-bool IOCPServer::BindAndListen(int nBindPort){
+bool IOCPServer::BindAndListen(int nBindPort)
+{
     SOCKADDR_IN stServerAddr;
     stServerAddr.sin_family = AF_INET;
     stServerAddr.sin_port = htons(nBindPort);
     stServerAddr.sin_addr.s_addr = htonl(INADDR_ANY);
 
-    if(0 != bind(mListenSocket, (SOCKADDR*)&stServerAddr, sizeof(SOCKADDR_IN))){
+    if(0 != bind(mListenSocket, (SOCKADDR*)&stServerAddr, sizeof(SOCKADDR_IN)))
+    {
         printf("[에러] bind()함수 실패 : %d\n", WSAGetLastError());
         return false;
     }
 
-    if(0 != listen(mListenSocket, WAIT_QUEUE_CNT)){ // 접속 대기 큐 5개
+    if(0 != listen(mListenSocket, WAIT_QUEUE_CNT))  // 접속 대기 큐 5개
+    {
         printf("[에러] listen()함수 실패 : %d\n", WSAGetLastError());
 		return false;
     }
@@ -40,7 +46,8 @@ bool IOCPServer::BindAndListen(int nBindPort){
 	return true;
 }
   
-bool IOCPServer::StartServer(){
+bool IOCPServer::StartServer()
+{
 
     mIOCPHandle = CreateIoCompletionPort(
         INVALID_HANDLE_VALUE,
@@ -51,12 +58,14 @@ bool IOCPServer::StartServer(){
 
     printf("[성공] IOCP 생성, 최대 사용 스레드 %d개\n", MAX_WORKERTHREAD);
 
-    if(mIOCPHandle == NULL){
+    if(mIOCPHandle == NULL)
+    {
         printf("[에러] CreateIoCompletionPort()함수 실패: %d\n", GetLastError());
 		return false;
     }
 
-    if(false == CreateThreads()){
+    if(false == CreateThreads())
+    {
         return false;
     }
 

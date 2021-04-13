@@ -1,7 +1,8 @@
 #include "ChatServer.h"
 #include "PacketInfo.h"
 
-void ChatServer::OnReceive(const UINT32 clientIndex_, const UINT32 size_, char* pData_) {
+void ChatServer::OnReceive(const UINT32 clientIndex_, const UINT32 size_, char* pData_) 
+{
 
     PacketInfo packetInfo;
     packetInfo.Set(clientIndex_, size_, pData_);
@@ -11,22 +12,26 @@ void ChatServer::OnReceive(const UINT32 clientIndex_, const UINT32 size_, char* 
 
 }
 
-void ChatServer::OnSend(const UINT32 clientIndex_, const UINT32 size_) {
+void ChatServer::OnSend(const UINT32 clientIndex_, const UINT32 size_) 
+{
     printf("[OnSend] 클라이언트(%d) %d bytes\n", clientIndex_, size_);
 }
 
 
-void ChatServer::OnClose(int clientIndex_){
+void ChatServer::OnClose(int clientIndex_)
+{
     printf("[OnClose] 클라이언트(%d) 연결 종료\n", clientIndex_);
     mClientMgr->CloseClient(clientIndex_);
 }
 
 
-unsigned ChatServer::AccepterThread(){
+unsigned ChatServer::AccepterThread()
+{
     unsigned uResult = 0;
     SOCKADDR_IN stClientAddr;
     int nAddrLen = sizeof(SOCKADDR_IN);
-    while(mbIsAccepterRun){
+    while(mbIsAccepterRun)
+    {
         SOCKET newSocket = accept(
             mListenSocket,
             (SOCKADDR*)&stClientAddr,
@@ -36,7 +41,8 @@ unsigned ChatServer::AccepterThread(){
         if(INVALID_SOCKET == newSocket)
             continue;
 
-        if(false == mClientMgr->CreateClient(mIOCPHandle, newSocket)){
+        if(false == mClientMgr->CreateClient(mIOCPHandle, newSocket))
+        {
             closesocket(newSocket);
             continue;
         }
@@ -46,14 +52,16 @@ unsigned ChatServer::AccepterThread(){
     return uResult;
 }
 
-unsigned ChatServer::WorkerThread(){
+unsigned ChatServer::WorkerThread()
+{
     unsigned uResult = 0;
     DWORD dwIoSize = 0;
     BOOL bSuccess = TRUE;
     stClientInfo* pClientInfo = NULL;
     LPOVERLAPPED lpOverlapped = NULL;
 
-    while(mbIsWorkerRun){
+    while(mbIsWorkerRun)
+    {
         bSuccess = GetQueuedCompletionStatus(
             mIOCPHandle,
             &dwIoSize,
@@ -62,30 +70,35 @@ unsigned ChatServer::WorkerThread(){
             INFINITE
         );
 
-        if(bSuccess==TRUE && dwIoSize==0 && lpOverlapped==NULL){
+        if(bSuccess==TRUE && dwIoSize==0 && lpOverlapped==NULL)
+        {
             mbIsWorkerRun = false;
             continue;
         }
 
         if(lpOverlapped==NULL) continue;
 
-        if(bSuccess == FALSE || (0 == dwIoSize && bSuccess == TRUE)){
+        if(bSuccess == FALSE || (0 == dwIoSize && bSuccess == TRUE))
+        {
             mClientMgr->CloseClient(pClientInfo->GetIndex());
             continue;
         }
 
         stOverlappedEx* pOverlappedEx = (stOverlappedEx*)lpOverlapped;
 
-        if(SEND == pOverlappedEx->m_eOperation){
+        if(SEND == pOverlappedEx->m_eOperation)
+        {
             OnSend(pClientInfo->GetIndex(), dwIoSize);
             delete[] pOverlappedEx->m_wsaBuf.buf;
             delete pOverlappedEx;
         }
-        else if(RECV == pOverlappedEx->m_eOperation){
+        else if(RECV == pOverlappedEx->m_eOperation)
+        {
             OnReceive(pClientInfo->GetIndex(), dwIoSize, pClientInfo->RecvBuffer());
             pClientInfo->BindRecv();
         }
-        else if(CLOSE == pOverlappedEx->m_eOperation){
+        else if(CLOSE == pOverlappedEx->m_eOperation)
+        {
             delete[] pOverlappedEx->m_wsaBuf.buf;
             delete pOverlappedEx;
             OnClose(pClientInfo->GetIndex());

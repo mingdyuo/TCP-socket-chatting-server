@@ -43,11 +43,10 @@ public:
     void Initialize();
     void Close();
 
-    bool IsConnected() {return m_socketClient != INVALID_SOCKET;}
-    int GetIndex(){return mIndex;}
+	bool IsConnected() { return m_socketClient != INVALID_SOCKET; }
+	int GetIndex() { return mIndex; }
 	
-	void SetSendBuf(int ioSize_){ CopyMemory(mSendBuf, mRecvBuf, ioSize_); }
-	char* SendBuffer(){return mSendBuf;}
+	char* SendBuffer() { return mSendBuf; }
     char* RecvBuffer() { return mRecvBuf; }
 
     bool BindIOCompletionPort(HANDLE iocpHandle_);

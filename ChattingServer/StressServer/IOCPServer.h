@@ -27,7 +27,6 @@ public:
     virtual void    OnCreate(const UINT32 clientIndex_, const UINT32 size_, char* pData_) {}
 
     bool            InitSocket();
-    bool            BindAndListen(int nBindPort);
     bool            StartServer();
 
     bool            CreateThreads();

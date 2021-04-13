@@ -3,7 +3,8 @@
 #include <iostream>
 
 
-void ErrorExit(const char* msg) {
+void ErrorExit(const char* msg) 
+{
 	printf("%s\n", msg);
 	exit(1);
 }
@@ -14,11 +15,13 @@ int main()
 
 	StressServer stressServer;
 
-	if (false == stressServer.InitSocket()) {
+	if (false == stressServer.InitSocket()) 
+	{
 		ErrorExit("서버 초기화 실패\n");
 	}
 
-	if (false == stressServer.StartServer()) {
+	if (false == stressServer.StartServer()) 
+	{
 		ErrorExit("IOCP 서버 시작 실패\n");
 	}
 

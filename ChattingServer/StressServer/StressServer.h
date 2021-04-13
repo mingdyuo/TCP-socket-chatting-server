@@ -2,12 +2,14 @@
 #include "ClientInfo.h"
 #include "CriticalSection.h"
 #include "IOCPServer.h"
-#include "csv_parser.h"
+#include "CsvParser.h"
 
 #include <process.h>
 #include <vector>
 #include <cstdlib>
 #include <ctime>
+#include <memory>
+
 
 class StressServer : public IOCPServer
 {
@@ -28,9 +30,11 @@ public:
         WSACleanup();
         for (int i = 0;i < mClients.size();i++) 
         {
-            if (mClients[i] == NULL) continue;
-            mClients[i]->Close();
-            delete mClients[i];
+            if (mClients[i] && mClients[i]->IsConnected())
+            {
+                mClients[i]->Close();
+            }
+
         }
     }
 
@@ -42,15 +46,20 @@ public:
 
 
 private:
-    const int SERVER_PORT = 9898;
+    const int SERVER_PORT               = 9898;
+    const int MAX_CLIENT                = 20000;
+    const int SLEEP_INTERVAL_CREATE     = 5;
+    const int SLEEP_INTERVAL_SEND       = 25;
 
-    std::vector<stClientInfo*> mClients;
+    std::vector<std::unique_ptr<stClientInfo>> mClients;
 
     std::vector<std::string> mContents;
     std::vector<std::string> mNicknames;
 
     int mClientCount;
     int mEndline;
+
+
 };
 
 

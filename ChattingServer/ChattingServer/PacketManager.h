@@ -15,7 +15,8 @@ using std::thread;
 
 
 template <typename ClientT>
-class PacketManager{
+class PacketManager
+{
 public:
     
     PacketManager(ChatClientManager<ClientT>* clientMgr_):mbIsPacketRun(true)

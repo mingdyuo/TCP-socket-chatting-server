@@ -10,15 +10,19 @@ class ClientManager
 protected:
     int getEmptyClient(){
         _LOCK(mFindMutex)
-        if (mClientCount == mMaxClientCount) {
+        if (mClientCount == mMaxClientCount) 
+        {
             _UNLOCK(mFindMutex)
             return mMaxClientCount;
         }
 
-        if(mClientCount == mCurrentCapacity){
+        if(mClientCount == mCurrentCapacity)
+        {
             int newCapacity = min(mCurrentCapacity*2, mMaxClientCount);
             mClientInfos.reserve(newCapacity);
-            for(int i = mCurrentCapacity;i < newCapacity;i++){
+
+            for(int i = mCurrentCapacity;i < newCapacity;i++)
+            {
                 ClientT* newClient = new ClientT(i);
                 mEmptyClients.push(i);
                 mClientInfos.push_back(newClient);
@@ -36,45 +40,73 @@ protected:
 
 public:
 
-    ClientManager(int maxClientCount):mClientCount(0){
+    ClientManager(int maxClientCount):mClientCount(0)
+    {
         mMaxClientCount = maxClientCount;
         mCurrentCapacity = mMaxClientCount / 4;
         mClientInfos.reserve(mCurrentCapacity);
-        for(int i=0;i<mCurrentCapacity;i++){
+        for(int i=0;i<mCurrentCapacity;i++)
+        {
             ClientT* newClient = new ClientT(i);
             mEmptyClients.push(i);
             mClientInfos.push_back(newClient);
         }
     }
-    ~ClientManager(){}
+    ~ClientManager()
+    {
+        for (int i = 0;i < mCurrentCapacity;i++)
+        {
+            if (mClientInfos[i] != NULL && mClientInfos[i]->IsConnected())
+            {
+                mClientInfos[i]->Close();
+                delete mClientInfos[i];
+            }
+            else if (mClientInfos[i] != NULL)
+            {
+                delete mClientInfos[i];
+            }
+        }
+    }
 
-    ClientT* GetClientByIndex(int index){
+    ClientT* GetClientByIndex(int index)
+    {
         return mClientInfos[index];
     }
     
-    bool CreateClient(HANDLE iocpHandle_, SOCKET socket_){
+    bool CreateClient(HANDLE iocpHandle_, SOCKET socket_)
+    {
         int index = getEmptyClient();
-        if(index == mMaxClientCount) {
+        if(index == mMaxClientCount) 
+        {
             printf("[알림] Client Full\n");
             return false;
         }
 
-        if(false == mClientInfos[index]->Connect(iocpHandle_, socket_)) {
+        if (false == mClientInfos[index]->Connect(iocpHandle_, socket_))
+        {
             return false;
         }
+        
 
         _LOCK(mCountMutex)
         ++mClientCount;
         _UNLOCK(mCountMutex)
-        printf("[알림] Client(%d) 연결 완료 / 현재 연결된 클라이언트 수 : %d\n", index, mClientCount);
+
+        printf("[알림] Client(%d) 연결 완료 / 현재 연결된 클라이언트 수 : %d / 현재 Capacity : %d\n", index, mClientCount, mClientInfos.size());
         return true;
     }
 
 
 
-    void CloseClient(ClientT* client){
+    void CloseClient(ClientT* client)
+    {
+        int index = client->GetIndex();
         if(client->IsConnected() == false) return;
         client->Close();
+
+        _LOCK(mFindMutex)
+        mEmptyClients.push(index);
+        _UNLOCK(mFindMutex)
 
         _LOCK(mCountMutex)
         --mClientCount;
@@ -84,10 +116,15 @@ public:
 
 
 
-    void CloseClient(int index_){
+    void CloseClient(int index_)
+    {
         if(mClientInfos[index_]->IsConnected() == false) return;
         mClientInfos[index_]->Close();
         
+        _LOCK(mFindMutex)
+        mEmptyClients.push(index_);
+        _UNLOCK(mFindMutex)
+
         _LOCK(mCountMutex)
         --mClientCount;
         _UNLOCK(mCountMutex)

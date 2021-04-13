@@ -24,18 +24,22 @@ public:
     virtual unsigned AccepterThread();
     virtual unsigned WorkerThread();
 
-    virtual void InitializeManagers(const UINT32 maxClientCount){
+    virtual void InitializeManagers(const UINT32 maxClientCount)
+    {
         mClientMgr = new ChatClientManager<stUserInfo>(maxClientCount);
         mPacketMgr = new PacketManager<stUserInfo>(mClientMgr);
     }
 
-    bool Initialize(int serverPort){
-        if(false == InitSocket()){
+    bool Initialize(int serverPort)
+    {
+        if(false == InitSocket())
+        {
             printf("소켓 초기화 실패\n");
             return false;
         }
 
-        if(false == BindAndListen(serverPort)){
+        if(false == BindAndListen(serverPort))
+        {
             printf("소켓 바인딩 실패\n");
             return false;
         }
@@ -43,7 +47,8 @@ public:
         return true;
     }
 
-    bool Run(int maxClient){    //< Function called in main
+    bool Run(int maxClient)    //< Function called in main
+    {
         InitializeManagers(maxClient);
 
         if(false == mPacketMgr->PacketThread())
@@ -54,15 +59,14 @@ public:
         return StartServer();   //< IOCP Server Run
     }
 
-    void CloseServer(){
+    void CloseServer()
+    {
         DestroyThreads();
         mPacketMgr->Close();
     }
 
 
 private:
-    void ProcessRecvPacket(const UINT32 clientIndex_, const UINT32 size_, char* pData_);
-
     ChatClientManager<stUserInfo>*      mClientMgr;
     PacketManager<stUserInfo>*          mPacketMgr;
 };

@@ -2,10 +2,12 @@
 #include "IOCPServer.h"
 #include <process.h>
 
-bool IOCPServer::InitSocket() {
+bool IOCPServer::InitSocket() 
+{
     WSADATA wsaData;
 
-    if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) {
+    if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) 
+    {
         printf("[에러] WSAStartup()함수 실패 : %d\n", WSAGetLastError());
         return false;
     }
@@ -14,7 +16,8 @@ bool IOCPServer::InitSocket() {
 }
 
 
-bool IOCPServer::StartServer() {
+bool IOCPServer::StartServer() 
+{
 
     mIOCPHandle = CreateIoCompletionPort(
         INVALID_HANDLE_VALUE,
@@ -25,12 +28,14 @@ bool IOCPServer::StartServer() {
 
     printf("[성공] IOCP 생성, 최대 사용 스레드 %d개\n", MAX_WORKERTHREAD);
 
-    if (mIOCPHandle == NULL) {
+    if (mIOCPHandle == NULL) 
+    {
         printf("[에러] CreateIoCompletionPort()함수 실패: %d\n", GetLastError());
         return false;
     }
 
-    if (false == CreateThreads()) {
+    if (false == CreateThreads()) 
+    {
         return false;
     }
 
@@ -41,23 +46,27 @@ bool IOCPServer::StartServer() {
     return true;
 }
 
-bool IOCPServer::CreateThreads() {
+bool IOCPServer::CreateThreads() 
+{
     mConnecterThread = thread(&IOCPServer::ConnecterThread, this);
 
     mSenderThread = thread(&IOCPServer::SenderThread, this);
 
-    for (int i = 0;i < MAX_WORKERTHREAD;i++) {
+    for (int i = 0;i < MAX_WORKERTHREAD;i++) 
+    {
         mIOWorkerThreads.push_back(thread(&IOCPServer::WorkerThread, this));
     }
     return true;
 }
 
 
-bool IOCPServer::DestroyThreads() {
+bool IOCPServer::DestroyThreads() 
+{
     CloseHandle(mIOCPHandle);
 
     mbIsWorkerRun = false;
-    for (size_t i = 0; i < mIOWorkerThreads.size();++i) {
+    for (size_t i = 0; i < mIOWorkerThreads.size();++i) 
+    {
         mIOWorkerThreads[i].join();
     }
 

@@ -1,7 +1,8 @@
 #pragma once
 #include "ClientInfo.h"
 
-void stClientInfo::Initialize() {
+void stClientInfo::Initialize() 
+{
     m_socketClient = INVALID_SOCKET;
     ZeroMemory(&m_stRecvOverlappedEx, sizeof(stOverlappedEx));
     ZeroMemory(&m_stSendOverlappedEx, sizeof(stOverlappedEx));
@@ -9,7 +10,8 @@ void stClientInfo::Initialize() {
     ZeroMemory(mSendBuf, sizeof(mRecvBuf));
 }
 
-void stClientInfo::Close() {
+void stClientInfo::Close() 
+{
     struct linger stLinger = { 0, 0 };
     shutdown(m_socketClient, SD_BOTH);
     setsockopt(m_socketClient, SOL_SOCKET, SO_LINGER, (char*)&stLinger, sizeof(stLinger));
@@ -17,10 +19,12 @@ void stClientInfo::Close() {
     Initialize();
 }
 
-void stClientInfo::Create(HANDLE iocpHandle_, int bBindPort) {
+void stClientInfo::Create(HANDLE iocpHandle_, int bBindPort) 
+{
     m_socketClient = socket(PF_INET, SOCK_STREAM, 0);
 
-    if (m_socketClient == INVALID_SOCKET) {
+    if (m_socketClient == INVALID_SOCKET) 
+    {
         printf("[에러] socket()함수 실패 : %d\n", WSAGetLastError());
         return;
     }
@@ -32,7 +36,8 @@ void stClientInfo::Create(HANDLE iocpHandle_, int bBindPort) {
     serverAddress.sin_addr.s_addr = inet_addr("127.0.0.1");
     serverAddress.sin_port = htons(bBindPort);
 
-    if (SOCKET_ERROR == connect(m_socketClient, (SOCKADDR*)&serverAddress, sizeof(serverAddress))) {
+    if (SOCKET_ERROR == connect(m_socketClient, (SOCKADDR*)&serverAddress, sizeof(serverAddress))) 
+    {
         printf("[에러] connect()함수 실패 : %d\n", WSAGetLastError());
         return;
     }
@@ -44,12 +49,14 @@ void stClientInfo::Create(HANDLE iocpHandle_, int bBindPort) {
         0
     );
 
-    if (hIOCP == INVALID_HANDLE_VALUE) {
+    if (hIOCP == INVALID_HANDLE_VALUE) 
+    {
         printf("[에러] CreateIoCompletionPort()함수 실패: %d\n", GetLastError());
         return;
     }
 
-    if (false == BindRecv()) {
+    if (false == BindRecv()) 
+    {
         printf("[에러] 클라이언트(%d) 연결 실패\n", mIndex);
         Close();
         return;
@@ -58,7 +65,8 @@ void stClientInfo::Create(HANDLE iocpHandle_, int bBindPort) {
 
 
 
-bool stClientInfo::BindRecv() {
+bool stClientInfo::BindRecv() 
+{
     DWORD dwFlag = 0;
     DWORD dwRecvNumBytes = 0;
 
@@ -76,7 +84,8 @@ bool stClientInfo::BindRecv() {
         NULL
     );
 
-    if (nRet == SOCKET_ERROR && (WSAGetLastError() != ERROR_IO_PENDING)) {
+    if (nRet == SOCKET_ERROR && (WSAGetLastError() != ERROR_IO_PENDING)) 
+    {
         printf("[알림] RECV_SOCKET_ERROR 클라이언트(%d) 연결 종료\n", mIndex);
         Close();
         return false;
@@ -85,7 +94,8 @@ bool stClientInfo::BindRecv() {
     return true;
 }
 
-bool stClientInfo::SendMsg(const UINT32 dataSize_, char* pMsg_, IOOperation ioType_) {
+bool stClientInfo::SendMsg(const UINT32 dataSize_, char* pMsg_, IOOperation ioType_) 
+{
     stOverlappedEx* sendOverlappedEx = new stOverlappedEx;
     ZeroMemory(sendOverlappedEx, sizeof(stOverlappedEx));
     sendOverlappedEx->m_wsaBuf.len = dataSize_;
