@@ -9,7 +9,7 @@
 class ChatServer : public IOCPServer
 {
 public:
-    ChatServer(){ }
+    ChatServer() : mClientMgr(nullptr), mPacketMgr(nullptr) { }
     virtual ~ChatServer(void)
     { 
         WSACleanup(); 

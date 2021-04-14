@@ -43,8 +43,8 @@ public:
     void Initialize();
     void Close();
 
-	bool IsConnected() { return m_socketClient != INVALID_SOCKET; }
-	int GetIndex() { return mIndex; }
+	bool IsConnected() const { return m_socketClient != INVALID_SOCKET; }
+	int GetIndex() const { return mIndex; }
 	
 	char* SendBuffer() { return mSendBuf; }
     char* RecvBuffer() { return mRecvBuf; }

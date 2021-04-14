@@ -1,7 +1,12 @@
-#include "CriticalSection.h"
 #include <queue>
+#include <mutex>
 #ifndef _CLIENT_MANAGER
 #define _CLIENT_MANAGER
+
+#define __LOCK_COUNT    mCountMutex.lock();
+#define __UNLOCK_COUNT  mCountMutex.unlock();
+#define __LOCK_FIND     mFindMutex.lock();
+#define __UNLOCK_FIND   mFindMutex.unlock();
 
 template <typename ClientT>
 class ClientManager
@@ -9,10 +14,10 @@ class ClientManager
 
 protected:
     int getEmptyClient(){
-        _LOCK(mFindMutex)
+        __LOCK_FIND
         if (mClientCount == mMaxClientCount) 
         {
-            _UNLOCK(mFindMutex)
+            __UNLOCK_FIND
             return mMaxClientCount;
         }
 
@@ -34,13 +39,13 @@ protected:
         int mEmptyIndex = mEmptyClients.front();
         mEmptyClients.pop();
 
-        _UNLOCK(mFindMutex)
+        __UNLOCK_FIND
         return mEmptyIndex;
     }
 
 public:
 
-    ClientManager(int maxClientCount):mClientCount(0)
+    ClientManager(int maxClientCount) : mClientCount(0)
     {
         mMaxClientCount = maxClientCount;
         mCurrentCapacity = mMaxClientCount / 4;
@@ -68,10 +73,7 @@ public:
         }
     }
 
-    ClientT* GetClientByIndex(int index)
-    {
-        return mClientInfos[index];
-    }
+    ClientT* GetClientByIndex(int index) const { return mClientInfos[index]; }
     
     bool CreateClient(HANDLE iocpHandle_, SOCKET socket_)
     {
@@ -88,9 +90,9 @@ public:
         }
         
 
-        _LOCK(mCountMutex)
+        __LOCK_COUNT
         ++mClientCount;
-        _UNLOCK(mCountMutex)
+        __UNLOCK_COUNT
 
         printf("[알림] Client(%d) 연결 완료 / 현재 연결된 클라이언트 수 : %d / 현재 Capacity : %d\n", index, mClientCount, mClientInfos.size());
         return true;
@@ -104,13 +106,13 @@ public:
         if(client->IsConnected() == false) return;
         client->Close();
 
-        _LOCK(mFindMutex)
+        __LOCK_FIND
         mEmptyClients.push(index);
-        _UNLOCK(mFindMutex)
+        __UNLOCK_FIND
 
-        _LOCK(mCountMutex)
+        __LOCK_COUNT
         --mClientCount;
-        _UNLOCK(mCountMutex)
+        __UNLOCK_COUNT
         printf("[알림] Client(%d) 연결 종료 / 현재 연결된 클라이언트 수 : %d\n", client->GetIndex(), mClientCount);
     }
 
@@ -121,13 +123,13 @@ public:
         if(mClientInfos[index_]->IsConnected() == false) return;
         mClientInfos[index_]->Close();
         
-        _LOCK(mFindMutex)
+        __LOCK_FIND
         mEmptyClients.push(index_);
-        _UNLOCK(mFindMutex)
+        __UNLOCK_FIND
 
-        _LOCK(mCountMutex)
+        __LOCK_COUNT
         --mClientCount;
-        _UNLOCK(mCountMutex)
+        __UNLOCK_COUNT
         printf("[알림] Client(%d) 연결 종료 / 현재 연결된 클라이언트 수 : %d\n", index_, mClientCount);
     }
 
@@ -142,9 +144,10 @@ protected:
     int                     mCurrentCapacity;
     int                     mClientCount;
 
-    CriticalSection         mCountMutex;
-    CriticalSection         mFindMutex;
+    std::mutex              mCountMutex;
+    std::mutex              mFindMutex;
     
 };
+
 
 #endif

@@ -1,6 +1,5 @@
 #pragma once
 #include "ClientInfo.h"
-#include "CriticalSection.h"
 #include "IOCPServer.h"
 #include "CsvParser.h"
 
@@ -34,20 +33,19 @@ public:
             {
                 mClients[i]->Close();
             }
-
         }
     }
 
-    virtual unsigned ConnecterThread();
-    virtual unsigned WorkerThread();
-    virtual unsigned SenderThread();
+    virtual unsigned ConnecterThread();     //< Create clients
+    virtual unsigned WorkerThread();        //< GQCS 
+    virtual unsigned SenderThread();        //< Send random packet
 
     bool CreateClient(const std::vector<std::string>& names);
 
 
 private:
     const int SERVER_PORT               = 9898;
-    const int MAX_CLIENT                = 20000;
+    const int MAX_CLIENT                = 10000;
     const int SLEEP_INTERVAL_CREATE     = 5;
     const int SLEEP_INTERVAL_SEND       = 25;
 

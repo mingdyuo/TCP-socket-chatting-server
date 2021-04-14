@@ -1,7 +1,6 @@
 #pragma comment(lib, "ws2_32")
 #include "UserInfo.h"
 #include "ClientManager.h"
-#include "CriticalSection.h"
 #include "PacketInfo.h"
 
 #ifndef _CHAT_CLIENT_MANAGER
@@ -15,7 +14,7 @@ class ChatClientManager : public ClientManager<ClientT>
 public:
     ChatClientManager(int maxClientCount): ClientManager<ClientT>(maxClientCount){}
 
-    int FindNickname(char* nickname_)
+    int FindNickname(char* nickname_) const
     {
         return -1; // 주석처리 하지 않을 시 닉네임 중복 허용 (스트레스 서버 테스트시 필요)
 

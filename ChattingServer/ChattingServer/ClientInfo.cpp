@@ -21,7 +21,6 @@ void stClientInfo::Close()
     Initialize();
 }
 
-
 bool stClientInfo::BindIOCompletionPort(HANDLE iocpHandle_)
 {
     HANDLE hIOCP = CreateIoCompletionPort(

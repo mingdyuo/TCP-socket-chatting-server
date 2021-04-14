@@ -52,9 +52,6 @@
     <ClInclude Include="CsvParser.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="CriticalSection.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="ClientInfo.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>

@@ -23,7 +23,8 @@ unsigned StressServer::WorkerThread()
     stClientInfo* pClientInfo = NULL;
     LPOVERLAPPED lpOverlapped = NULL;
 
-    while (mbIsWorkerRun) {
+    while (mbIsWorkerRun) 
+    {
         bSuccess = GetQueuedCompletionStatus(
             mIOCPHandle,
             &dwIoSize,
@@ -32,27 +33,31 @@ unsigned StressServer::WorkerThread()
             INFINITE
         );
 
-        if (bSuccess == TRUE && dwIoSize == 0 && lpOverlapped == NULL) {
+        if (bSuccess == TRUE && dwIoSize == 0 && lpOverlapped == NULL) 
+        {
             mbIsWorkerRun = false;
             continue;
         }
 
         if (lpOverlapped == NULL) continue;
 
-        if (bSuccess == FALSE || (0 == dwIoSize && bSuccess == TRUE)) {
+        if (bSuccess == FALSE || (0 == dwIoSize && bSuccess == TRUE)) 
+        {
             mClients[pClientInfo->GetIndex()]->Close();
             continue;
         }
 
         stOverlappedEx* pOverlappedEx = (stOverlappedEx*)lpOverlapped;
 
-        if (SEND == pOverlappedEx->m_eOperation) {
+        if (SEND == pOverlappedEx->m_eOperation) 
+        {
             printf("[SEND(%d)] %d bytes\t", pClientInfo->GetIndex(), dwIoSize);
             if (mEndline++ % 4 == 0) printf("\n");
             delete[] pOverlappedEx->m_wsaBuf.buf;
             delete pOverlappedEx;
         }
-        else if (RECV == pOverlappedEx->m_eOperation) {
+        else if (RECV == pOverlappedEx->m_eOperation) 
+        {
             printf("[RECV(%d)] %d bytes\t", pClientInfo->GetIndex(), dwIoSize);
             if (mEndline++ % 4 == 0) printf("\n");
             pClientInfo->BindRecv();
@@ -72,7 +77,8 @@ unsigned StressServer::SenderThread()
 
     while (mbIsSenderRun)  // 패킷 생성해서 보내기
     {
-        if (mClientCount == 0) continue;
+        if (mClientCount == 0) 
+            continue;
 
         castType = rand() % 8;
         senderIndex = rand() % mClientCount; // 임의로 송신자 선택
@@ -88,7 +94,8 @@ unsigned StressServer::SenderThread()
 
         senderIndex++;
         contentIndex++;
-        if (contentIndex >= mContents.size()) contentIndex = 0;
+        if (contentIndex >= mContents.size()) 
+            contentIndex = 0;
 
         Sleep(SLEEP_INTERVAL_SEND);
     }
@@ -107,7 +114,8 @@ bool StressServer::CreateClient(const std::vector<std::string>& names)
     mClients.push_back(std::move(newClient));
 
     printf("[CONNECT] %d counts\t", mClientCount);
-    if (mEndline++ % 4 == 0) printf("\n");
+    if (mEndline++ % 4 == 0) 
+        printf("\n");
 
     mClientCount++;
 

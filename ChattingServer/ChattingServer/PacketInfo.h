@@ -20,7 +20,7 @@ struct PacketInfo
     bool        isClose;
     char*       pPacketData;
 
-    PacketInfo(): DataSize(0), SendType(SENDTYPE_UNINTIALIZED), isClose(false) {}
+    PacketInfo(): DataSize(0), SendType(SENDTYPE_UNINTIALIZED), isClose(false), ClientIndex(0), pPacketData(nullptr) {}
     PacketInfo(const PacketInfo& origin):
         ClientIndex(origin.ClientIndex), 
         DataSize(origin.DataSize), 

@@ -53,30 +53,7 @@ public:
 	char* RecvBuffer() { return mRecvBuf; }
 
 	void Create(HANDLE, int);
-
-
-	bool InitPacket(const std::string& name) 
-	{	
-		nickname = std::string(name);
-
-			// 닉네임 생성 & 입장 처리
-		SERVER_ENTER_PACKET serverPacket;
-		serverPacket.Length = (UINT16)strlen(name.c_str()) + 1;
-
-		
-		strncpy(serverPacket.Sender, name.c_str(), serverPacket.Length);
-		serverPacket.Type = SERVER_ENTER;
-
-		SendMsg(serverPacket.Length, (char*)&serverPacket);
-
-		ROOM_ENTER_PACKET roomPacket;
-		roomPacket.Type = ROOM_ENTER;
-		roomPacket.RoomNo = mIndex % 5 + 1;
-		strcpy(roomPacket.Sender, name.c_str());
-		roomPacket.Length = strlen(name.c_str());
-
-		SendMsg(ROOM_ENTER_PACKET_LENGTH, (char*)&roomPacket);
-	}
+	bool InitPacket(const std::string& name);
 
 	bool BindIOCompletionPort(HANDLE iocpHandle_);
 	bool Connect(HANDLE iocpHandle_, SOCKET socket_);
@@ -95,7 +72,7 @@ protected:
 
 	std::string		nickname;
 
-	int             mIndex; 				//< Vector index managed by Client Manager
+	int             mIndex;
 	int				mRoom;
 };
 

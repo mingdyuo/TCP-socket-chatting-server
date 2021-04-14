@@ -15,7 +15,7 @@ public:
     ~stUserInfo(){}
     
 
-    char* GetNickname(){return mNickname;}
+    char* GetNickname() { return mNickname; }
     void SetNickname(char* nickname)
     {
         mRoom = 0;
@@ -23,8 +23,8 @@ public:
         CopyMemory(mNickname, nickname, strlen(nickname));
     }
 
-    int GetRoom(){return mRoom;}
-    int GetPrevRoom(){return mPrevRoom;}
+    int GetRoom() const { return mRoom; }
+    int GetPrevRoom() const { return mPrevRoom; }
     
     bool EnterRoom(int RoomNumber)
     {
