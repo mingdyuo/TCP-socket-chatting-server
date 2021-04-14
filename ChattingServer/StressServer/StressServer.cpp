@@ -52,14 +52,18 @@ unsigned StressServer::WorkerThread()
         if (SEND == pOverlappedEx->m_eOperation) 
         {
             printf("[SEND(%d)] %d bytes\t", pClientInfo->GetIndex(), dwIoSize);
-            if (mEndline++ % 4 == 0) printf("\n");
+            if (mEndline++ % 4 == 0) 
+                printf("\n");
+
             delete[] pOverlappedEx->m_wsaBuf.buf;
             delete pOverlappedEx;
         }
         else if (RECV == pOverlappedEx->m_eOperation) 
         {
             printf("[RECV(%d)] %d bytes\t", pClientInfo->GetIndex(), dwIoSize);
-            if (mEndline++ % 4 == 0) printf("\n");
+            if (mEndline++ % 4 == 0) 
+                printf("\n");
+
             pClientInfo->BindRecv();
         }
     }
@@ -70,8 +74,8 @@ unsigned StressServer::WorkerThread()
 unsigned StressServer::SenderThread()
 {
     unsigned uResult = 0;
-    int castType, senderIndex = 0;
-    int contentIndex = 0;
+    int castType;
+    int contentIndex = 0,senderIndex = 0;
 
     srand((unsigned int)time(NULL));
 
@@ -97,7 +101,7 @@ unsigned StressServer::SenderThread()
         if (contentIndex >= mContents.size()) 
             contentIndex = 0;
 
-        Sleep(SLEEP_INTERVAL_SEND);
+        Sleep(150);
     }
     printf("[알림] Sender thread 종료\n");
     return uResult;

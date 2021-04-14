@@ -20,19 +20,21 @@
 
 - 필요한 조건
 
-  1. Modern C++을 지원하는 Visual studio 
+  1. C++14을 지원하는 Visual studio IDE
   2. Windows 환경 (IOCP는 MS 환경에서만 지원합니다.)
 
 - 빌드 및 실행하기
 
   `git clone`을 받은 후 `TCP-socket-chatting-server/ChattingServer`에 있는 솔루션 파일인 `ChattingServer.sln`을 실행합니다.
 
+  `ChattingServer`, `ChattingClient`, `StressServer`의 세 프로젝트 모두 sdl 검사를 비활성화 해줍니다.
+
   릴리즈 모드로 솔루션을 빌드합니다.
 
   `TCP-socket-chatting-server/ChattingServer/Release` 로 이동합니다.
 
   `ChattingServer.exe`를 먼저 실행한 다음 `ChattingClient.exe`를 실행합니다.
-
+  
   부하 테스트를 하는 경우 `ChattingServer.exe`를 실행한 다음 `StressServer.exe`를 실행합니다.
 
 <br>

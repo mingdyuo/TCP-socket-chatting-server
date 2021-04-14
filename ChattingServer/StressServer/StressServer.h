@@ -26,7 +26,6 @@ public:
 
     virtual ~StressServer(void)
     {
-        WSACleanup();
         for (int i = 0;i < mClients.size();i++) 
         {
             if (mClients[i] && mClients[i]->IsConnected())
@@ -34,6 +33,7 @@ public:
                 mClients[i]->Close();
             }
         }
+        WSACleanup();
     }
 
     virtual unsigned ConnecterThread();     //< Create clients
@@ -51,11 +51,11 @@ private:
 
     std::vector<std::unique_ptr<stClientInfo>> mClients;
 
-    std::vector<std::string> mContents;
-    std::vector<std::string> mNicknames;
+    std::vector<std::string>    mNicknames;
+    std::vector<std::string>    mContents;
 
-    int mClientCount;
-    int mEndline;
+    int                         mClientCount;
+    long long int               mEndline;
 
 
 };

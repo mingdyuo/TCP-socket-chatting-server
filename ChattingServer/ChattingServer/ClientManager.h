@@ -23,7 +23,7 @@ protected:
 
         if(mClientCount == mCurrentCapacity)
         {
-            int newCapacity = min(mCurrentCapacity*2, mMaxClientCount);
+            int newCapacity = min(mCurrentCapacity * 2, mMaxClientCount);
             mClientInfos.reserve(newCapacity);
 
             for(int i = mCurrentCapacity;i < newCapacity;i++)
