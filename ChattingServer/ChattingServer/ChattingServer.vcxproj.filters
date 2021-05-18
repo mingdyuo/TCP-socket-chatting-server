@@ -13,6 +13,15 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="ChatServer">
+      <UniqueIdentifier>{4f7c2904-4bcc-4494-a8af-e1c2af20247b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="LogicProcess">
+      <UniqueIdentifier>{ca0944a5-1d13-496e-9a74-bbd00edd8c0c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SendServer">
+      <UniqueIdentifier>{f9b728c6-86b8-45fc-8286-ad5769a09b2e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ChatServer.cpp">
@@ -29,6 +38,15 @@
     </ClCompile>
     <ClCompile Include="UserInfo.cpp">
       <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="n_ChatServer.cpp">
+      <Filter>ChatServer</Filter>
+    </ClCompile>
+    <ClCompile Include="LogicProcess.cpp">
+      <Filter>LogicProcess</Filter>
+    </ClCompile>
+    <ClCompile Include="UserManager.cpp">
+      <Filter>ChatServer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -61,6 +79,21 @@
     </ClInclude>
     <ClInclude Include="ChatClientManager.h">
       <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="n_ChatServer.h">
+      <Filter>ChatServer</Filter>
+    </ClInclude>
+    <ClInclude Include="LogicProcess.h">
+      <Filter>LogicProcess</Filter>
+    </ClInclude>
+    <ClInclude Include="SendServer.h">
+      <Filter>SendServer</Filter>
+    </ClInclude>
+    <ClInclude Include="ChatUser.h">
+      <Filter>ChatServer</Filter>
+    </ClInclude>
+    <ClInclude Include="UserManager.h">
+      <Filter>ChatServer</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

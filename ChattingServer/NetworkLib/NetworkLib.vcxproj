@@ -18,62 +18,35 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="ChatServer.cpp" />
-    <ClCompile Include="ClientInfo.cpp" />
-    <ClCompile Include="IOCPServer.cpp" />
-    <ClCompile Include="LogicProcess.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="n_ChatServer.cpp" />
-    <ClCompile Include="UserInfo.cpp" />
-    <ClCompile Include="UserManager.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="ChatClientManager.h" />
-    <ClInclude Include="ChatServer.h" />
-    <ClInclude Include="ChatUser.h" />
-    <ClInclude Include="ClientInfo.h" />
-    <ClInclude Include="ClientManager.h" />
-    <ClInclude Include="IOCPServer.h" />
-    <ClInclude Include="LogicProcess.h" />
-    <ClInclude Include="n_ChatServer.h" />
-    <ClInclude Include="Packet.h" />
-    <ClInclude Include="PacketInfo.h" />
-    <ClInclude Include="PacketManager.h" />
-    <ClInclude Include="PacketManager.hpp" />
-    <ClInclude Include="SendServer.h" />
-    <ClInclude Include="UserInfo.h" />
-    <ClInclude Include="UserManager.h" />
-  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{1eb9f7cd-2c8d-4293-a852-05a4c4e51f7f}</ProjectGuid>
-    <RootNamespace>ChattingServer</RootNamespace>
+    <ProjectGuid>{711acfaf-f7de-49a9-80cf-b25876a8a9c3}</ProjectGuid>
+    <RootNamespace>NetworkLib</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -112,7 +85,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <SDLCheck>false</SDLCheck>
+      <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
@@ -126,7 +99,7 @@
       <WarningLevel>Level3</WarningLevel>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <SDLCheck>false</SDLCheck>
+      <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
@@ -165,6 +138,20 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="IOCPServer.cpp" />
+    <ClCompile Include="Session.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="IOCPServer.h" />
+    <ClInclude Include="IoData.h" />
+    <ClInclude Include="Package.h" />
+    <ClInclude Include="Packet.h" />
+    <ClInclude Include="PacketFactory.h" />
+    <ClInclude Include="Session.h" />
+    <ClInclude Include="Stream.h" />
+    <ClInclude Include="ToString.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

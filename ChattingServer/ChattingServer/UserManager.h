@@ -1,0 +1,83 @@
+#pragma once
+#ifndef USER_MANAGER_H
+#define USER_MANAGER_H
+
+#include <map>
+#include <set>
+
+#ifdef _MULTI_THREAD_LOGIC_PROCESS
+#include <mutex>
+#endif
+
+#include "ChatUser.h"
+#include "../NetworkLib/Session.h"
+#include "SendServer.h"
+
+
+class UserManager
+{
+
+public:
+    UserManager(SendServer* sServer)
+        : userId_(1), userCount_(0), SendServer_(sServer)
+    {
+
+    }
+
+    UserManager(UserManager const&) = delete;
+    UserManager(UserManager const&&) = delete;
+
+    ~UserManager()
+    {
+        if (userList_.empty())
+            return;
+
+        for (auto& user : userList_)
+        {
+            if (user.second == nullptr)
+                continue;
+
+            user.second->Release();
+            delete user.second;
+        }
+    }
+
+    Session* GetSession(int id) const;
+    User* GetUser(uint32_t id) const;
+
+    bool CreateUser(HANDLE iocpHandle, SOCKET socket);
+
+    inline void ExitLobby(User* user)
+    {
+        userInLobby_.erase(user);
+    }
+
+    inline void EnterLobby(User* user)
+    {
+        userInLobby_.insert(user);
+    }
+
+    void RemoveUser(User* user);
+    void RemoveUser(int uid);
+
+    void SendAcceptPacket(Session* session);
+
+    void SendLobbyInfo(Session* session);
+
+protected:
+    std::map<uint32_t, User*>   userList_;
+    uint32_t                    userCount_;
+
+    std::set<User*>             userInLobby_;
+    uint32_t                    userId_;
+
+#ifdef _MULTI_THREAD_LOGIC_PROCESS
+    std::mutex                  mutex_;
+#endif
+
+    SendServer* SendServer_;
+
+};
+
+
+#endif
