@@ -13,13 +13,22 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Client">
+      <UniqueIdentifier>{634754bd-1986-4923-84d0-9a16a21d55e6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Display">
+      <UniqueIdentifier>{d16ae62e-49bb-41f4-a4bd-a079c6d9e52b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="IOCPClient.cpp">
       <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Client</Filter>
+    </ClCompile>
+    <ClCompile Include="Client.cpp">
+      <Filter>Client</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -32,8 +41,23 @@
     <ClInclude Include="IOCPClient.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="CriticalSection.h">
-      <Filter>헤더 파일</Filter>
+    <ClInclude Include="Client.h">
+      <Filter>Client</Filter>
+    </ClInclude>
+    <ClInclude Include="ClientBase.h">
+      <Filter>Client</Filter>
+    </ClInclude>
+    <ClInclude Include="Display.h">
+      <Filter>Display</Filter>
+    </ClInclude>
+    <ClInclude Include="LoginDisplay.h">
+      <Filter>Display</Filter>
+    </ClInclude>
+    <ClInclude Include="ClientLogic.cpp">
+      <Filter>Client</Filter>
+    </ClInclude>
+    <ClInclude Include="ClientLogicFunc.cpp">
+      <Filter>Client</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

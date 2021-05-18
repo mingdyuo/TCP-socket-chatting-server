@@ -1,47 +1,24 @@
 #include "ChatServer.h"
-#include "PacketInfo.h"
-
-void ChatServer::OnReceive(const UINT32 clientIndex_, const UINT32 size_, char* pData_) 
-{
-
-    PacketInfo packetInfo;
-    packetInfo.Set(clientIndex_, size_, pData_);
-
-    printf("[OnReceive] 클라이언트(%d) %d bytes\n", packetInfo.ClientIndex, packetInfo.DataSize);
-    mPacketMgr->ClassifyPacket(packetInfo);
-
-}
-
-void ChatServer::OnSend(const UINT32 clientIndex_, const UINT32 size_) 
-{
-    printf("[OnSend] 클라이언트(%d) %d bytes\n", clientIndex_, size_);
-}
-
-
-void ChatServer::OnClose(int clientIndex_)
-{
-    printf("[OnClose] 클라이언트(%d) 연결 종료\n", clientIndex_);
-    mClientMgr->CloseClient(clientIndex_);
-}
-
+#include "../NetworkLib/Package.h"
+#include "LogicProcess.h"
 
 unsigned ChatServer::AccepterThread()
 {
     unsigned uResult = 0;
     SOCKADDR_IN stClientAddr;
     int nAddrLen = sizeof(SOCKADDR_IN);
-    while(mbIsAccepterRun)
+    while (bIsAccepterRun_)
     {
         SOCKET newSocket = accept(
-            mListenSocket,
+            listenSocket_,
             (SOCKADDR*)&stClientAddr,
             &nAddrLen
         );
 
-        if(INVALID_SOCKET == newSocket)
+        if (INVALID_SOCKET == newSocket)
             continue;
 
-        if(false == mClientMgr->CreateClient(mIOCPHandle, newSocket))
+        if (false == logicProcess_->CreateUser(IOCPHandle_, newSocket))
         {
             closesocket(newSocket);
             continue;
@@ -52,56 +29,70 @@ unsigned ChatServer::AccepterThread()
     return uResult;
 }
 
+
 unsigned ChatServer::WorkerThread()
 {
     unsigned uResult = 0;
     DWORD dwIoSize = 0;
     BOOL bSuccess = TRUE;
-    stClientInfo* pClientInfo = NULL;
-    LPOVERLAPPED lpOverlapped = NULL;
+    Session* pSession = nullptr;
+    LPOVERLAPPED lpOverlapped = nullptr;
 
-    while(mbIsWorkerRun)
+    while (bIsWorkerRun_)
     {
-        bSuccess = GetQueuedCompletionStatus(
-            mIOCPHandle,
-            &dwIoSize,
-            (PULONG_PTR)&pClientInfo,
-            &lpOverlapped,
-            INFINITE
-        );
-
-        if(bSuccess==TRUE && dwIoSize==0 && lpOverlapped==NULL)
+        try
         {
-            mbIsWorkerRun = false;
-            continue;
+            bSuccess = GetQueuedCompletionStatus(
+                IOCPHandle_,
+                &dwIoSize,
+                (PULONG_PTR)&pSession,
+                &lpOverlapped,
+                INFINITE
+            );
+
+            if (bSuccess == TRUE && dwIoSize == 0 && lpOverlapped == nullptr)
+            {
+                bIsWorkerRun_ = false;
+                continue;
+            }
+
+            if (lpOverlapped == nullptr) continue;
+
+            if (bSuccess == FALSE || (0 == dwIoSize && bSuccess == TRUE))
+            {
+                logicProcess_->RemoveUser(pSession->GetPid());
+                continue;
+            }
+
+            IoData* ioData = (IoData*)lpOverlapped;
+
+            if (IO_SEND == ioData->Type())
+            {
+                printf("[SEND] client(%d)\n", pSession->GetPid());
+                delete ioData;
+            }
+            else if (IO_RECV == ioData->Type())
+            {
+                Packet* packet = pSession->OnRecv(dwIoSize);
+
+                if (packet)
+                {
+                    RecvPackage package(pSession, packet);
+                    logicProcess_->PushPackage(package);
+                }
+
+                pSession->BindRecv();
+            }
+
         }
-
-        if(lpOverlapped==NULL) continue;
-
-        if(bSuccess == FALSE || (0 == dwIoSize && bSuccess == TRUE))
+        catch (Session* session)
         {
-            mClientMgr->CloseClient(pClientInfo->GetIndex());
-            continue;
-        }
+            if (WSAGetLastError() != 64)
+            {
+                printf("[Error] GQCS error\n");
+            }
 
-        stOverlappedEx* pOverlappedEx = (stOverlappedEx*)lpOverlapped;
-
-        if(SEND == pOverlappedEx->m_eOperation)
-        {
-            OnSend(pClientInfo->GetIndex(), dwIoSize);
-            delete[] pOverlappedEx->m_wsaBuf.buf;
-            delete pOverlappedEx;
-        }
-        else if(RECV == pOverlappedEx->m_eOperation)
-        {
-            OnReceive(pClientInfo->GetIndex(), dwIoSize, pClientInfo->RecvBuffer());
-            pClientInfo->BindRecv();
-        }
-        else if(CLOSE == pOverlappedEx->m_eOperation)
-        {
-            delete[] pOverlappedEx->m_wsaBuf.buf;
-            delete pOverlappedEx;
-            OnClose(pClientInfo->GetIndex());
+            logicProcess_->RemoveUser(pSession->GetPid());
         }
 
     }

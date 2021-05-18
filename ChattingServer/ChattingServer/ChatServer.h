@@ -1,73 +1,54 @@
-#pragma once
+#ifndef CHAT_SERVER_H
+#define CHAT_SERVER_H
 
-#include "IOCPServer.h"
-#include "ChatClientManager.h"
-#include "UserInfo.h"
-#include "PacketManager.h"
-#include <process.h>
+#include "../NetworkLib/IOCPServer.h"
+
+class LogicProcess;
 
 class ChatServer : public IOCPServer
 {
 public:
-    ChatServer() : mClientMgr(nullptr), mPacketMgr(nullptr) { }
+    ChatServer() = delete;
+
+    ChatServer(LogicProcess* logicProcess) :logicProcess_(logicProcess) {}
+
     virtual ~ChatServer(void)
-    { 
-        WSACleanup(); 
-        delete mClientMgr;
-        delete mPacketMgr;
-    }
+    {}
 
-    virtual void OnReceive(const UINT32 clientIndex_, const UINT32 size_, char* pData_);
-    virtual void OnSend(const UINT32 clientIndex_, const UINT32 size_);
-    virtual void OnClose(int clientIndex_);
+    virtual unsigned AccepterThread() override;
+    virtual unsigned WorkerThread() override;
 
-    virtual unsigned AccepterThread();
-    virtual unsigned WorkerThread();
-
-    virtual void InitializeManagers(const UINT32 maxClientCount)
-    {
-        mClientMgr = new ChatClientManager<stUserInfo>(maxClientCount);
-        mPacketMgr = new PacketManager<stUserInfo>(mClientMgr);
-    }
 
     bool Initialize(int serverPort)
     {
-        if(false == InitSocket())
-        {
-            printf("소켓 초기화 실패\n");
+        if (false == InitSocket())
             return false;
-        }
 
-        if(false == BindAndListen(serverPort))
-        {
-            printf("소켓 바인딩 실패\n");
+        if (false == BindAndListen(serverPort))
             return false;
-        }
 
         return true;
     }
 
-    bool Run(int maxClient)    //< Function called in main
+    bool Run()    //< Function called in main
     {
-        InitializeManagers(maxClient);
+        //< 다른 초기화 해줘야 하는 작업들 있다면 실행 
 
-        if(false == mPacketMgr->PacketThread())
-            return false;   
-        
-        printf("[알림] packetThread 생성 완료\n");
-        
         return StartServer();   //< IOCP Server Run
     }
 
     void CloseServer()
     {
+        // 다른 닫아야 하는 작업들 종료
         DestroyThreads();
-        mPacketMgr->Close();
     }
 
 
 private:
-    ChatClientManager<stUserInfo>*      mClientMgr;
-    PacketManager<stUserInfo>*          mPacketMgr;
+    LogicProcess* logicProcess_;
 };
+
+
+
+#endif // !CHAT_SERVER_H
 

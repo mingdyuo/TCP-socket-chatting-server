@@ -19,24 +19,19 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ChatServer.cpp" />
     <ClCompile Include="ClientInfo.cpp" />
-    <ClCompile Include="IOCPServer.cpp" />
     <ClCompile Include="LogicProcess.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="n_ChatServer.cpp" />
+    <ClCompile Include="ChatServer.cpp" />
     <ClCompile Include="UserInfo.cpp" />
     <ClCompile Include="UserManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ChatClientManager.h" />
-    <ClInclude Include="ChatServer.h" />
     <ClInclude Include="ChatUser.h" />
-    <ClInclude Include="ClientInfo.h" />
     <ClInclude Include="ClientManager.h" />
-    <ClInclude Include="IOCPServer.h" />
     <ClInclude Include="LogicProcess.h" />
-    <ClInclude Include="n_ChatServer.h" />
+    <ClInclude Include="ChatServer.h" />
     <ClInclude Include="Packet.h" />
     <ClInclude Include="PacketInfo.h" />
     <ClInclude Include="PacketManager.h" />

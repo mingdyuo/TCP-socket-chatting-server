@@ -23,7 +23,7 @@ bool Session::BindIOCompletionPort(HANDLE iocpHandle)
 
     if (hIOCP == INVALID_HANDLE_VALUE)
     {
-        printf("[ERROR] CreateIoCompletionPort()함수: %d\n", GetLastError());
+        printf("[ERROR] CreateIoCompletionPort() function: %d\n", GetLastError());
         return false;
     }
 
@@ -35,7 +35,7 @@ bool Session::Connect(HANDLE iocpHandle, SOCKET socket)
     socket_ = socket;
     if (BindIOCompletionPort(iocpHandle) == false)
     {
-        printf("[ERROR] BindIOCompletionPort() 함수\n");
+        printf("[ERROR] BindIOCompletionPort() funtion\n");
         return false;
     }
 
@@ -45,7 +45,7 @@ bool Session::Connect(HANDLE iocpHandle, SOCKET socket)
         return false;
     }
 
-    printf("[SUCCESS] 클라이언트(%d) 생성\n", userId_);
+    printf("[SUCCESS] CLIENT(%d) CREATED\n", userId_);
 
     return true;
 }
@@ -104,7 +104,6 @@ Packet* Session::OnRecv(size_t ioSize)
     return packet;
 }
 
-//bool Session::SendPacket(Packet* packet)
 bool Session::SendPacket(Packet* const packet)
 {
     Stream stream;

@@ -43,6 +43,12 @@
 
 - IOCP 모델을 이용하여 만든 채팅 서버입니다.
 
+- 멀티 스레드로 동작합니다.
+
+  1. `AcceptorThread`
+  2. `WorkerThread`
+  3. `PacketThread` (`WSASend` only)
+
 - 클래스/구조체 상속 관계는 다음과 같습니다.
 
   1. `IOCPServer` ← `ChatServer`
@@ -63,7 +69,7 @@
 
 - 패킷 관련 자료구조는 다음과 같습니다.
 
-  1. `enum eAction : UINT16 {}`
+  1. `enum eAction : UINT16 { }`
 
      클라이언트와 주고받는 패킷에 포함되어 있으며, 어떤 요청인지를 의미합니다.
 
