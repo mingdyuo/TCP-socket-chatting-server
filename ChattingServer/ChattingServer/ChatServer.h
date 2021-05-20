@@ -1,7 +1,7 @@
 #ifndef CHAT_SERVER_H
 #define CHAT_SERVER_H
 
-#include "../NetworkLib/IOCPServer.h"
+#include "IOCPServer.h"
 
 class LogicProcess;
 

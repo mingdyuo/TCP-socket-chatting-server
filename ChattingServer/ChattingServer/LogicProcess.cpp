@@ -1,5 +1,6 @@
 #include "LogicProcess.h"
-
+#include "SendServer.h"
+#include "UserManager.h"
 
 LogicProcess::~LogicProcess()
 {
@@ -15,6 +16,13 @@ LogicProcess::~LogicProcess()
 			delete package.packet_;
 		}
 	}
+}
+
+
+void LogicProcess::SetMgr(UserManager* uMgr, SendServer* sServer)
+{
+	uMgr_ = uMgr;
+	sendServer_ = sServer;
 }
 
 
@@ -72,3 +80,12 @@ void LogicProcess::Close()
 	}
 }
 
+bool LogicProcess::CreateUser(HANDLE IOCPHandle, SOCKET socket)
+{
+	return uMgr_->CreateUser(IOCPHandle, socket);
+}
+
+void LogicProcess::RemoveUser(uint32_t pId)
+{
+	uMgr_->RemoveUser(pId);
+}

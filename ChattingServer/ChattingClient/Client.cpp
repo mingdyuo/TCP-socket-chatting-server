@@ -9,7 +9,14 @@ bool Client::Initialize(int bindPort)
 {
 	display_ = new LoginDisplay();
 	state_ = ClientState::LOGIN;
-	return this->InitSocket() && this->ConnectServer(bindPort);
+
+	if (this->InitSocket() && this->ConnectServer(bindPort))
+		return true;
+	else
+	{
+		delete display_;
+		return false;
+	}
 }
 
 bool Client::ServerEnter()

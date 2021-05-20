@@ -2,7 +2,7 @@
 #ifndef USER_H
 #define USER_H
 
-#include "../NetworkLib/Session.h"
+#include "Session.h"
 
 class User
 {

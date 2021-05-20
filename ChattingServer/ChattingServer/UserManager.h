@@ -10,7 +10,7 @@
 #endif
 
 #include "ChatUser.h"
-#include "../NetworkLib/Session.h"
+//#include "../NetworkLib/Session.h"
 #include "SendServer.h"
 
 

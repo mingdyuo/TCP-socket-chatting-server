@@ -17,20 +17,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="IOCPServer.cpp">
-      <Filter>IOCPServer</Filter>
-    </ClCompile>
-    <ClCompile Include="Session.cpp">
-      <Filter>Network</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="IOCPServer.h">
-      <Filter>IOCPServer</Filter>
-    </ClInclude>
-    <ClInclude Include="Session.h">
-      <Filter>Network</Filter>
-    </ClInclude>
     <ClInclude Include="IoData.h">
       <Filter>Network</Filter>
     </ClInclude>

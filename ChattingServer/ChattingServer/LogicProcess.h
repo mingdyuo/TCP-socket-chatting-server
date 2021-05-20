@@ -24,10 +24,12 @@
 #define CONST_LOCK_GUARD(m) const std::lock_guard<std::mutex>(m)
 #endif
 
-#include "../NetworkLib/PacketFactory.h"
+//#include "../NetworkLib/PacketFactory.h"
 #include "../NetworkLib/Package.h"
-#include "SendServer.h"
-#include "UserManager.h"
+//#include "SendServer.h"
+class SendServer;
+class UserManager;
+
 
 class LogicProcess
 {
@@ -45,27 +47,17 @@ public:
 
 	~LogicProcess();
 
-	void SetMgr(UserManager* uMgr, SendServer* sServer)
-	{
-		uMgr_ = uMgr;
-		sendServer_ = sServer;
-	}
+	void SetMgr(UserManager* uMgr, SendServer* sServer);
 
 	void	Run(); //< Process Thread »ý¼º
 	void	Close();
-
-	void	PushPackage(const RecvPackage& package);
+	
+	void		PushPackage(const RecvPackage& package);
 	RecvPackage PopPackage();
 
-	inline bool CreateUser(HANDLE IOCPHandle, SOCKET socket)
-	{
-		return uMgr_->CreateUser(IOCPHandle, socket);
-	}
+	bool CreateUser(HANDLE IOCPHandle, SOCKET socket);
 
-	inline void RemoveUser(uint32_t pId)
-	{
-		uMgr_->RemoveUser(pId);
-	}
+	void RemoveUser(uint32_t pId);
 
 
 
