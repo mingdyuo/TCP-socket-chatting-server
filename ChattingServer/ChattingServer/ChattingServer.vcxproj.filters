@@ -10,12 +10,12 @@
     <Filter Include="SendServer">
       <UniqueIdentifier>{f9b728c6-86b8-45fc-8286-ad5769a09b2e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="past header">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
     <Filter Include="IOCPServer">
       <UniqueIdentifier>{139b6522-9f93-4b07-858c-b5e5043eed5f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="past header%28삭제예정%29">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -39,20 +39,11 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="UserInfo.h">
-      <Filter>past header</Filter>
-    </ClInclude>
     <ClInclude Include="PacketManager.hpp">
-      <Filter>past header</Filter>
+      <Filter>past header%28삭제예정%29</Filter>
     </ClInclude>
     <ClInclude Include="PacketManager.h">
-      <Filter>past header</Filter>
-    </ClInclude>
-    <ClInclude Include="PacketInfo.h">
-      <Filter>past header</Filter>
-    </ClInclude>
-    <ClInclude Include="Packet.h">
-      <Filter>past header</Filter>
+      <Filter>past header%28삭제예정%29</Filter>
     </ClInclude>
     <ClInclude Include="ChatServer.h">
       <Filter>ChatServer</Filter>

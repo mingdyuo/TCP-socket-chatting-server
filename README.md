@@ -1,10 +1,45 @@
-# TCP-socket-chatting-server
+# TCP-socket-chatting-server v1.1
+
+- IOCP 모델을 이용하여 만든 채팅 서버입니다.
+
+- 멀티 스레드로 동작합니다.
+
+### How to build
+
+- 필요한 조건
+
+  1. C++17을 지원하는 Visual studio IDE
+  2. Windows 환경 (IOCP는 MS 환경에서만 지원합니다.)
+
+- 빌드 및 실행하기
+
+  `git clone`을 받은 후 `TCP-socket-chatting-server/ChattingServer`에 있는 솔루션 파일인 `ChattingServer.sln`을 실행합니다.
+
+  `Debug` 혹은 `Release` 모드로 솔루션을 빌드합니다.
+
+  `TCP-socket-chatting-server/ChattingServer/{build mode}` 로 이동합니다.
+
+  `ChattingServer.exe`를 먼저 실행한 다음 `ChattingClient.exe`를 실행합니다.
+
+  ~~부하 테스트를 하는 경우 `ChattingServer.exe`를 실행한 다음 `StressServer.exe`를 실행합니다.~~
+  
+  (스트레스 테스트 코드는 리팩토링이 진행중입니다.)
+
+<br>
+
+## 서버 구조
+
+
+
+<br>
+
+# TCP-socket-chatting-server v1.0
 
 - 윈속 라이브러리를 사용하여 채팅 서버를 구현한 프로젝트입니다.
 
 - 소켓 입출력 모델로는 IOCP를 사용하였습니다.
 
-- 초기에 C++98로 작성하였으며, C++11로 수정하는 작업을 진행하고 있습니다.
+- 초기에 C++98로 작성하였으며, C++11로 수정하는 작업을 진행하였습니다.
 
   (Visual Studio는 2005 버전에서 초기 작성하였고, 2019 버전으로 이동)
 
@@ -39,15 +74,11 @@
 
 <br>
 
-## 서버
+## 서버 구조
 
-- IOCP 모델을 이용하여 만든 채팅 서버입니다.
-
-- 멀티 스레드로 동작합니다.
-
-  1. `AcceptorThread`
-  2. `WorkerThread`
-  3. `PacketThread` (`WSASend` only)
+1. `AcceptorThread`
+2. `WorkerThread`
+3. `PacketThread` (`WSASend` only)
 
 - 클래스/구조체 상속 관계는 다음과 같습니다.
 

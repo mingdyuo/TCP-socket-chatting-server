@@ -19,29 +19,28 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="IOCPServer.cpp" />
-    <ClCompile Include="LogicProcess.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="ChatServer.cpp" />
-    <ClCompile Include="Session.cpp" />
-    <ClCompile Include="UserManager.cpp" />
+    <None Include="nickname_data.csv" />
+    <None Include="random_content.csv" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ChatUser.h" />
+    <ClCompile Include="ClientInfo.cpp" />
+    <ClCompile Include="CsvParser.cpp" />
+    <ClCompile Include="IOCPServer.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="StressServer.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ClientInfo.h" />
+    <ClInclude Include="CsvParser.h" />
     <ClInclude Include="IOCPServer.h" />
-    <ClInclude Include="LogicProcess.h" />
-    <ClInclude Include="ChatServer.h" />
-    <ClInclude Include="PacketManager.h" />
-    <ClInclude Include="PacketManager.hpp" />
-    <ClInclude Include="SendServer.h" />
-    <ClInclude Include="Session.h" />
-    <ClInclude Include="UserManager.h" />
+    <ClInclude Include="Packet.h" />
+    <ClInclude Include="StressServer.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{1eb9f7cd-2c8d-4293-a852-05a4c4e51f7f}</ProjectGuid>
-    <RootNamespace>ChattingServer</RootNamespace>
+    <ProjectGuid>{87f19885-a652-4da5-94b3-5c36c19f0748}</ProjectGuid>
+    <RootNamespace>StressServer</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -97,11 +96,9 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <LibraryPath>$(MSBuildProjectDirectory)\NetworkLib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <LibraryPath>$(MSBuildProjectDirectory)\NetworkLib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -109,7 +106,6 @@
       <SDLCheck>false</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)\NetworkLib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -124,7 +120,6 @@
       <SDLCheck>false</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)\NetworkLib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -136,10 +131,9 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <SDLCheck>true</SDLCheck>
+      <SDLCheck>false</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)\NetworkLib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -151,10 +145,9 @@
       <WarningLevel>Level3</WarningLevel>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <SDLCheck>true</SDLCheck>
+      <SDLCheck>false</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)\NetworkLib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

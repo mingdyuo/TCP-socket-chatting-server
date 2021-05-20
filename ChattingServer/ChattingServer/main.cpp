@@ -14,10 +14,11 @@ void ErrorExit(const char* msg)
 int main()
 {
 	const int SERVER_PORT 	= 9898;
+	const int ROOM_NO		= 5;
 
 	std::unique_ptr<LogicProcess>	logicProcess	= std::make_unique<LogicProcess>();
 	std::unique_ptr<SendServer>		sendServer		= std::make_unique<SendServer>();
-	std::unique_ptr<UserManager>	userManager		= std::make_unique<UserManager>(sendServer.get());
+	std::unique_ptr<UserManager>	userManager		= std::make_unique<UserManager>(sendServer.get(), ROOM_NO);
 
 	logicProcess->SetMgr(userManager.get(), sendServer.get());
 

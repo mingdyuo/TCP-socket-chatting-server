@@ -20,17 +20,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp" />
-    <ClCompile Include="IOCPClient.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h" />
     <ClInclude Include="ClientBase.h" />
-    <ClInclude Include="ClientFunc.cpp" />
     <ClInclude Include="Display.h" />
-    <ClInclude Include="IOCPClient.h" />
+    <ClInclude Include="LobbyDisplay.h" />
     <ClInclude Include="LoginDisplay.h" />
-    <ClInclude Include="Packet.h" />
     <ClInclude Include="Position.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

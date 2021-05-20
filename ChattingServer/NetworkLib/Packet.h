@@ -34,6 +34,9 @@ enum PacketType
 	E_PK_S_SERVER_ENTER_NO = 502,
 
 	E_PK_S_LOBBY_USER_INFO,
+	E_PK_S_LOBBY_ENTER,
+	E_PK_S_LOBBY_EXIT,
+
 	E_PK_S_ROOM_LIST_OK,
 
 	E_PK_S_ROOM_ENTER,
@@ -126,16 +129,24 @@ class PK_S_LOBBY_USER_INFO : public Packet
 public:
 	PacketType type() { return E_PK_S_LOBBY_USER_INFO; }
 
-	PK_S_LOBBY_USER_INFO() : userCount(0) {}
+	PK_S_LOBBY_USER_INFO() : userCount(0), roomCount(0) {}
+	PK_S_LOBBY_USER_INFO(uint16_t room) : userCount(0), roomCount(room) {}
 
+	uint16_t roomCount;
 	uint16_t userCount;
+	std::vector<uint32_t> ids;
 	std::vector<std::string> names;
 
 	void encode(Stream& stream)
 	{
 		stream << (packet_header_size)this->type();
+		stream << roomCount;
 		userCount = static_cast<uint16_t>(names.size());
 		stream << userCount;
+		for (auto& id : ids)
+		{
+			stream << id;
+		}
 		for (auto& name : names)
 		{
 			stream << name;
@@ -144,8 +155,15 @@ public:
 
 	void decode(Stream& stream)
 	{
+		stream >> &roomCount;
 		stream >> &userCount;
 		std::string name;
+		uint32_t id;
+		for (int i = 0;i < userCount;i++)
+		{
+			stream >> &id;
+			ids.push_back(id);
+		}
 		for (int i = 0;i < userCount;i++)
 		{
 			stream >> &name;
@@ -155,6 +173,32 @@ public:
 };
 
 
+
+class PK_S_LOBBY_ENTER : public Packet
+{
+public:
+	PacketType type() { return E_PK_S_LOBBY_ENTER; }
+
+	PK_S_LOBBY_ENTER() : uid(0) {}
+	PK_S_LOBBY_ENTER(uint32_t id, std::string name) : 
+		uid(0), nickname(name) {}
+
+	uint32_t uid;
+	std::string nickname;
+
+	void encode(Stream& stream)
+	{
+		stream << (packet_header_size)this->type();
+		stream << uid;
+		stream << nickname;
+	}
+
+	void decode(Stream& stream)
+	{
+		stream >> &uid;
+		stream >> &nickname;
+	}
+};
 
 
 #endif

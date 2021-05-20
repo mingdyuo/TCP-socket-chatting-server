@@ -88,7 +88,7 @@ User* UserManager::GetUser(uint32_t id) const
 
 void UserManager::SendAcceptPacket(Session* session)
 {
-    std::shared_ptr<PK_S_SERVER_ENTER_OK> packet = std::make_shared<PK_S_SERVER_ENTER_OK>(session->GetPid());
+    std::shared_ptr<PK_S_SERVER_ENTER_OK> packet = std::make_shared<PK_S_SERVER_ENTER_OK>(session->GetId());
     SendPackage package(session, packet);
     sendServer_->PushPackage(package);
 }
@@ -96,33 +96,35 @@ void UserManager::SendAcceptPacket(Session* session)
 void UserManager::SendLobbyInfo(Session* session) 
                                                             //< Current Connected User infos & Users in lobby
 {
+    std::shared_ptr<PK_S_LOBBY_USER_INFO> packet = std::make_shared<PK_S_LOBBY_USER_INFO>(roomCount_);
+    for (auto& user : userList_)
+    {
+        packet->ids.push_back(user.second->GetId());
+        packet->names.push_back(user.second->GetNickname());
+    }
 
-    std::shared_ptr<PK_S_LOBBY_INFO> packet = std::make_shared<PK_S_LOBBY_INFO>();
-    //std::shared_ptr<PK_S_LOBBY_INFO> packet = std::make_shared<PK_S_LOBBY_INFO>();
-    //for (auto& user : userList_)
-    //{
-    //    if (user.second->IsInLobby())
-    //        packet->lobbyInfo.push_back(
-    //            UserPacketInfo(user.second->GetId(), user.second->GetPosition()));
-    //}
-
-    //SendPackage package(session, packet);
-    //networkServer_->PushPackage(package);
-
+    SendPackage package(session, packet);
+    sendServer_->PushPackage(package);
 }
 
-void UserManager::LobbyCast(Session* session) 
+void UserManager::LobbyCast(Session* session, PacketType type) 
                                                             //< In-out Info of other users
 {
-   /* std::shared_ptr<PK_S_PLAYER_POSITION> packet = std::make_shared<PK_S_PLAYER_POSITION>(user->GetId(), user->GetPosition());
-    SendPackage package(nullptr, packet);
-
-    for (auto& user : userInLobby_)
+    User* user = this->GetUser(session->GetId());
+    if (type == E_PK_S_LOBBY_ENTER)
     {
-        package.session_ = user->GetSession();
-        networkServer_->PushPackage(package);
-    }*/
-    
+        std::shared_ptr<PK_S_LOBBY_ENTER> packet = std::make_shared<PK_S_LOBBY_ENTER>(user->GetId(), user->GetNickname());
+        SendPackage package(nullptr, packet);
+        for (auto& user : userList_)
+        {
+            package.session_ = user.second->GetSession();
+            sendServer_->PushPackage(package);
+        }
+    }
+    else if (type == E_PK_S_LOBBY_EXIT)
+    {
+
+    }
 }
 
 

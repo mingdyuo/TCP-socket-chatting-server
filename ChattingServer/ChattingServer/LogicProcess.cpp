@@ -115,5 +115,6 @@ void LogicProcess::C_SERVER_ENTER(const RecvPackage& package)
 
 	uMgr_->SendAcceptPacket(package.session_);
 	uMgr_->SendLobbyInfo(package.session_);
-	uMgr_->LobbyCast(package.session_);
+	uMgr_->LobbyCast(package.session_, packet->type());
+	
 }
