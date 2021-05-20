@@ -40,7 +40,7 @@ public:
     void CloseServer()
     {
         // 다른 닫아야 하는 작업들 종료
-        DestroyThreads();
+        this->DestroyThreads();
     }
 
 

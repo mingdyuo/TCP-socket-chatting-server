@@ -23,13 +23,10 @@
     <ClCompile Include="LogicProcess.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ChatServer.cpp" />
-    <ClCompile Include="UserInfo.cpp" />
     <ClCompile Include="UserManager.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ChatClientManager.h" />
     <ClInclude Include="ChatUser.h" />
-    <ClInclude Include="ClientManager.h" />
     <ClInclude Include="LogicProcess.h" />
     <ClInclude Include="ChatServer.h" />
     <ClInclude Include="Packet.h" />
@@ -100,9 +97,11 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
+    <LibraryPath>$(MSBuildProjectDirectory)\NetworkLib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
+    <LibraryPath>$(MSBuildProjectDirectory)\NetworkLib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

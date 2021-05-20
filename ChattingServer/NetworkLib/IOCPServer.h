@@ -1,14 +1,13 @@
 #pragma once
 #pragma comment(lib, "ws2_32")
 
+#ifndef IOCP_SERVER_H
+#define IOCP_SERVER_H
+
 #include <winsock2.h>
 #include <vector>
 #include <cstring>
 #include <thread>
-
-
-#ifndef _IOCP_SERVER
-#define _IOCP_SERVER
 
 class IOCPServer
 {

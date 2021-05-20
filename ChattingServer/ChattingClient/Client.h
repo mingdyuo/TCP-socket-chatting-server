@@ -31,19 +31,8 @@ namespace KeyInput
 class Client : public ClientBase
 {
 public:
-	bool Initialize(int bindPort)
-	{
-		display_ = new LoginDisplay();
-		state_ = ClientState::LOGIN;
-		return this->InitSocket() && this->ConnectServer(bindPort);
-	}
-
-	bool ServerEnter()
-	{
-		this->CreateThreads();
-		jobThread_ = std::thread(&Client::LogicThread, this);
-		return true;
-	}
+	bool Initialize(int bindPort);
+	bool ServerEnter();
 
 protected:
 	virtual void SendThread();
@@ -55,7 +44,7 @@ protected:
 	void SendNickname();
 	
 	void RecvProcess(Packet* packet);
-	void SendProcess();
+	void SendProcess(){}
 
 
 

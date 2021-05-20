@@ -50,7 +50,7 @@ public:
 	virtual PacketType type() = 0;
 	virtual void encode(Stream& stream) { stream << (packet_header_size)this->type(); }
 	virtual void decode(Stream& stream) {}
-	virtual void print() { ToString(this->type()); }
+	virtual void print() { ToString("Packet type : ", this->type()); }
 };
 
 
@@ -97,6 +97,9 @@ class PK_S_SERVER_ENTER_OK : public Packet
 {
 public:
 	PacketType type() { return E_PK_S_SERVER_ENTER_OK; }
+
+	PK_S_SERVER_ENTER_OK() :pid(0){}
+	PK_S_SERVER_ENTER_OK(uint32_t id) :pid(id) {}
 
 	uint32_t pid;
 	std::string nickname;

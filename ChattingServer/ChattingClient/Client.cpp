@@ -119,3 +119,18 @@ void Client::PushQueue(Packet* packet)
 	std::lock_guard<std::mutex> lock(mutex_);
 	sendQueue_.push(packet);
 }
+
+
+
+
+void Client::RecvProcess(Packet* packet)
+{
+	if (packet->type() == E_PK_S_SERVER_ENTER_OK)
+	{
+		// 함수 포인터를 걍 만들어야 겠다..
+	}
+
+
+	delete packet;
+}
+

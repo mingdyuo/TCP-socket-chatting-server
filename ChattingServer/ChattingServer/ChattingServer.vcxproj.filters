@@ -23,9 +23,6 @@
     <ClCompile Include="ClientInfo.cpp">
       <Filter>past source</Filter>
     </ClCompile>
-    <ClCompile Include="UserInfo.cpp">
-      <Filter>past source</Filter>
-    </ClCompile>
     <ClCompile Include="ChatServer.cpp">
       <Filter>ChatServer</Filter>
     </ClCompile>
@@ -53,12 +50,6 @@
       <Filter>past header</Filter>
     </ClInclude>
     <ClInclude Include="Packet.h">
-      <Filter>past header</Filter>
-    </ClInclude>
-    <ClInclude Include="ClientManager.h">
-      <Filter>past header</Filter>
-    </ClInclude>
-    <ClInclude Include="ChatClientManager.h">
       <Filter>past header</Filter>
     </ClInclude>
     <ClInclude Include="ChatServer.h">

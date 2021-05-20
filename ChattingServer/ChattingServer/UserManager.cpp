@@ -1,6 +1,30 @@
 #include "UserManager.h"
 #include "../NetworkLib/Packet.h"
 
+/* * * * * * * * * * * *
+*   User Create & Remove
+* * * * * * * * * * * * */
+
+bool UserManager::CreateUser(HANDLE iocpHandle, SOCKET socket)
+{
+    User* newUser = new User(userId_);
+
+    if (false == newUser->Initialize(iocpHandle, socket))
+    {
+        delete newUser;
+        return false;
+    }
+
+    // CONST_LOCK_GUARD(mutex_);
+
+    userList_.insert({ userId_++, newUser });
+    ++userCount_;
+
+    userInLobby_.insert(newUser);
+
+    return true;
+}
+
 void UserManager::RemoveUser(User* user)
 {
     user->Release();
@@ -31,55 +55,9 @@ void UserManager::RemoveUser(int index)
     this->RemoveUser(it->second);
 }
 
-
-void UserManager::LobbyCast()
-{
-    
-    
-}
-
-
-void UserManager::SendAcceptPacket(Session* session)
-{
-    std::shared_ptr<PK_S_SERVER_ENTER_OK> packet = std::make_shared<PK_S_SERVER_ENTER_OK>();
-    packet->pid = session->GetPid();
-    SendPackage package(session, packet);
-    networkServer_->PushPackage(package);
-}
-
-void UserManager::SendLobbyInfo(Session* session)
-{
-    std::shared_ptr<PK_S_LOBBY_INFO> packet = std::make_shared<PK_S_LOBBY_INFO>();
-    for (auto& user : userList_)
-    {
-        if (user.second->IsInLobby())
-            packet->lobbyInfo.push_back(
-                UserPacketInfo(user.second->GetId(), user.second->GetPosition()));
-    }
-
-    SendPackage package(session, packet);
-    networkServer_->PushPackage(package);
-
-}
-
-void UserManager::MoveBroadcast(uint32_t pid, MovementDirection dir = MovementDirection::NONE)
-{
-    MoveBroadcast(this->GetUser(pid), dir);
-}
-
-void UserManager::MoveLobbyCast(User* user)
-{
-    // ¶ô
-
-    std::shared_ptr<PK_S_PLAYER_POSITION> packet = std::make_shared<PK_S_PLAYER_POSITION>(user->GetId(), user->GetPosition());
-    SendPackage package(nullptr, packet);
-
-    for (auto& user : userInLobby_)
-    {
-        package.session_ = user->GetSession();
-        networkServer_->PushPackage(package);
-    }
-}
+/* * * * * * * * * * * *
+*         Getter
+* * * * * * * * * * * * */
 
 Session* UserManager::GetSession(int id) const
 {
@@ -103,22 +81,66 @@ User* UserManager::GetUser(uint32_t id) const
     return user->second;
 }
 
-bool UserManager::CreateUser(HANDLE iocpHandle, SOCKET socket)
+/* * * * * * * * * * * *
+*     Packet Process
+*   -> Accept & Lobby
+* * * * * * * * * * * * */
+
+void UserManager::SendAcceptPacket(Session* session)
 {
-    User* newUser = new User(userId_);
+    std::shared_ptr<PK_S_SERVER_ENTER_OK> packet = std::make_shared<PK_S_SERVER_ENTER_OK>(session->GetPid());
+    SendPackage package(session, packet);
+    sendServer_->PushPackage(package);
+}
 
-    if (false == newUser->Initialize(iocpHandle, socket))
+void UserManager::SendLobbyInfo(Session* session) 
+                                                            //< Current Connected User infos & Users in lobby
+{
+    //std::shared_ptr<PK_S_LOBBY_INFO> packet = std::make_shared<PK_S_LOBBY_INFO>();
+    //for (auto& user : userList_)
+    //{
+    //    if (user.second->IsInLobby())
+    //        packet->lobbyInfo.push_back(
+    //            UserPacketInfo(user.second->GetId(), user.second->GetPosition()));
+    //}
+
+    //SendPackage package(session, packet);
+    //networkServer_->PushPackage(package);
+
+}
+
+void UserManager::LobbyCast(Session* session) 
+                                                            //< In-out Info of other users
+{
+   /* std::shared_ptr<PK_S_PLAYER_POSITION> packet = std::make_shared<PK_S_PLAYER_POSITION>(user->GetId(), user->GetPosition());
+    SendPackage package(nullptr, packet);
+
+    for (auto& user : userInLobby_)
     {
-        delete newUser;
-        return false;
-    }
+        package.session_ = user->GetSession();
+        networkServer_->PushPackage(package);
+    }*/
+    
+}
 
-    // CONST_LOCK_GUARD(mutex_);
 
-    userList_.insert({ userId_++, newUser });
-    ++userCount_;
+/* * * * * * * * * * * * * * *
+*     Packet Process
+*   -> Chatting Room Packet
+* * * * * * * * * * * * * * * */
 
-    userInLobby_.insert(newUser);
 
-    return true;
+void UserManager::SendMulticast(Session* session)
+{
+
+}
+
+void UserManager::SendBroadcast(Session* session)
+{
+
+}
+
+void UserManager::SendUnicast(Session* session)
+{
+
 }

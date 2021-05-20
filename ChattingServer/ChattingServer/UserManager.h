@@ -19,7 +19,7 @@ class UserManager
 
 public:
     UserManager(SendServer* sServer)
-        : userId_(1), userCount_(0), SendServer_(sServer)
+        : userId_(1), userCount_(0), sendServer_(sServer)
     {
 
     }
@@ -64,6 +64,13 @@ public:
 
     void SendLobbyInfo(Session* session);
 
+    void SendMulticast(Session* session);
+    void SendBroadcast(Session* session);
+    void SendUnicast(Session* session);
+
+    void LobbyCast(Session* session);
+    
+
 protected:
     std::map<uint32_t, User*>   userList_;
     uint32_t                    userCount_;
@@ -75,7 +82,7 @@ protected:
     std::mutex                  mutex_;
 #endif
 
-    SendServer* SendServer_;
+    SendServer* sendServer_;
 
 };
 
