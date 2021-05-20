@@ -123,11 +123,11 @@ public:
 	void operator >> (str_t* retVal)
 	{
 		size_t length = 0;
-		while (stream_[readPtr_ + ++length] != '\0') {}
+		while ((stream_[readPtr_ + ++length] != '\0') && (readPtr_ + length < SOCKBUF_SIZE)) 
+		{}
 		retVal->clear();
 		retVal->assign(&stream_[readPtr_], &stream_[readPtr_ + length]);
 		readPtr_ = readPtr_ + length + 1;
-
 	}
 
 private:

@@ -3,12 +3,16 @@
 #ifndef LOGIC_PROCESS_H
 #define LOGIC_PROCESS_H
 
-//< Edit here if multi threads are needed for logic process 
-// #define _MULTI_THREAD_LOGIC_PROCESS
-// #define LOGIC_THREAD_COUNT 3
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * * * Edit here if multi threads are needed for logic process
+ 
+#define _MULTI_THREAD_LOGIC_PROCESS
+#define LOGIC_THREAD_COUNT 3
 
-// #define _MULTI_THREAD_SEND_SERVER
-// #define SEND_SERVER_THREAD_COUNT 3
+#define _MULTI_THREAD_SEND_SERVER
+#define SEND_SERVER_THREAD_COUNT 3
+
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include <map>
 #include <thread>
@@ -24,9 +28,7 @@
 #define CONST_LOCK_GUARD(m) const std::lock_guard<std::mutex>(m)
 #endif
 
-//#include "../NetworkLib/PacketFactory.h"
 #include "../NetworkLib/Package.h"
-//#include "SendServer.h"
 class SendServer;
 class UserManager;
 
@@ -83,10 +85,7 @@ protected:
 		delete package.packet_; // üũ
 	}
 
-	void C_SERVER_ENTER(const RecvPackage& package)
-	{
-
-	}
+	void C_SERVER_ENTER(const RecvPackage& package);
 	
 
 
@@ -96,6 +95,10 @@ private:
 	std::queue<RecvPackage>		jobQueue_;
 	bool						bProcessRun;
 
+
+private:
+	SendServer*					sendServer_;
+	UserManager*				uMgr_;
 
 
 private:
@@ -117,8 +120,7 @@ private:
 	std::vector<std::thread>	sendThreads_;
 	std::vector<std::thread>	processThreads_;
 
-	SendServer*					sendServer_;
-	UserManager*				uMgr_;
+
 
 };
 

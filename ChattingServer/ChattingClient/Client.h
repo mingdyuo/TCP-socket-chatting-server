@@ -30,7 +30,7 @@ namespace KeyInput
 
 class Client : public ClientBase
 {
-	typedef void (Client::* PROCESS_FUNCTION)(const Packet* packet);
+	typedef void (Client::* PROCESS_FUNCTION)(Packet* packet);
 	typedef std::map<packet_header_size, PROCESS_FUNCTION> PROCESS_FUNCTION_MAP;
 
 public:
@@ -57,10 +57,7 @@ protected:
 	Packet*		PopQueue();
 
 private:
-	void F_SERVER_ENTER_OK(const Packet* packet)
-	{
-
-	}
+	void F_SERVER_ENTER_OK(Packet* packet);
 
 
 private:

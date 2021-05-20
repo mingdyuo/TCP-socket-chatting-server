@@ -33,6 +33,9 @@ enum PacketType
 	E_PK_S_SERVER_ENTER_OK = 501,
 	E_PK_S_SERVER_ENTER_NO = 502,
 
+	E_PK_S_LOBBY_USER_INFO,
+	E_PK_S_ROOM_LIST_OK,
+
 	E_PK_S_ROOM_ENTER,
 	E_PK_S_ROOM_EXIT,
 
@@ -41,7 +44,6 @@ enum PacketType
 	E_PK_S_UNICAST_OK,
 	E_PK_S_UNICAST_NO,
 
-	E_PK_S_ROOM_LIST_OK,
 };
 
 class Packet
@@ -117,5 +119,42 @@ public:
 		stream >> &nickname;
 	}
 };
+
+
+class PK_S_LOBBY_USER_INFO : public Packet
+{
+public:
+	PacketType type() { return E_PK_S_LOBBY_USER_INFO; }
+
+	PK_S_LOBBY_USER_INFO() : userCount(0) {}
+
+	uint16_t userCount;
+	std::vector<std::string> names;
+
+	void encode(Stream& stream)
+	{
+		stream << (packet_header_size)this->type();
+		userCount = static_cast<uint16_t>(names.size());
+		stream << userCount;
+		for (auto& name : names)
+		{
+			stream << name;
+		}
+	}
+
+	void decode(Stream& stream)
+	{
+		stream >> &userCount;
+		std::string name;
+		for (int i = 0;i < userCount;i++)
+		{
+			stream >> &name;
+			names.push_back(name);
+		}
+	}
+};
+
+
+
 
 #endif

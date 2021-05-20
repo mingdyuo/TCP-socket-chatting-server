@@ -18,38 +18,15 @@ LogicProcess::~LogicProcess()
 	}
 }
 
-
 void LogicProcess::SetMgr(UserManager* uMgr, SendServer* sServer)
 {
 	uMgr_ = uMgr;
 	sendServer_ = sServer;
 }
 
-
-void LogicProcess::PushPackage(const RecvPackage& package)
-{
-
-#ifdef _MULTI_THREAD_LOGIC_PROCESS
-	CONST_LOCK_GUARD(mutex_);
-#endif
-
-	jobQueue_.push(package);
-}
-
-RecvPackage LogicProcess::PopPackage()
-{
-#ifdef _MULTI_THREAD_LOGIC_PROCESS
-	CONST_LOCK_GUARD(mutex_);
-#endif
-
-	if (jobQueue_.empty())
-		return RecvPackage();
-
-	RecvPackage package = jobQueue_.front();
-	jobQueue_.pop();
-
-	return package;
-}
+/* * * * * * * * * * * * * * * * * * * * *
+*					Run & Close
+* * * * * * * * * * * * * * * * * * * * */
 
 void LogicProcess::Run()
 {
@@ -80,12 +57,63 @@ void LogicProcess::Close()
 	}
 }
 
+/* * * * * * * * * * * * * * * * * * * * *
+*				Queue Manage
+* * * * * * * * * * * * * * * * * * * * */
+
+void LogicProcess::PushPackage(const RecvPackage& package)
+{
+
+#ifdef _MULTI_THREAD_LOGIC_PROCESS
+	CONST_LOCK_GUARD(mutex_);
+#endif
+
+	jobQueue_.push(package);
+}
+
+RecvPackage LogicProcess::PopPackage()
+{
+#ifdef _MULTI_THREAD_LOGIC_PROCESS
+	CONST_LOCK_GUARD(mutex_);
+#endif
+
+	if (jobQueue_.empty())
+		return RecvPackage();
+
+	RecvPackage package = jobQueue_.front();
+	jobQueue_.pop();
+
+	return package;
+}
+
+/* * * * * * * * * * * * * * * * * * * * *
+*				User Manage
+* * * * * * * * * * * * * * * * * * * * */
+
 bool LogicProcess::CreateUser(HANDLE IOCPHandle, SOCKET socket)
 {
 	return uMgr_->CreateUser(IOCPHandle, socket);
 }
 
+
 void LogicProcess::RemoveUser(uint32_t pId)
 {
 	uMgr_->RemoveUser(pId);
+}
+
+
+/* * * * * * * * * * * * * * * * * * * * *
+*				Logic Functions
+* * * * * * * * * * * * * * * * * * * * */
+
+
+void LogicProcess::C_SERVER_ENTER(const RecvPackage& package)
+{
+	PK_C_SERVER_ENTER* packet = static_cast<PK_C_SERVER_ENTER*>(package.packet_);
+	User* user = uMgr_->GetUser(package.session_->GetId());
+	user->SetNickname(packet->nickname);
+
+	uMgr_->SendAcceptPacket(package.session_);
+	uMgr_->SendLobbyInfo(package.session_);
+	uMgr_->LobbyCast(package.session_);
 }

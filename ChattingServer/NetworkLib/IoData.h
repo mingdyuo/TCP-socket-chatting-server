@@ -73,7 +73,7 @@ public:
 		return wsabuf;
 	}
 
-	WSABUF SendSet(int dataSize, char* pMsg) // new로 매번 새로 생성할지 어떻게 할지 고민된다도르
+	WSABUF SendSet(int dataSize, char* pMsg) 
 	{
 		ZeroMemory(this, sizeof(IoData));
 		ioType_ = IO_SEND;

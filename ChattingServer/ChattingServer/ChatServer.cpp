@@ -60,7 +60,7 @@ unsigned ChatServer::WorkerThread()
 
             if (bSuccess == FALSE || (0 == dwIoSize && bSuccess == TRUE))
             {
-                logicProcess_->RemoveUser(pSession->GetPid());
+                logicProcess_->RemoveUser(pSession->GetId());
                 continue;
             }
 
@@ -68,7 +68,7 @@ unsigned ChatServer::WorkerThread()
 
             if (IO_SEND == ioData->Type())
             {
-                printf("[SEND] client(%d)\n", pSession->GetPid());
+                printf("[SEND] client(%d)\n", pSession->GetId());
                 delete ioData;
             }
             else if (IO_RECV == ioData->Type())
@@ -92,7 +92,7 @@ unsigned ChatServer::WorkerThread()
                 printf("[Error] GQCS error\n");
             }
 
-            logicProcess_->RemoveUser(pSession->GetPid());
+            logicProcess_->RemoveUser(pSession->GetId());
         }
 
     }

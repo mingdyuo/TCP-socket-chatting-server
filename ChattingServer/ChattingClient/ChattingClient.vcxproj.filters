@@ -49,10 +49,7 @@
     <ClInclude Include="LoginDisplay.h">
       <Filter>Display</Filter>
     </ClInclude>
-    <ClInclude Include="ClientLogic.cpp">
-      <Filter>Client</Filter>
-    </ClInclude>
-    <ClInclude Include="ClientLogicFunc.cpp">
+    <ClInclude Include="ClientFunc.cpp">
       <Filter>Client</Filter>
     </ClInclude>
   </ItemGroup>

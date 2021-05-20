@@ -96,6 +96,8 @@ void UserManager::SendAcceptPacket(Session* session)
 void UserManager::SendLobbyInfo(Session* session) 
                                                             //< Current Connected User infos & Users in lobby
 {
+
+    std::shared_ptr<PK_S_LOBBY_INFO> packet = std::make_shared<PK_S_LOBBY_INFO>();
     //std::shared_ptr<PK_S_LOBBY_INFO> packet = std::make_shared<PK_S_LOBBY_INFO>();
     //for (auto& user : userList_)
     //{

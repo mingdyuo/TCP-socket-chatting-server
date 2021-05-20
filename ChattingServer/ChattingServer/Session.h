@@ -26,7 +26,7 @@ public:
 	void Close();
 
 	bool IsConnected() const { return socket_ != INVALID_SOCKET; }
-	uint32_t GetPid() const { return userId_; }
+	uint32_t GetId() const { return userId_; }
 
 	bool Connect(HANDLE iocpHandle, SOCKET socket);
 	bool BindRecv();

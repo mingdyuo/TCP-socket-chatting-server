@@ -24,7 +24,12 @@ public:
 
 		case E_PK_S_SERVER_ENTER_OK:
 			return new PK_S_SERVER_ENTER_OK();
+		case E_PK_S_LOBBY_USER_INFO:
+			return new PK_S_LOBBY_USER_INFO();
+		default:
+			return new PK_UNDEFINED();
 		}
+
 	}
 
 
