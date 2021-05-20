@@ -19,6 +19,11 @@ public:
 			/* CLIENT */
 		case E_PK_C_SERVER_ENTER:
 			return new PK_C_SERVER_ENTER();
+
+			/* SERVER */
+
+		case E_PK_S_SERVER_ENTER_OK:
+			return new PK_S_SERVER_ENTER_OK();
 		}
 	}
 
@@ -38,6 +43,8 @@ public:
 
 		return packet;
 	}
+
+	
 };
 
 #endif

@@ -7,7 +7,7 @@
 class LoginDisplay : public Display
 {
 public:
-	void draw()
+	virtual void draw()
 	{
 		this->GetNickname();
 	}

@@ -1,5 +1,6 @@
 #include "ChatServer.h"
 #include "LogicProcess.h"
+#include "UserManager.h"
 #include <string>
 #include <iostream>
 #include <memory>
@@ -14,7 +15,12 @@ int main()
 {
 	const int SERVER_PORT 	= 9898;
 
-	std::unique_ptr<LogicProcess> logicProcess = std::make_unique<LogicProcess>();
+	std::unique_ptr<LogicProcess>	logicProcess	= std::make_unique<LogicProcess>();
+	std::unique_ptr<SendServer>		sendServer		= std::make_unique<SendServer>();
+	std::unique_ptr<UserManager>	userManager		= std::make_unique<UserManager>(sendServer.get());
+
+	logicProcess->SetMgr(userManager.get(), sendServer.get());
+
 	ChatServer chatServer(logicProcess.get());
 
 	if(false == chatServer.Initialize(SERVER_PORT))

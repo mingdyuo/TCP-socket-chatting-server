@@ -15,7 +15,7 @@ int main()
 	if (!client.Initialize(kServerPort))
 		ErrorExit("초기화 실패");
 
-	if (!client.ServerEnter())
+	if (!client.ConnectToServer())
 		ErrorExit("서버 연결 실패");
 
 	client.Close();

@@ -30,45 +30,58 @@ namespace KeyInput
 
 class Client : public ClientBase
 {
+	typedef void (Client::* PROCESS_FUNCTION)(const Packet* packet);
+	typedef std::map<packet_header_size, PROCESS_FUNCTION> PROCESS_FUNCTION_MAP;
+
 public:
+	Client();
+	~Client();
+
 	bool Initialize(int bindPort);
-	bool ServerEnter();
+	bool ConnectToServer();
 
 protected:
-	virtual void SendThread();
-	virtual void RecvThread();
-	virtual void StateProcessThread();
+	virtual void	SendThread();
+	virtual void	RecvThread();
+	virtual void	StateProcessThread();
+	void			LogicThread();
 
-	void LogicThread();
 
 	void SendNickname();
 	
 	void RecvProcess(Packet* packet);
-	void SendProcess(){}
+	void StateProcess();
 
 
-
-	Packet*		PopQueue();
 	void		PushQueue(Packet* packet);
+	Packet*		PopQueue();
+
+private:
+	void F_SERVER_ENTER_OK(const Packet* packet)
+	{
+
+	}
 
 
 private:
 	static const int	kMaxNameLen = 32;
 	std::string			nickname_;
 
-	Display* display_;
+	uint32_t			userId_;
+	ClientState			state_;
+
+	Display*			display_;
+
+private:
 	std::array<char, SOCKBUF_SIZE> recvBuf_;
 
 	std::queue<Packet*> sendQueue_;
 	std::queue<Packet*> recvQueue_;
 
-	ClientState state_;
 
-	std::mutex mutex_;
+	std::thread			jobThread_;
+	std::mutex			mutex_;
 
-	std::thread jobThread_;
-
-	uint32_t userId_;
-
+	PROCESS_FUNCTION_MAP processFunc_;
 
 };

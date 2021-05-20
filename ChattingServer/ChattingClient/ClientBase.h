@@ -65,9 +65,9 @@ public:
     }
 
 protected:
-    virtual void SendThread() { }
-    virtual void RecvThread() { }
-    virtual void StateProcessThread() { }
+    virtual void SendThread() = 0;
+    virtual void RecvThread() = 0;
+    virtual void StateProcessThread() = 0;
 
     SOCKET          socket_;
     bool            bIsWorkerRun_;

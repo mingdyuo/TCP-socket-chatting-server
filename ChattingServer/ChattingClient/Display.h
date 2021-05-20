@@ -55,7 +55,7 @@ public:
 		system("cls");
 	}
 
-	virtual void draw() {}
+	virtual void draw() = 0;
 
 	inline void SetColor(int TColor, int BColor = CLR_DEFAULT_BLACK)
 	{

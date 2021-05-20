@@ -5,6 +5,32 @@
 *   Initialize & Start
 * * * * * * * * * * * */
 
+Client::Client() 
+{
+	processFunc_[E_PK_S_SERVER_ENTER_OK] = &Client::F_SERVER_ENTER_OK;
+	
+}
+
+Client::~Client()
+{
+	//< LOCK
+	while (!sendQueue_.empty())
+	{
+		Packet* packet = sendQueue_.front();
+		sendQueue_.pop();
+
+		delete packet;
+	}
+
+	while (!recvQueue_.empty())
+	{
+		Packet* packet = recvQueue_.front();
+		recvQueue_.pop();
+
+		delete packet;
+	}
+}
+
 bool Client::Initialize(int bindPort)
 {
 	display_ = new LoginDisplay();
@@ -19,7 +45,7 @@ bool Client::Initialize(int bindPort)
 	}
 }
 
-bool Client::ServerEnter()
+bool Client::ConnectToServer()
 {
 	this->CreateThreads();
 	jobThread_ = std::thread(&Client::LogicThread, this);
@@ -81,7 +107,7 @@ void Client::StateProcessThread()
 {
 	while (bIsWorkerRun_)
 	{
-		this->SendProcess();
+		this->StateProcess();
 	}
 }
 
@@ -103,7 +129,7 @@ void Client::LogicThread()
 
 
 /* * * * * * * * * * * *
-*     Queue Process
+*     Queue Manage
 * * * * * * * * * * * */
 
 
@@ -128,16 +154,47 @@ void Client::PushQueue(Packet* packet)
 }
 
 
+/* * * * * * * * * * * * * * *
+*     Function mapping
+* * * * * * * * * * * * * * */
 
 
 void Client::RecvProcess(Packet* packet)
 {
-	if (packet->type() == E_PK_S_SERVER_ENTER_OK)
-	{
-		// 함수 포인터를 걍 만들어야 겠다..
-	}
-
-
+	PROCESS_FUNCTION fp = processFunc_[packet->type()];
+	if (fp != nullptr) (this->*fp)(packet);
 	delete packet;
 }
+
+
+void Client::SendNickname()
+{
+	do {
+		display_->draw();
+		std::getline(std::cin, nickname_);
+	} while (nickname_.empty());
+
+	state_ = ClientState::PENDING;
+
+	PK_C_SERVER_ENTER* packet = new PK_C_SERVER_ENTER();
+	packet->nickname = nickname_;
+
+	this->PushQueue(packet);
+}
+
+
+void Client::StateProcess()
+{
+	if (state_ == ClientState::LOGIN)
+	{
+		this->SendNickname();
+	}
+	else if (state_ == ClientState::LOBBY)
+	{
+
+	}
+}
+
+
+
 

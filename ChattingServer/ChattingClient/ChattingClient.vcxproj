@@ -26,8 +26,7 @@
   <ItemGroup>
     <ClInclude Include="Client.h" />
     <ClInclude Include="ClientBase.h" />
-    <ClInclude Include="ClientLogic.cpp" />
-    <ClInclude Include="ClientLogicFunc.cpp" />
+    <ClInclude Include="ClientFunc.cpp" />
     <ClInclude Include="Display.h" />
     <ClInclude Include="IOCPClient.h" />
     <ClInclude Include="LoginDisplay.h" />
