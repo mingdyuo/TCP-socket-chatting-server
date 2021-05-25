@@ -24,7 +24,7 @@ public:
 
 			if (package.Empty())
 			{
-				Sleep(10);
+				Sleep(1);
 				continue;
 			}
 

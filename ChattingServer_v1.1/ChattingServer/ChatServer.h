@@ -30,18 +30,9 @@ public:
         return true;
     }
 
-    bool Run()    //< Function called in main
-    {
-        //< 다른 초기화 해줘야 하는 작업들 있다면 실행 
+    bool RunServer();
+    void CloseServer();
 
-        return StartServer();   //< IOCP Server Run
-    }
-
-    void CloseServer()
-    {
-        // 다른 닫아야 하는 작업들 종료
-        this->DestroyThreads();
-    }
 
 
 private:

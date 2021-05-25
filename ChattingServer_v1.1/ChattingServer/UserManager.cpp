@@ -94,17 +94,23 @@ void UserManager::SendAcceptPacket(Session* session)
 }
 
 void UserManager::SendLobbyInfo(Session* session) 
-                                                            //< Current Connected User infos & Users in lobby
+                                                            //< Current Connected User infos in lobby & ChatRooms
 {
-    std::shared_ptr<PK_S_LOBBY_USER_INFO> packet = std::make_shared<PK_S_LOBBY_USER_INFO>(roomCount_);
+    std::shared_ptr<PK_S_LOBBY_ROOM_INFO> roomPacket = std::make_shared<PK_S_LOBBY_ROOM_INFO>();
+    // TODO : 채팅방 정보 보내기
+
+
+    std::shared_ptr<PK_S_LOBBY_USER_INFO> userPacket = std::make_shared<PK_S_LOBBY_USER_INFO>(roomCount_);
     for (auto& user : userList_)
     {
-        packet->ids.push_back(user.second->GetId());
-        packet->names.push_back(user.second->GetNickname());
+        userPacket->ids.push_back(user.second->GetId());
+        userPacket->names.push_back(user.second->GetNickname());
     }
 
-    SendPackage package(session, packet);
+    SendPackage package(session, userPacket);
     sendServer_->PushPackage(package);
+
+
 }
 
 void UserManager::LobbyCast(Session* session, PacketType type) 

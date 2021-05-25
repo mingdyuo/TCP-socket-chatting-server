@@ -44,17 +44,17 @@ public:
 	}
 
 public:
-	inline void SetNickname(const std::string nickname) { nickname_ = nickname; }
+	inline void			SetNickname(const std::string nickname) { nickname_ = nickname; }
 
-	inline std::string GetNickname() const { return nickname_; }
+	inline std::string	GetNickname() const { return nickname_; }
 
-	inline bool IsInRoom() const { return currRoom_ == 0; }
+	inline bool			IsInRoom() const { return currRoom_ == 0; }
 
-	inline uint16_t GetRoom() const { return currRoom_; }
+	inline uint16_t		GetRoom() const { return currRoom_; }
 
-	inline Session* GetSession() { return &session_; }
+	inline Session*		GetSession() { return &session_; }
 
-	inline uint32_t GetId() const { return userId_; }
+	inline uint32_t		GetId() const { return userId_; }
 
 
 private:

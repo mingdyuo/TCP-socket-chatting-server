@@ -17,6 +17,9 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
     </Filter>
+    <Filter Include="Utility">
+      <UniqueIdentifier>{cb574858-ac3c-4c43-96b9-1385a585672d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ChatServer.cpp">
@@ -66,5 +69,20 @@
     <ClInclude Include="Session.h">
       <Filter>IOCPServer</Filter>
     </ClInclude>
+    <ClInclude Include="Room.h">
+      <Filter>ChatServer</Filter>
+    </ClInclude>
+    <ClInclude Include="RoomManager.h">
+      <Filter>ChatServer</Filter>
+    </ClInclude>
+    <ClInclude Include="Log.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="unistd.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>

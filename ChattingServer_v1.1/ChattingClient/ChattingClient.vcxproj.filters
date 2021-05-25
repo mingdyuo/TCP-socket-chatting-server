@@ -19,6 +19,9 @@
     <ClCompile Include="Client.cpp">
       <Filter>Client</Filter>
     </ClCompile>
+    <ClCompile Include="ClientFunc.cpp">
+      <Filter>Client</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Position.h">

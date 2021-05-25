@@ -1,13 +1,20 @@
 #include "Client.h"
 #include "LoginDisplay.h"
+#include "LobbyDisplay.h"
+#include <conio.h>
 
 /* * * * * * * * * * * 
 *   Initialize & Start
 * * * * * * * * * * * */
 
-Client::Client() 
+Client::Client() :
+	display_(nullptr), state_(ClientState::PENDING), userId_(0), recvBuf_(std::array<char, SOCKBUF_SIZE>())
 {
 	processFunc_[E_PK_S_SERVER_ENTER_OK] = &Client::F_SERVER_ENTER_OK;
+
+	processFunc_[E_PK_S_LOBBY_ROOM_INFO] = &Client::F_LOBBY_ROOM_INFO;
+	processFunc_[E_PK_S_LOBBY_USER_INFO] = &Client::F_LOBBY_USER_INFO;
+
 	
 }
 
@@ -167,6 +174,19 @@ void Client::RecvProcess(Packet* packet)
 }
 
 
+void Client::StateProcess()
+{
+	if (state_ == ClientState::LOGIN)
+	{
+		this->SendNickname();
+	}
+	else if (state_ == ClientState::LOBBY)
+	{
+		this->LobbyPage();
+	}
+}
+
+
 void Client::SendNickname()
 {
 	do {
@@ -182,31 +202,29 @@ void Client::SendNickname()
 	this->PushQueue(packet);
 }
 
-
-void Client::StateProcess()
+void Client::LobbyPage()
 {
-	if (state_ == ClientState::LOGIN)
+	int key;
+	LobbyDisplay* display = static_cast<LobbyDisplay*>(display_);
+	while (state_ == ClientState::LOBBY)
 	{
-		this->SendNickname();
+		key = _getch();
+		if (key == 224) {
+			key = _getch();
+			switch (key) {
+			case KeyInput::KEY_UP:
+				display->CursorUp();
+				break;
+			case KeyInput::KEY_DOWN:
+				display->CursorDown();
+				break;
+			default:
+				break;
+			}
+		}
+		else if (key == KeyInput::KEY_ENTER)
+		{
+			
+		}
 	}
-	else if (state_ == ClientState::LOBBY)
-	{
-
-	}
-}
-
-/* * * * * * * * * * * * * * *
-*     Function mapping
-* * * * * * * * * * * * * * */
-
-
-
-void Client::F_SERVER_ENTER_OK(Packet* packet)
-{
-	PK_S_SERVER_ENTER_OK* okPacket = static_cast<PK_S_SERVER_ENTER_OK*>(packet);
-	delete display_;
-	state_ = ClientState::LOBBY;
-	userId_ = okPacket->pid;
-	/*display_ = new LobbyDisplay(userId_);
-	display_->Clear();*/
 }

@@ -2,6 +2,21 @@
 #include "../NetworkLib/Package.h"
 #include "LogicProcess.h"
 
+
+bool ChatServer::RunServer()    //< Function called in main
+{
+    logicProcess_->Run();
+
+    return StartServer();   //< IOCP Server Run
+}
+
+void ChatServer::CloseServer()
+{
+    // 다른 닫아야 하는 작업들 종료
+    this->DestroyThreads();
+}
+
+
 unsigned ChatServer::AccepterThread()
 {
     unsigned uResult = 0;

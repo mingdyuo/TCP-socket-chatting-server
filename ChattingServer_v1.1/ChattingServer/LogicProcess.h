@@ -72,6 +72,7 @@ protected:
 
 			if (package.Empty()) //< 나중에 queue에 비동기를 걸어놓고 비어있는 경우 재우자
 			{
+				Sleep(1);
 				continue;
 			}
 			this->Process(package);

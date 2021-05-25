@@ -6,37 +6,24 @@
 #include <windows.h>
 #include <cstdio>
 
-
-/*
-#define BLACK 0
-#define BLUE 1
-#define GREEN 2
-#define CYAN 3
-#define RED 4
-#define MAGENTA 5
-#define BROWN 6
-#define LIGHTGRAY 7
-#define DARKGRAY 8
-#define LIGHTBLUE 9
-#define LIGHTGREEN 10
-#define LIGHTCYAN 11
-#define LIGHTRED 12
-#define LIGHTMAGENTA 13
-#define YELLOW 14
-#define WHITE 15
-*/
-
 enum DisplayColor
 {
-	CLR_MY_POSITION = 12,
-	CLR_OTHERS_POSITION = 15,
-	CLR_MONSTER_POSITION = 5,
-	CLR_DEFAULT_WHITE = 15,
-	CLR_DEFAULT_BLACK = 0,
-	CLR_NPC_TEXT = 1,
-	CLR_NPC_BACK = 14,
-	CLR_MONSTER = 10
-
+	CLR_BLACK = 0,
+	CLR_BLUE =1,
+	CLR_GREEN =2,
+	CLR_CYAN =3,
+	CLR_RED =4,
+	CLR_MAGENTA =5,
+	CLR_BROWN =6,
+	CLR_LIGHTGRAY =7,
+	CLR_DARKGRAY =8,
+	CLR_LIGHTBLUE =9,
+	CLR_LIGHTGREEN =10,
+	CLR_LIGHTCYAN =11,
+	CLR_LIGHTRED =12,
+	CLR_LIGHTMAGENTA =13,
+	CLR_YELLOW =14,
+	CLR_WHITE =15,
 };
 
 class Display
@@ -57,7 +44,7 @@ public:
 
 	virtual void draw() = 0;
 
-	inline void SetColor(int TColor, int BColor = CLR_DEFAULT_BLACK)
+	inline void SetColor(int TColor, int BColor = CLR_BLACK)
 	{
 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), TColor + BColor * 16);
 	}

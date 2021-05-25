@@ -29,7 +29,7 @@ int main()
 		ErrorExit("[CLOSED] SERVER INITIALIZE FAIL\n");
 	}
 
-	if(false == chatServer.Run())
+	if(false == chatServer.RunServer())
 	{
 		ErrorExit("[CLOSED] IOCP SERVER RUN FAIL\n");
 	}
