@@ -12,15 +12,20 @@
 - 필요한 조건
 
   1. C++17을 지원하는 Visual studio IDE
-  2. Windows 환경 (IOCP는 MS 환경에서만 지원합니다.)
+
+  2. 솔루션에 `spdlog` 라이브러리 설치
+
+     (프로젝트 - NuGet 패키지 관리 - spdlog v1.0.0 설치)
+
+  3. Windows 환경 (IOCP는 MS 환경에서만 지원합니다.)
 
 - 빌드 및 실행하기
 
-  `git clone`을 받은 후 `TCP-socket-chatting-server/ChattingServer`에 있는 솔루션 파일인 `ChattingServer.sln`을 실행합니다.
+  `git clone`을 받은 후 `TCP-socket-chatting-server/ChattingServer_v1.1`에 있는 솔루션 파일인 `ChattingServer.sln`을 실행합니다.
 
   `Debug` 혹은 `Release` 모드로 솔루션을 빌드합니다.
 
-  `TCP-socket-chatting-server/ChattingServer/{build mode}` 로 이동합니다.
+  `TCP-socket-chatting-server/ChattingServer_v1.1/{build mode}` 로 이동합니다.
 
   `ChattingServer.exe`를 먼저 실행한 다음 `ChattingClient.exe`를 실행합니다.
 
@@ -54,7 +59,7 @@
 
 - IOCP 서버와 패킷 매니저의 구조는 [여기](https://github.com/mingdyuo/TCP-socket-chatting-server/blob/main/Documentation/IOCP%20%EC%B1%84%ED%8C%85%EC%84%9C%EB%B2%84%20%EB%8B%A8%EA%B3%84%EB%B3%84%20%EC%8B%A4%EC%8A%B5.md)를 참고했습니다.
 
-- [여기](https://github.com/mingdyuo/TCP-socket-chatting-server/tree/main/Documentation)서 채팅서버 v1.0 전체 제작 과정을 볼 수 있습니다.
+- [여기](https://github.com/mingdyuo/TCP-socket-chatting-server/tree/main/Documentation/v1.0)서 채팅서버 v1.0 전체 제작 과정을 볼 수 있습니다.
 
 - 클라이언트 단은 추후에 리팩토링을 할 예정입니다.
 
@@ -69,13 +74,13 @@
 
 - 빌드 및 실행하기
 
-  `git clone`을 받은 후 `TCP-socket-chatting-server/ChattingServer`에 있는 솔루션 파일인 `ChattingServer.sln`을 실행합니다.
+  `git clone`을 받은 후 `TCP-socket-chatting-server/ChattingServer_v1.0`에 있는 솔루션 파일인 `ChattingServer.sln`을 실행합니다.
 
   `ChattingServer`, `ChattingClient`, `StressServer`의 세 프로젝트 모두 sdl 검사를 비활성화 해줍니다.
 
   릴리즈 모드로 솔루션을 빌드합니다.
 
-  `TCP-socket-chatting-server/ChattingServer/Release` 로 이동합니다.
+  `TCP-socket-chatting-server/ChattingServer_v1.0/Release` 로 이동합니다.
 
   `ChattingServer.exe`를 먼저 실행한 다음 `ChattingClient.exe`를 실행합니다.
   
@@ -167,7 +172,7 @@
 
 - IOCP 모델을 베이스로 해서 소켓 입출력을 처리하였습니다.
 
-- [여기](https://github.com/mingdyuo/TCP-socket-chatting-server/blob/main/Documentation/TCP%20%EC%86%8C%EC%BC%93%20%EC%B1%84%ED%8C%85%20%EC%84%9C%EB%B2%84%20%EC%A0%9C%EC%9E%91%20-%204%20%EC%8A%A4%ED%8A%B8%EB%A0%88%EC%8A%A4%20%EC%84%9C%EB%B2%84.md)서 제작 과정을 볼 수 있습니다.
+- [여기](https://github.com/mingdyuo/TCP-socket-chatting-server/blob/main/Documentation/v1.0/TCP%20%EC%86%8C%EC%BC%93%20%EC%B1%84%ED%8C%85%20%EC%84%9C%EB%B2%84%20%EC%A0%9C%EC%9E%91%20-%204%20%EC%8A%A4%ED%8A%B8%EB%A0%88%EC%8A%A4%20%EC%84%9C%EB%B2%84.md)서 제작 과정을 볼 수 있습니다.
 
 - 스트레스 서버 테스트를 하기 위해서는 `ChattingServer` 프로젝트의 `ChatClientManager.h`의 `int FindNickname(char*)` 함수에서 첫 줄에 있는 `return -1;`이 주석처리 되어 있지 않아야 합니다.
 
