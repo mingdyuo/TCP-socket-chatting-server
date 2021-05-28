@@ -21,8 +21,11 @@
   <ItemGroup>
     <ClCompile Include="IOCPServer.cpp" />
     <ClCompile Include="LogicProcess.cpp" />
+    <ClCompile Include="LogicProcessFunc.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ChatServer.cpp" />
+    <ClCompile Include="Room.cpp" />
+    <ClCompile Include="RoomManager.cpp" />
     <ClCompile Include="Session.cpp" />
     <ClCompile Include="UserManager.cpp" />
   </ItemGroup>

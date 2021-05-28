@@ -27,7 +27,7 @@ public:
 public:
 	bool EnterRoom(uint16_t no)
 	{
-		if (false == IsInRoom())
+		if (IsInLobby())
 			return false;
 
 		currRoom_ = no;
@@ -36,7 +36,7 @@ public:
 
 	bool ExitRoom()
 	{
-		if (IsInRoom())
+		if (false == IsInLobby())
 			return false;
 
 		currRoom_ = 0;
@@ -48,7 +48,7 @@ public:
 
 	inline std::string	GetNickname() const { return nickname_; }
 
-	inline bool			IsInRoom() const { return currRoom_ == 0; }
+	inline bool			IsInLobby() const { return currRoom_ == 0; }
 
 	inline uint16_t		GetRoom() const { return currRoom_; }
 

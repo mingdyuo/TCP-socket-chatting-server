@@ -1,4 +1,5 @@
 #include "UserManager.h"
+#include "RoomManager.h"
 #include "../NetworkLib/Packet.h"
 
 /* * * * * * * * * * * *
@@ -19,7 +20,8 @@ bool UserManager::CreateUser(HANDLE iocpHandle, SOCKET socket)
 
     userList_.insert({ userId_++, newUser });
 
-    userInLobby_.insert(newUser);
+    rMgr_->InputNewUser(newUser);
+    // userInLobby_.insert(newUser);
 
     return true;
 }
@@ -30,9 +32,9 @@ void UserManager::RemoveUser(User* user)
 
     uint32_t uid = user->GetId();
 
-    if (false == user->IsInRoom())
+    if (user->IsInLobby())
     {
-        // EXIT
+        //< 현재 있는 채팅방에 따라서 암튼 삭제  && 캐스트
     }
 
     printf("[CLOSE] User (%d, %s) 해제\n", user->GetId(), user->GetNickname().c_str());

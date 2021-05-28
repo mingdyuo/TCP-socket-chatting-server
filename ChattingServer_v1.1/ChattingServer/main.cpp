@@ -1,6 +1,7 @@
 #include "ChatServer.h"
 #include "LogicProcess.h"
 #include "UserManager.h"
+#include "RoomManager.h"
 #include <string>
 #include <iostream>
 #include <memory>
@@ -17,9 +18,13 @@ int main()
 
 	std::unique_ptr<LogicProcess>	logicProcess	= std::make_unique<LogicProcess>();
 	std::unique_ptr<SendServer>		sendServer		= std::make_unique<SendServer>();
-	std::unique_ptr<UserManager>	userManager		= std::make_unique<UserManager>(sendServer.get());
+	std::unique_ptr<UserManager>	userManager		= std::make_unique<UserManager>();
+	std::unique_ptr<RoomManager>	roomManager		= std::make_unique<RoomManager>();
 
-	logicProcess->SetMgr(userManager.get(), sendServer.get());
+
+	userManager->SetMgr(roomManager.get(), sendServer.get());
+	roomManager->SetMgr(userManager.get(), sendServer.get());
+	logicProcess->SetMgr(roomManager.get(), userManager.get(), sendServer.get());
 
 	std::unique_ptr<ChatServer> chatServer = std::make_unique<ChatServer>(logicProcess.get());
 
@@ -53,4 +58,5 @@ int main()
 
 	return 0;
 }
+
 

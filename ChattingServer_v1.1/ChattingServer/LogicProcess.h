@@ -31,6 +31,7 @@
 #include "../NetworkLib/Package.h"
 class SendServer;
 class UserManager;
+class RoomManager;
 
 
 class LogicProcess
@@ -41,16 +42,16 @@ class LogicProcess
 public:
 
 	LogicProcess() :
-		uMgr_(nullptr), sendServer_(nullptr), bProcessRun(true)
+		uMgr_(nullptr), sendServer_(nullptr), rMgr_(nullptr), bProcessRun(true)
 	{
 		processFunc_[E_PK_C_SERVER_ENTER] = &LogicProcess::C_SERVER_ENTER;
-		processFunc_[E_PK_C_ROOM_INFO] = &LogicProcess::C_ROOM_INFO;
+		processFunc_[E_PK_C_LOBBY_ROOM_INFO] = &LogicProcess::C_LOBBY_ROOM_INFO;
 
 	}
 
 	~LogicProcess();
 
-	void SetMgr(UserManager* uMgr, SendServer* sServer);
+	void SetMgr(RoomManager* rMgr, UserManager* uMgr, SendServer* sServer);
 
 	void	Run(); //< Process Thread »ý¼º
 	void	Close();
@@ -88,7 +89,7 @@ protected:
 	}
 
 	void C_SERVER_ENTER(const RecvPackage& package);
-	void C_ROOM_INFO(const RecvPackage& package);
+	void C_LOBBY_ROOM_INFO(const RecvPackage& package);
 
 
 private:
@@ -101,7 +102,7 @@ private:
 private:
 	SendServer*					sendServer_;
 	UserManager*				uMgr_;
-
+	RoomManager*				rMgr_;
 
 private:
 

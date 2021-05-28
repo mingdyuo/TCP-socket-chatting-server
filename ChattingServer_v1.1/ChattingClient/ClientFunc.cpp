@@ -38,7 +38,7 @@ void Client::F_SERVER_ENTER_OK(Packet* packet)
 
 	state_ = ClientState::LOBBY;
 
-	PK_C_ROOM_INFO* getRoomPacket = new PK_C_ROOM_INFO();
+	PK_C_LOBBY_ROOM_INFO* getRoomPacket = new PK_C_LOBBY_ROOM_INFO();
 	this->PushQueue(getRoomPacket);
 }
 

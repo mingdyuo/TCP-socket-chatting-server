@@ -94,10 +94,10 @@ public:
 	}
 };
 
-class PK_C_ROOM_INFO : public Packet
+class PK_C_LOBBY_ROOM_INFO : public Packet
 {
 public:
-	PacketType type() { return E_PK_C_ROOM_INFO; }
+	PacketType type() { return E_PK_C_LOBBY_ROOM_INFO; }
 };
 
 

@@ -36,6 +36,15 @@
     <ClCompile Include="Session.cpp">
       <Filter>IOCPServer</Filter>
     </ClCompile>
+    <ClCompile Include="Room.cpp">
+      <Filter>ChatServer</Filter>
+    </ClCompile>
+    <ClCompile Include="RoomManager.cpp">
+      <Filter>ChatServer</Filter>
+    </ClCompile>
+    <ClCompile Include="LogicProcessFunc.cpp">
+      <Filter>LogicProcess</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ChatServer.h">

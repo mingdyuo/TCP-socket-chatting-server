@@ -38,8 +38,8 @@ public:
 
 		case E_PK_C_ROOM_CREATE:
 			return new PK_C_ROOM_CREATE();
-		case E_PK_C_ROOM_INFO:
-			return new PK_C_ROOM_INFO();
+		case E_PK_C_LOBBY_ROOM_INFO:
+			return new PK_C_LOBBY_ROOM_INFO();
 
 
 			/* * * * * * * * * * *From Server* * * * * * * * * * */

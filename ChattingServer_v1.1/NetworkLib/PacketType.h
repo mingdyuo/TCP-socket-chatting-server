@@ -30,7 +30,8 @@ enum PacketType
 	E_PK_C_UNICAST,
 
 	E_PK_C_ROOM_CREATE,
-	E_PK_C_ROOM_INFO,
+	E_PK_C_LOBBY_ROOM_INFO, //< 로비에서 채팅방 리스트 요청
+	
 
 	/* From Server */
 	E_PK_S_SERVER_ENTER_OK = 501,

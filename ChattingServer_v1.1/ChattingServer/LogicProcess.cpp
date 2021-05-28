@@ -1,6 +1,7 @@
 #include "LogicProcess.h"
 #include "SendServer.h"
 #include "UserManager.h"
+#include "RoomManager.h"
 
 LogicProcess::~LogicProcess()
 {
@@ -18,14 +19,15 @@ LogicProcess::~LogicProcess()
 	}
 }
 
-void LogicProcess::SetMgr(UserManager* uMgr, SendServer* sServer)
+void LogicProcess::SetMgr(RoomManager* rMgr, UserManager* uMgr, SendServer* sServer)
 {
+	rMgr_ = rMgr;
 	uMgr_ = uMgr;
 	sendServer_ = sServer;
 }
 
 /* * * * * * * * * * * * * * * * * * * * *
-*					Run & Close
+*				Run & Close
 * * * * * * * * * * * * * * * * * * * * */
 
 void LogicProcess::Run()
@@ -99,27 +101,4 @@ bool LogicProcess::CreateUser(HANDLE IOCPHandle, SOCKET socket)
 void LogicProcess::RemoveUser(uint32_t pId)
 {
 	uMgr_->RemoveUser(pId);
-}
-
-
-/* * * * * * * * * * * * * * * * * * * * *
-*				Logic Functions
-* * * * * * * * * * * * * * * * * * * * */
-
-
-void LogicProcess::C_SERVER_ENTER(const RecvPackage& package)
-{
-	PK_C_SERVER_ENTER* packet = static_cast<PK_C_SERVER_ENTER*>(package.packet_);
-	User* user = uMgr_->GetUser(package.session_->GetId());
-	user->SetNickname(packet->nickname);
-
-	uMgr_->SendAcceptPacket(package.session_);
-	uMgr_->SendLobbyInfo(package.session_);
-	uMgr_->LobbyCast(package.session_, packet->type());
-	
-}
-
-void LogicProcess::C_ROOM_INFO(const RecvPackage& package)
-{
-
 }
