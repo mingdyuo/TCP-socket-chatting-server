@@ -34,6 +34,10 @@ public:
 	
 	void RoomCast();
 
+	uint16_t GetId() const { return roomId_; }
+	const std::string& GetName() const { return roomName_; }
+	size_t GetUserCount() const { return users_.size(); }
+
 
 private:
 	//< 방 개설자 넣을까 말까

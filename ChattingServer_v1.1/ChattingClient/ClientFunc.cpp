@@ -47,6 +47,9 @@ void Client::F_LOBBY_ROOM_INFO(Packet* packet)
 {
 	PK_S_LOBBY_ROOM_INFO* roomPacket = static_cast<PK_S_LOBBY_ROOM_INFO*>(packet);
 
+	if (roomPacket->roomCount == 0)
+		return;
+
 	LobbyDisplay* display = static_cast<LobbyDisplay*>(display_);
 	display->SetRoomList(roomPacket->roomId, roomPacket->roomName);
 	display->draw();
