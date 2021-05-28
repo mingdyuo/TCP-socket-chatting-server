@@ -10,6 +10,7 @@
 class LobbyDisplay : public Display
 {
 public:
+	LobbyDisplay() = delete;
 	LobbyDisplay(uint32_t id) :
 		myId_(id), cursorIndex_(4), lowerLimit_(4)
 	{}
@@ -34,17 +35,20 @@ public:
 		this->DrawCursor();
 	}
 
-	void SetRoomList(const std::vector<std::string>& chatrooms)
+	void SetRoomList(
+		const std::vector<uint16_t>& chatroomId,
+		const std::vector<std::string>& chatroomName)
 	{
-		chatRooms_ = chatrooms;
+		chatRoomIds_ = chatroomId;
+		chatRooms_ = chatroomName;
 	}
 
 	void CursorDown()
 	{
 		this->EraseCursor();
 
-		int upperLimit = 1 + chatRooms_.size();
-		cursorIndex_ = MIN(++cursorIndex_, upperLimit);
+		int upperLimit = lowerLimit_ + chatRooms_.size();
+		cursorIndex_ = min(++cursorIndex_, upperLimit);
 
 		this->DrawCursor();
 	}
@@ -53,10 +57,14 @@ public:
 	{
 		this->EraseCursor();
 
-		cursorIndex_= MAX(--cursorIndex_, lowerLimit_);
+		cursorIndex_= max(--cursorIndex_, lowerLimit_);
 
 		this->DrawCursor();
 	}
+
+	int GetSelection() const 
+	{ return cursorIndex_ == chatRooms_.size() + lowerLimit_ ? 0 : chatRoomIds_[cursorIndex_ - lowerLimit_]; }
+		
 
 private:
 	
@@ -71,7 +79,7 @@ private:
 	void DrawList() 
 	{
 		this->SetColor(CLR_WHITE);
-		gotoxy(0, 4);
+		gotoxy(0, lowerLimit_);
 		for (int i = 0;i < chatRooms_.size();i++)
 		{ 
 			printf("[    ] %s\n", chatRooms_[i].c_str());
@@ -94,11 +102,11 @@ private:
 	}
 
 private:
-	int MIN(int a, int b)
+	inline int MIN(int a, int b)
 	{
 		return a > b ? b : a;
 	}
-	int MAX(int a, int b)
+	inline int MAX(int a, int b)
 	{
 		return a > b ? a : b;
 	}
@@ -106,6 +114,7 @@ private:
 private:
 	short cursorIndex_;
 	std::vector<std::string> chatRooms_;
+	std::vector<uint16_t> chatRoomIds_;
 	std::map<uint32_t, std::string> users_;
 	uint32_t myId_;
 	const int lowerLimit_;

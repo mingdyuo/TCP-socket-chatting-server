@@ -26,7 +26,7 @@ private:
 
 	std::string roomName_;
 	std::set<User*> users_;
-
+	uint16_t roomId_;
 
 };
 

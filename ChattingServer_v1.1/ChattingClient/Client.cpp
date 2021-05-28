@@ -187,21 +187,6 @@ void Client::StateProcess()
 }
 
 
-void Client::SendNickname()
-{
-	do {
-		display_->draw();
-		std::getline(std::cin, nickname_);
-	} while (nickname_.empty());
-
-	state_ = ClientState::PENDING;
-
-	PK_C_SERVER_ENTER* packet = new PK_C_SERVER_ENTER();
-	packet->nickname = nickname_;
-
-	this->PushQueue(packet);
-}
-
 void Client::LobbyPage()
 {
 	int key;
@@ -224,7 +209,15 @@ void Client::LobbyPage()
 		}
 		else if (key == KeyInput::KEY_ENTER)
 		{
-			
+			int selected = display->GetSelection();
+			if (selected == 0) //< 새로운 채팅방 만들기
+			{
+
+			}
+			else
+			{
+
+			}
 		}
 	}
 }

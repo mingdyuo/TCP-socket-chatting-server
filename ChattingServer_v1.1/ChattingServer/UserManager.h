@@ -10,7 +10,6 @@
 #endif
 
 #include "ChatUser.h"
-//#include "../NetworkLib/Session.h"
 #include "SendServer.h"
 
 
@@ -18,11 +17,9 @@ class UserManager
 {
 
 public:
-    UserManager(SendServer* sServer, int roomCount)
-        : userId_(1), userCount_(0), sendServer_(sServer), roomCount_(roomCount)
-    {
-        chatRoom_.resize(roomCount_, std::set<User*>());
-    }
+    UserManager(SendServer* sServer)
+        : userId_(1), sendServer_(sServer)
+    { }
 
     UserManager() = delete;
     UserManager(UserManager const&) = delete;
@@ -74,13 +71,10 @@ public:
 
 protected:
     std::map<uint32_t, User*>   userList_;
-    uint32_t                    userCount_;
 
     std::vector<std::set<User*>> chatRoom_;
     std::set<User*>             userInLobby_;
     uint32_t                    userId_;
-
-    const int                   roomCount_;
 
 #ifdef _MULTI_THREAD_LOGIC_PROCESS
     std::mutex                  mutex_;

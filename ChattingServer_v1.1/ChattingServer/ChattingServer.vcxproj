@@ -32,8 +32,6 @@
     <ClInclude Include="Log.h" />
     <ClInclude Include="LogicProcess.h" />
     <ClInclude Include="ChatServer.h" />
-    <ClInclude Include="PacketManager.h" />
-    <ClInclude Include="PacketManager.hpp" />
     <ClInclude Include="Room.h" />
     <ClInclude Include="RoomManager.h" />
     <ClInclude Include="SendServer.h" />

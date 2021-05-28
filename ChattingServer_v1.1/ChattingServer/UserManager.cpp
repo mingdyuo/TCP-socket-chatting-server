@@ -18,7 +18,6 @@ bool UserManager::CreateUser(HANDLE iocpHandle, SOCKET socket)
     // CONST_LOCK_GUARD(mutex_);
 
     userList_.insert({ userId_++, newUser });
-    ++userCount_;
 
     userInLobby_.insert(newUser);
 
@@ -100,7 +99,7 @@ void UserManager::SendLobbyInfo(Session* session)
     // TODO : 채팅방 정보 보내기
 
 
-    std::shared_ptr<PK_S_LOBBY_USER_INFO> userPacket = std::make_shared<PK_S_LOBBY_USER_INFO>(roomCount_);
+    std::shared_ptr<PK_S_LOBBY_USER_INFO> userPacket = std::make_shared<PK_S_LOBBY_USER_INFO>(userList_.size());
     for (auto& user : userList_)
     {
         userPacket->ids.push_back(user.second->GetId());

@@ -44,6 +44,7 @@ public:
 		uMgr_(nullptr), sendServer_(nullptr), bProcessRun(true)
 	{
 		processFunc_[E_PK_C_SERVER_ENTER] = &LogicProcess::C_SERVER_ENTER;
+		processFunc_[E_PK_C_ROOM_INFO] = &LogicProcess::C_ROOM_INFO;
 
 	}
 
@@ -87,7 +88,7 @@ protected:
 	}
 
 	void C_SERVER_ENTER(const RecvPackage& package);
-	
+	void C_ROOM_INFO(const RecvPackage& package);
 
 
 private:

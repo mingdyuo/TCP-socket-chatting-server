@@ -143,10 +143,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="ClientPacket.h" />
     <ClInclude Include="IoData.h" />
     <ClInclude Include="Package.h" />
     <ClInclude Include="Packet.h" />
     <ClInclude Include="PacketFactory.h" />
+    <ClInclude Include="PacketType.h" />
+    <ClInclude Include="ServerPacket.h" />
     <ClInclude Include="Stream.h" />
     <ClInclude Include="ToString.h" />
   </ItemGroup>

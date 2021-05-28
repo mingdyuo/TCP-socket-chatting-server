@@ -118,3 +118,8 @@ void LogicProcess::C_SERVER_ENTER(const RecvPackage& package)
 	uMgr_->LobbyCast(package.session_, packet->type());
 	
 }
+
+void LogicProcess::C_ROOM_INFO(const RecvPackage& package)
+{
+
+}

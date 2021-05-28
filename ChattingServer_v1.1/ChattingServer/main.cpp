@@ -14,22 +14,21 @@ void ErrorExit(const char* msg)
 int main()
 {
 	const int SERVER_PORT 	= 9898;
-	const int ROOM_NO		= 5;
 
 	std::unique_ptr<LogicProcess>	logicProcess	= std::make_unique<LogicProcess>();
 	std::unique_ptr<SendServer>		sendServer		= std::make_unique<SendServer>();
-	std::unique_ptr<UserManager>	userManager		= std::make_unique<UserManager>(sendServer.get(), ROOM_NO);
+	std::unique_ptr<UserManager>	userManager		= std::make_unique<UserManager>(sendServer.get());
 
 	logicProcess->SetMgr(userManager.get(), sendServer.get());
 
-	ChatServer chatServer(logicProcess.get());
+	std::unique_ptr<ChatServer> chatServer = std::make_unique<ChatServer>(logicProcess.get());
 
-	if(false == chatServer.Initialize(SERVER_PORT))
+	if(false == chatServer->Initialize(SERVER_PORT))
 	{
 		ErrorExit("[CLOSED] SERVER INITIALIZE FAIL\n");
 	}
 
-	if(false == chatServer.RunServer())
+	if(false == chatServer->RunServer())
 	{
 		ErrorExit("[CLOSED] IOCP SERVER RUN FAIL\n");
 	}
@@ -46,9 +45,12 @@ int main()
 		}
 	}
 
-	chatServer.CloseServer();
+	chatServer->CloseServer();
+	logicProcess->Close();
+
 	printf("[INFO] SERVER CLOSED. PRESS ENTER TO EXIT.\n");
 	getchar();
+
 	return 0;
 }
 
