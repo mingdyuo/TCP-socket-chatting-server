@@ -40,7 +40,24 @@ public:
 class PK_C_ROOM_ENTER : public Packet
 {
 public:
+	PK_C_ROOM_ENTER() :rid(0){}
+	PK_C_ROOM_ENTER(uint16_t rid) :
+		rid(rid) {}
+
+	uint16_t rid;
+
 	PacketType type() { return E_PK_C_ROOM_ENTER; }
+
+	void encode(Stream& stream)
+	{
+		stream << (packet_header_size)this->type();
+		stream << rid;
+	}
+
+	void decode(Stream& stream)
+	{
+		stream >> &rid;
+	}
 };
 
 class PK_C_ROOM_EXIT : public Packet
@@ -73,23 +90,20 @@ class PK_C_ROOM_CREATE : public Packet
 public:
 	PacketType type() { return E_PK_C_ROOM_CREATE; }
 
-	PK_C_ROOM_CREATE() : uid(0) {}
-	PK_C_ROOM_CREATE(uint32_t uid, std::string roomname) :
-		uid(uid), roomName(roomname) {}
+	PK_C_ROOM_CREATE() {}
+	PK_C_ROOM_CREATE(std::string roomname) :
+		roomName(roomname) {}
 
-	uint32_t uid;
 	std::string roomName;
 
 	void encode(Stream& stream)
 	{
 		stream << (packet_header_size)this->type();
-		stream << uid;
 		stream << roomName;
 	}
 
 	void decode(Stream& stream)
 	{
-		stream >> &uid;
 		stream >> &roomName;
 	}
 };

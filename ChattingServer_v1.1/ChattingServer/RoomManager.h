@@ -32,13 +32,16 @@ public:
 
 	Room* GetRoom(uint16_t roomId);
 
-	void CreateRoom(std::string roomName);
+	void CreateRoom(uint32_t uid, std::string roomName);
+
 
 	void MultiCast(uint16_t roomId);
 	
 	void BroadCast();
 
-	void SendRoomList(Session* session);
+	void SendRoomListToOne(Session* session);
+
+	void SendRoomListToAll();
 
 	void InputNewUser(User* user)
 	{

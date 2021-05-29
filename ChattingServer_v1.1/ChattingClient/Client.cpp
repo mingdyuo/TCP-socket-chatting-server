@@ -212,11 +212,13 @@ void Client::LobbyPage()
 			int selected = display->GetSelection();
 			if (selected == 0) //< 새로운 채팅방 만들기
 			{
-
+				PK_C_ROOM_CREATE* packet = new PK_C_ROOM_CREATE("Test room name");
+				sendQueue_.push(packet);
 			}
 			else
 			{
-
+				PK_C_ROOM_ENTER* packet = new PK_C_ROOM_ENTER(selected);
+				sendQueue_.push(packet);
 			}
 		}
 	}

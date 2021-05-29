@@ -51,28 +51,11 @@ public:
 
     bool CreateUser(HANDLE iocpHandle, SOCKET socket);
 
-    inline void ExitLobby(User* user)
-    {
-        //userInLobby_.erase(user);
-    }
-
-    inline void EnterLobby(User* user)
-    {
-        //userInLobby_.insert(user);
-    }
-
     void RemoveUser(User* user);
     void RemoveUser(int uid);
 
     void SendAcceptPacket(Session* session);
 
-    void SendLobbyInfo(Session* session);
-
-    void SendMulticast(Session* session);
-    void SendBroadcast(Session* session);
-    void SendUnicast(Session* session);
-
-    void LobbyCast(Session* session, PacketType type);
     
 
 protected:

@@ -47,6 +47,9 @@ public:
 		processFunc_[E_PK_C_SERVER_ENTER] = &LogicProcess::C_SERVER_ENTER;
 		processFunc_[E_PK_C_LOBBY_ROOM_INFO] = &LogicProcess::C_LOBBY_ROOM_INFO;
 
+		processFunc_[E_PK_C_ROOM_CREATE] = &LogicProcess::C_ROOM_CREATE;
+		processFunc_[E_PK_C_ROOM_ENTER] = &LogicProcess::C_ROOM_ENTER;
+
 	}
 
 	~LogicProcess();
@@ -91,6 +94,9 @@ protected:
 	void C_SERVER_ENTER(const RecvPackage& package);
 	void C_LOBBY_ROOM_INFO(const RecvPackage& package);
 
+	void C_ROOM_CREATE(const RecvPackage& package);
+	void C_ROOM_ENTER(const RecvPackage& package);
+
 
 private:
 
@@ -128,4 +134,6 @@ private:
 };
 
 #endif // !LOGIC_PROCESS_H
+
+
 
