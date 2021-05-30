@@ -4,6 +4,7 @@
 #include <map>
 #include <string>
 #include <set>
+#include "Package.h"
 
 class User;
 class Room;
@@ -34,10 +35,7 @@ public:
 
 	void CreateRoom(uint32_t uid, std::string roomName);
 
-
-	void MultiCast(uint16_t roomId);
-	
-	void BroadCast();
+	void BroadCast(PacketPtr packet);
 
 	void SendRoomListToOne(Session* session);
 

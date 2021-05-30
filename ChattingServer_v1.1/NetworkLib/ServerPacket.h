@@ -171,24 +171,24 @@ class PK_S_ROOM_ENTER : public Packet
 {
 public:
 	PacketType type() { return E_PK_S_ROOM_ENTER; }
-	PK_S_ROOM_ENTER() : uid(0), rid(0) {}
-	PK_S_ROOM_ENTER(uint32_t uid, uint16_t rid) :
-		uid(uid), rid(rid) {}
+	PK_S_ROOM_ENTER() : uid(0) {}
+	PK_S_ROOM_ENTER(uint32_t uid, std::string name) :
+		uid(uid), name(name){}
 
 	uint32_t uid;
-	uint16_t rid;
+	std::string name;
 
 	void encode(Stream& stream)
 	{
 		stream << (packet_header_size)this->type();
 		stream << uid;
-		stream << rid;
+		stream << name;
 	}
 
 	void decode(Stream& stream)
 	{
 		stream >> &uid;
-		stream >> &rid;
+		stream >> &name;
 	}
 };
 
@@ -196,24 +196,23 @@ class PK_S_ROOM_EXIT : public Packet
 {
 public:
 	PacketType type() { return E_PK_S_ROOM_EXIT; }
-	uint32_t uid;
-	uint16_t rid;
 
-	PK_S_ROOM_EXIT() : uid(0), rid(0) {}
-	PK_S_ROOM_EXIT(uint32_t uid, uint16_t rid) :
-		uid(uid), rid(rid) {}
+	PK_S_ROOM_EXIT() :uid(0){}
+	PK_S_ROOM_EXIT(uint32_t uid) :
+		uid(uid) {}
+
+	uint32_t uid;
+
 
 	void encode(Stream& stream)
 	{
 		stream << (packet_header_size)this->type();
 		stream << uid;
-		stream << rid;
 	}
 
 	void decode(Stream& stream)
 	{
 		stream >> &uid;
-		stream >> &rid;
 	}
 };
 
@@ -240,22 +239,13 @@ public:
 	}
 };
 
-
-
-class PK_S_BROADCAST : public Packet
+class PK_S_CAST : public Packet
 {
 public:
-	PacketType type() { return E_PK_S_BROADCAST; }
-};
-
-class PK_S_MULTICAST : public Packet
-{
-public:
-	PacketType type() { return E_PK_S_MULTICAST; }
-
-	PK_S_MULTICAST() {}
-	PK_S_MULTICAST(const std::string& name, const std::string& text):
-		nickname(name), text(text){}
+	PacketType type() = 0;
+	PK_S_CAST() {}
+	PK_S_CAST(std::string sender, std::string text) :
+		nickname(sender), text(text) {}
 
 	std::string text;
 	std::string nickname;
@@ -272,14 +262,36 @@ public:
 		stream >> &nickname;
 		stream >> &text;
 	}
-
 };
 
-class PK_S_UNICAST_OK : public Packet
+class PK_S_BROADCAST : public PK_S_CAST
+{
+public:
+	PacketType type() { return E_PK_S_BROADCAST; }
+	PK_S_BROADCAST() {}
+	PK_S_BROADCAST(std::string sender, std::string text)
+		: PK_S_CAST(sender, text) {}
+};
+
+
+class PK_S_MULTICAST : public PK_S_CAST
+{
+public:
+	PacketType type() { return E_PK_S_MULTICAST; }
+	PK_S_MULTICAST() {}
+	PK_S_MULTICAST(std::string sender, std::string text)
+		: PK_S_CAST(sender, text) {}
+};
+
+class PK_S_UNICAST_OK : public PK_S_CAST
 {
 public:
 	PacketType type() { return E_PK_S_UNICAST_OK; }
+	PK_S_UNICAST_OK() {}
+	PK_S_UNICAST_OK(std::string sender, std::string text)
+		: PK_S_CAST(sender, text) {}
 };
+
 
 class PK_S_UNICAST_NO : public Packet
 {

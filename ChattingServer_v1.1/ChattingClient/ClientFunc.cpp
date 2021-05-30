@@ -64,31 +64,37 @@ void Client::F_LOBBY_USER_INFO(Packet* packet)
 
 void Client::F_ROOM_ENTER(Packet* packet)
 {
-	PK_S_ROOM_ENTER* enterpacket = static_cast<PK_S_ROOM_ENTER*>(packet);
+	PK_S_ROOM_ENTER* enterPacket = static_cast<PK_S_ROOM_ENTER*>(packet);
 	if (state_ == ClientState::LOBBY)
 	{
 		delete display_;
 		display_ = new RoomDisplay(this->userId_, this->nickname_);
+		display_->Clear();
 		display_->draw();
 		state_ = ClientState::CHATROOM;
 	}
-	else if (state_ == ClientState::CHATROOM)
-	{
-		// 다른 사람이 들어온 것
-	}
+	
+	RoomDisplay* display = static_cast<RoomDisplay*>(display_);
+	display->UpdatePlayer(enterPacket->uid, enterPacket->name);
 
 }
 
 
 void Client::F_ROOM_EXIT(Packet* packet)
 {
-	if (state_ == ClientState::LOBBY)
+	PK_S_ROOM_EXIT* exitPacket = static_cast<PK_S_ROOM_EXIT*>(packet);
+	if (exitPacket->uid == this->userId_)
 	{
 		// 내가 나간 것
+		delete display_;
+		display_ = new LobbyDisplay(this->userId_);
+		state_ = ClientState::LOBBY;
 	}
-	else if (state_ == ClientState::CHATROOM)
+	else
 	{
 		// 다른 사람이 나간 것
+		RoomDisplay* display = static_cast<RoomDisplay*>(display_);
+		display->RemovePlayer(exitPacket->uid);
 	}
 }
 
@@ -99,7 +105,7 @@ void Client::F_ROOM_NAME(Packet* packet)
 	display->SetRoomName(namepacket->roomName);
 }
 
-void Client::F_MULTICAST(Packet* packet)
+void Client::F_RECV_CAST(Packet* packet)
 {
 	RoomDisplay* display = static_cast<RoomDisplay*>(display_);
 	display->OnRecv(packet);

@@ -7,7 +7,7 @@ void Room::EnterRoom(User* user)
 	user->EnterRoom(this);
 	users_.insert(user);
 
-	std::shared_ptr<PK_S_ROOM_ENTER> enterPacket = std::make_shared<PK_S_ROOM_ENTER>(user->GetId(), this->roomId_);
+	std::shared_ptr<PK_S_ROOM_ENTER> enterPacket = std::make_shared<PK_S_ROOM_ENTER>(user->GetId(), user->GetNickname());
 	this->RoomCast(enterPacket);
 
 	std::shared_ptr<PK_S_ROOM_NAME> namePacket = std::make_shared<PK_S_ROOM_NAME>(this->roomName_);
@@ -20,7 +20,7 @@ void Room::ExitRoom(User* user)
 	user->ExitRoom();
 	users_.erase(user);
 
-	std::shared_ptr<PK_S_ROOM_EXIT> exitPacket = std::make_shared<PK_S_ROOM_EXIT>(user->GetId(), this->roomId_);
+	std::shared_ptr<PK_S_ROOM_EXIT> exitPacket = std::make_shared<PK_S_ROOM_EXIT>(user->GetId());
 	this->RoomCast(exitPacket);
 }
 

@@ -21,20 +21,11 @@ void RoomManager::CreateRoom(uint32_t uid, std::string roomName)
 	this->SendRoomListToOne(uMgr_->GetSession(uid));
 }
 
-void RoomManager::MultiCast(uint16_t roomId)
-{
-	auto room = this->GetRoom(roomId);
-	if (room == nullptr)
-		return;
-
-	//room->RoomCast();
-}
-
-void RoomManager::BroadCast()
+void RoomManager::BroadCast(PacketPtr packet)
 {
 	for (auto& room : roomList_)
 	{
-		// room.second->RoomCast();
+		room.second->RoomCast(packet);
 		// Multicast in each room
 	}
 }

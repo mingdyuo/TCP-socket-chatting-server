@@ -82,6 +82,16 @@ User* UserManager::GetUser(uint32_t id) const
     return user->second;
 }
 
+User* UserManager::FindByNickname(const std::string& name)
+{
+    for(auto& user : userList_)
+    { 
+        if (name == user.second->GetNickname())
+            return user.second;
+    }
+    return nullptr;
+}
+
 /* * * * * * * * * * * *
 *     Packet Process
 *   -> Accept & Lobby

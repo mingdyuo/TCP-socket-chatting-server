@@ -66,7 +66,8 @@ private:
 	void F_ROOM_EXIT(Packet* packet);
 	void F_ROOM_NAME(Packet* packet);
 
-	void F_MULTICAST(Packet* packet);
+	void F_RECV_CAST(Packet* packet);
+	
 
 
 private:

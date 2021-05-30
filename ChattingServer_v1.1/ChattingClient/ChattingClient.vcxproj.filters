@@ -7,10 +7,6 @@
     <Filter Include="Display">
       <UniqueIdentifier>{d16ae62e-49bb-41f4-a4bd-a079c6d9e52b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="출력참고용">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -27,9 +23,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Position.h">
-      <Filter>출력참고용</Filter>
-    </ClInclude>
     <ClInclude Include="Client.h">
       <Filter>Client</Filter>
     </ClInclude>

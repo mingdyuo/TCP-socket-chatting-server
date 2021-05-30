@@ -39,7 +39,24 @@ void LogicProcess::C_ROOM_ENTER(const RecvPackage& package)
 
 void LogicProcess::C_UNICAST(const RecvPackage& package)
 {
-
+	PK_C_UNICAST* recvPacket = static_cast<PK_C_UNICAST*>(package.packet_);
+	User* sender = uMgr_->GetUser(package.session_->GetId());
+	User* recver = uMgr_->FindByNickname(recvPacket->recver);
+	SendPackage sendPackage(sender->GetSession());
+	if (recver == nullptr)
+	{
+		std::shared_ptr<PK_S_UNICAST_NO> packet = std::make_shared<PK_S_UNICAST_NO>();
+		sendPackage.packet_ = packet;
+		sendServer_->PushPackage(sendPackage);
+	}
+	else
+	{
+		std::shared_ptr<PK_S_UNICAST_OK> packet = std::make_shared<PK_S_UNICAST_OK>(sender->GetNickname(), recvPacket->text);
+		sendPackage.packet_ = packet;
+		sendServer_->PushPackage(sendPackage);
+		sendPackage.session_ = recver->GetSession();
+		sendServer_->PushPackage(sendPackage);
+	}
 }
 
 void LogicProcess::C_MULTICAST(const RecvPackage& package)
@@ -54,5 +71,9 @@ void LogicProcess::C_MULTICAST(const RecvPackage& package)
 
 void LogicProcess::C_BROADCAST(const RecvPackage& package)
 {
+	User* user = uMgr_->GetUser(package.session_->GetId());
+	PK_C_BROADCAST* recvPacket = static_cast<PK_C_BROADCAST*>(package.packet_);
 
+	std::shared_ptr<PK_S_BROADCAST> packet = std::make_shared<PK_S_BROADCAST>(user->GetNickname(), recvPacket->text);
+	rMgr_->BroadCast(packet);
 }

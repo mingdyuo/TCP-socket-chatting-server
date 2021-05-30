@@ -21,7 +21,10 @@ Client::Client() :
 	processFunc_[E_PK_S_ROOM_EXIT] = &Client::F_ROOM_EXIT;
 	processFunc_[E_PK_S_ROOM_NAME] = &Client::F_ROOM_NAME;
 
-	processFunc_[E_PK_S_MULTICAST] = &Client::F_MULTICAST;
+	processFunc_[E_PK_S_MULTICAST] = &Client::F_RECV_CAST;
+	processFunc_[E_PK_S_BROADCAST] = &Client::F_RECV_CAST;
+	processFunc_[E_PK_S_UNICAST_OK] = &Client::F_RECV_CAST;
+	processFunc_[E_PK_S_UNICAST_NO] = &Client::F_RECV_CAST;
 	
 }
 

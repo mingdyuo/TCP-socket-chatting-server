@@ -31,7 +31,6 @@
     <ClInclude Include="Display.h" />
     <ClInclude Include="LobbyDisplay.h" />
     <ClInclude Include="LoginDisplay.h" />
-    <ClInclude Include="Position.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

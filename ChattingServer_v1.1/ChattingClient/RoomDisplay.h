@@ -16,14 +16,13 @@ class RoomDisplay : public Display
 public:
 	RoomDisplay() = delete;
 	RoomDisplay(uint32_t id, std::string nickname) :
-		myId_(id), myNickname_(nickname), outputCursor_(6), inputCursor_(10)
+		myId_(id), myNickname_(nickname), outputCursor_(6), inputCursor_(7)
 	{
 		this->CursorView(TRUE);
 	}
 
 	void draw()
 	{
-		this->Clear();
 		this->DrawTopInfo();
 		this->SendClear();
 	}
@@ -34,19 +33,19 @@ public:
 		this->draw();
 	}
 
-	void UpdatePlayer(uint32_t id, const std::string& name)
+	void UpdatePlayer(uint32_t uid, const std::string& name)
 	{
-		users_[id] = name;
+		users_[uid] = name;
 		EnterMessage(name);
 	}
 
-	void RemovePlayer(uint32_t pid)
+	void RemovePlayer(uint32_t uid)
 	{
-		auto player = users_.find(pid);
+		auto player = users_.find(uid);
 		if (player != users_.end())
 		{
-			this->ExitMessage(users_[pid]);
-			users_.erase(pid);
+			this->ExitMessage(users_[uid]);
+			users_.erase(uid);
 		}
 	}
 
@@ -58,7 +57,7 @@ public:
 		}
 		else if (text.find("/") == 0 && text.find(" ") != std::string::npos)
 		{
-			return new PK_C_UNICAST(this->ParseForNickname(text), text);
+			return new PK_C_UNICAST(this->ParseForNickname(text), text.substr(text.find(" ") + 1));
 		}
 
 		return new PK_C_MULTICAST(text);
@@ -73,35 +72,28 @@ public:
 	{
 		gotoxy(0, outputCursor_++);
 
-		switch (packet->type())
-		{
-		case E_PK_S_MULTICAST:
-		{
-			PK_S_MULTICAST* textPacket = static_cast<PK_S_MULTICAST*>(packet);
-			SetColor(CLR_WHITE);
-			printf("[%s님] %s", textPacket->nickname.c_str(), textPacket->text.c_str());
-			break;
-		}
-		case E_PK_S_BROADCAST:
-		{
-			SetColor(CLR_WHITE, CLR_YELLOW);
-			break;
-		}
-		case E_PK_S_UNICAST_OK:
-		{
-			SetColor(CLR_GREEN);
-			break;
-		}
-		case E_PK_S_UNICAST_NO:
+		if (packet->type() == E_PK_S_UNICAST_NO)
 		{
 			SetColor(CLR_GREEN);
 			printf("[알림] 해당 닉네임의 유저는 존재하지 않습니다.");
-			break;
 		}
-		default:
-			break;
+		else
+		{
+			PK_S_CAST* textPacket = static_cast<PK_S_CAST*>(packet);
+			switch (packet->type())
+			{
+			case E_PK_S_MULTICAST:
+				SetColor(CLR_WHITE); break;
+			case E_PK_S_BROADCAST:
+				SetColor(CLR_RED, CLR_YELLOW); break;
+			case E_PK_S_UNICAST_OK:
+				SetColor(CLR_GREEN); break;
+			default:
+				break;
+			}
+			printf("[%s님] %s", textPacket->nickname.c_str(), textPacket->text.c_str());
 		}
-
+		SetColor(CLR_WHITE);
 		UpdateInputBox();
 	}
 
@@ -111,7 +103,7 @@ private:
 	void DrawTopInfo()
 	{
 		gotoxy(0, 0); printf("┏┓╋╋╋╋╋╋┏┓╋╋╋╋╋╋╋╋┏┓╋╋╋╋┏┓╋┏┓　　　　"); printf("[방제목] %s", roomName_.empty() ? "로딩중..": roomName_.c_str());
-		gotoxy(0, 1); printf("┃┃╋╋╋╋╋┏┛┗┳┓╋╋╋╋╋╋┃┃╋╋╋┏┛┗┓┃┃　　　　"); printf("현재 인원 (%lld)명", users_.size());
+		gotoxy(0, 1); printf("┃┃╋╋╋╋╋┏┛┗┳┓╋╋╋╋╋╋┃┃╋╋╋┏┛┗┓┃┃　　　　"); // printf("현재 인원 (%lld)명", users_.size());
 		gotoxy(0, 2); printf("┃┃╋╋╋┏━┻┓┏┫┣━━┓┏━━┫┗━┳━┻┓┏┛┃┃　　　　"); 
 		gotoxy(0, 3); printf("┃┃╋╋┏┫┃━┫┃┗┫━━┫┃┏━┫┏┓┃┏┓┃┃╋┗┛　　　　"); printf("전체 채팅 : \"/all 채팅내용\"");
 		gotoxy(0, 4); printf("┃┗━━┛┃┃━┫┗┓┣━━┃┃┗━┫┃┃┃┏┓┃┗┓┏┓　　　　"); printf("귓속말 : \"/nickname 채팅내용\"");
@@ -120,17 +112,21 @@ private:
 
 	void EnterMessage(const std::string& name)
 	{
+		gotoxy(0, outputCursor_++);
 		printf("[알림] %s님이 입장하셨습니다.", name.c_str());
+		this->UpdateInputBox();
 	}
 
 	void ExitMessage(const std::string& name)
 	{
+		gotoxy(0, outputCursor_++);
 		printf("[알림] %s님이 퇴장하셨습니다.", name.c_str());
+		this->UpdateInputBox();
 	}
 
 	std::string ParseForNickname(std::string text)
 	{
-		return text.substr(1, text.find_first_of(" "));;
+		return text.substr(1, text.find_first_of(" ") - 1);;
 	}
 
 	void UpdateInputBox()

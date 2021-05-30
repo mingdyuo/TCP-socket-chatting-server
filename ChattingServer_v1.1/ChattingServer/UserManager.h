@@ -46,8 +46,10 @@ public:
         sendServer_ = sServer;
     }
 
-    Session* GetSession(int id) const;
-    User* GetUser(uint32_t id) const;
+    Session*    GetSession(int id) const;
+    User*       GetUser(uint32_t id) const;
+
+    User*       FindByNickname(const std::string& name);
 
     bool CreateUser(HANDLE iocpHandle, SOCKET socket);
 
