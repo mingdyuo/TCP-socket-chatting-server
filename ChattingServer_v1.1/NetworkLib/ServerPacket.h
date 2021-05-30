@@ -141,6 +141,7 @@ public:
 
 	uint32_t uid;
 	std::string nickname;
+	
 
 	void encode(Stream& stream)
 	{
@@ -217,6 +218,27 @@ public:
 };
 
 
+class PK_S_ROOM_NAME : public Packet
+{
+public:
+	PacketType type() { return E_PK_S_ROOM_NAME; }
+	PK_S_ROOM_NAME() {}
+	PK_S_ROOM_NAME(std::string name):
+		roomName(name) {}
+
+	std::string roomName;
+
+	void encode(Stream& stream)
+	{
+		stream << (packet_header_size)this->type();
+		stream << roomName;
+	}
+
+	void decode(Stream& stream)
+	{
+		stream >> &roomName;
+	}
+};
 
 
 

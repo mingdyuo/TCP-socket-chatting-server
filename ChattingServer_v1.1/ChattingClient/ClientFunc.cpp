@@ -68,7 +68,7 @@ void Client::F_ROOM_ENTER(Packet* packet)
 	if (state_ == ClientState::LOBBY)
 	{
 		delete display_;
-		display_ = new RoomDisplay(this->userId_);
+		display_ = new RoomDisplay(this->userId_, this->nickname_);
 		display_->draw();
 	}
 	else if (state_ == ClientState::CHATROOM)
@@ -89,4 +89,11 @@ void Client::F_ROOM_EXIT(Packet* packet)
 	{
 		// 다른 사람이 나간 것
 	}
+}
+
+void Client::F_ROOM_NAME(Packet* packet)
+{
+	PK_S_ROOM_NAME* namepacket = static_cast<PK_S_ROOM_NAME*>(packet);
+	RoomDisplay* display = static_cast<RoomDisplay*>(display_);
+	display->SetRoomName(namepacket->roomName);
 }

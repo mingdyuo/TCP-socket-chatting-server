@@ -49,6 +49,7 @@ protected:
 
 	void SendNickname();
 	void LobbyPage();
+	void ChatRoomPage();
 	
 	void RecvProcess(Packet* packet);
 	void StateProcess();
@@ -63,6 +64,7 @@ private:
 	void F_LOBBY_USER_INFO(Packet* packet);
 	void F_ROOM_ENTER(Packet* packet);
 	void F_ROOM_EXIT(Packet* packet);
+	void F_ROOM_NAME(Packet* packet);
 
 
 private:

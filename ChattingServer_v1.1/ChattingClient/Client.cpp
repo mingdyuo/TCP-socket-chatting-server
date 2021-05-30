@@ -1,7 +1,9 @@
 #include "Client.h"
 #include "LoginDisplay.h"
 #include "LobbyDisplay.h"
+#include "RoomDisplay.h"
 #include <conio.h>
+#include <iostream>
 
 /* * * * * * * * * * * 
 *   Initialize & Start
@@ -17,6 +19,7 @@ Client::Client() :
 
 	processFunc_[E_PK_S_ROOM_ENTER] = &Client::F_ROOM_ENTER;
 	processFunc_[E_PK_S_ROOM_EXIT] = &Client::F_ROOM_EXIT;
+	processFunc_[E_PK_S_ROOM_NAME] = &Client::F_ROOM_NAME;
 
 	
 }
@@ -187,6 +190,10 @@ void Client::StateProcess()
 	{
 		this->LobbyPage();
 	}
+	else if (state_ == ClientState::CHATROOM)
+	{
+		
+	}
 }
 
 
@@ -224,5 +231,21 @@ void Client::LobbyPage()
 				sendQueue_.push(packet);
 			}
 		}
+	}
+}
+
+void Client::ChatRoomPage()
+{
+	std::string buffer;
+	RoomDisplay* display = static_cast<RoomDisplay*>(display_);
+	while (state_ == ClientState::CHATROOM)
+	{
+		std::getline(std::cin, buffer);
+		if (buffer.empty())
+		{
+			continue;
+		}
+		sendQueue_.push(display->SendChat(buffer));
+		buffer.clear();
 	}
 }

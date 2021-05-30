@@ -62,6 +62,8 @@ public:
 			return new PK_S_ROOM_ENTER();
 		case E_PK_S_ROOM_EXIT:
 			return new PK_S_ROOM_EXIT();
+		case E_PK_S_ROOM_NAME:
+			return new PK_S_ROOM_NAME();
 
 		case E_PK_S_BROADCAST:
 			return new PK_S_BROADCAST();

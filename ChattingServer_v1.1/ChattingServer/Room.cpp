@@ -9,6 +9,10 @@ void Room::EnterRoom(User* user)
 
 	std::shared_ptr<PK_S_ROOM_ENTER> enterPacket = std::make_shared<PK_S_ROOM_ENTER>(user->GetId(), this->roomId_);
 	this->RoomCast(enterPacket);
+
+	std::shared_ptr<PK_S_ROOM_NAME> namePacket = std::make_shared<PK_S_ROOM_NAME>(this->roomName_);
+	SendPackage package(user->GetSession(), namePacket);
+	sendServer_->PushPackage(package);
 }
 
 void Room::ExitRoom(User* user)
