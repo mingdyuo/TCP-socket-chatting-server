@@ -252,6 +252,27 @@ class PK_S_MULTICAST : public Packet
 {
 public:
 	PacketType type() { return E_PK_S_MULTICAST; }
+
+	PK_S_MULTICAST() {}
+	PK_S_MULTICAST(const std::string& name, const std::string& text):
+		nickname(name), text(text){}
+
+	std::string text;
+	std::string nickname;
+
+	void encode(Stream& stream)
+	{
+		stream << (packet_header_size)this->type();
+		stream << nickname;
+		stream << text;
+	}
+
+	void decode(Stream& stream)
+	{
+		stream >> &nickname;
+		stream >> &text;
+	}
+
 };
 
 class PK_S_UNICAST_OK : public Packet

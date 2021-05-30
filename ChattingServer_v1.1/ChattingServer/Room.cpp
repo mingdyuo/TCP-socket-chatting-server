@@ -4,7 +4,7 @@
 
 void Room::EnterRoom(User* user)
 {
-	user->EnterRoom(roomId_);
+	user->EnterRoom(this);
 	users_.insert(user);
 
 	std::shared_ptr<PK_S_ROOM_ENTER> enterPacket = std::make_shared<PK_S_ROOM_ENTER>(user->GetId(), this->roomId_);

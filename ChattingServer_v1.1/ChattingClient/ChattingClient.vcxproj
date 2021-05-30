@@ -22,6 +22,7 @@
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="ClientFunc.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="RoomDisplay.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="RoomDisplay.h" />

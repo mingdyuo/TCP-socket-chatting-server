@@ -7,13 +7,16 @@
 #include "../NetworkLib/PacketFactory.h"
 #include <map>
 #include <string>
+#include <mutex>
+
+
 
 class RoomDisplay : public Display
 {
 public:
 	RoomDisplay() = delete;
 	RoomDisplay(uint32_t id, std::string nickname) :
-		myId_(id), myNickname_(nickname), outputCursor_(6), inputCursor_(6)
+		myId_(id), myNickname_(nickname), outputCursor_(6), inputCursor_(10)
 	{
 		this->CursorView(TRUE);
 	}
@@ -22,7 +25,7 @@ public:
 	{
 		this->Clear();
 		this->DrawTopInfo();
-		this->SetCursorToInputBox();
+		this->SendClear();
 	}
 
 	void SetRoomName(std::string name)
@@ -47,16 +50,11 @@ public:
 		}
 	}
 
-	void OnRecv()
-	{
-
-	}
-
 	Packet* SendChat(const std::string& text)
 	{
 		if (text.find("/all ") == 0 && text.size() > std::string("/all ").size())
 		{
-			return new PK_C_BROADCAST(text);
+			return new PK_C_BROADCAST(text.substr(std::string("/all ").size()));
 		}
 		else if (text.find("/") == 0 && text.find(" ") != std::string::npos)
 		{
@@ -68,8 +66,45 @@ public:
 
 	void OnSend()
 	{
-		this->SetCursorToInputBox();
+		this->SendClear();
 	}
+
+	void OnRecv(Packet* packet)
+	{
+		gotoxy(0, outputCursor_++);
+
+		switch (packet->type())
+		{
+		case E_PK_S_MULTICAST:
+		{
+			PK_S_MULTICAST* textPacket = static_cast<PK_S_MULTICAST*>(packet);
+			SetColor(CLR_WHITE);
+			printf("[%s님] %s", textPacket->nickname.c_str(), textPacket->text.c_str());
+			break;
+		}
+		case E_PK_S_BROADCAST:
+		{
+			SetColor(CLR_WHITE, CLR_YELLOW);
+			break;
+		}
+		case E_PK_S_UNICAST_OK:
+		{
+			SetColor(CLR_GREEN);
+			break;
+		}
+		case E_PK_S_UNICAST_NO:
+		{
+			SetColor(CLR_GREEN);
+			printf("[알림] 해당 닉네임의 유저는 존재하지 않습니다.");
+			break;
+		}
+		default:
+			break;
+		}
+
+		UpdateInputBox();
+	}
+
 
 private:
 
@@ -98,20 +133,36 @@ private:
 		return text.substr(1, text.find_first_of(" "));;
 	}
 
-	void SetCursorToInputBox()
+	void UpdateInputBox()
+	{
+		gotoxy(0, inputCursor_++); printf("%c[2K\n%c[2K\n%c[2K\n%c[2K\n%c[2K\n%c[2K", 27, 27, 27, 27, 27, 27);
+		gotoxy(0, inputCursor_); printf("〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓\n[%s님]: ", myNickname_.c_str());
+	}
+
+	void SendClear()
 	{
 		gotoxy(0, inputCursor_); printf("%c[2K\n%c[2K\n%c[2K\n%c[2K\n%c[2K\n%c[2K", 27, 27, 27, 27, 27, 27);
 		gotoxy(0, inputCursor_); printf("〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓\n[%s님]: ", myNickname_.c_str());
+
 	}
+
+
+	
+
+private:
+	static const std::string BROADCAST_COMMAND;
 
 private:
 	short inputCursor_;
 	short outputCursor_;
 
-	std::map<uint32_t, std::string> users_;
-	uint32_t myId_;
-	std::string myNickname_;
-	std::string roomName_;
+	std::string						roomName_;
+	std::map<uint32_t, std::string>	users_;
+
+	uint32_t						myId_;
+	std::string						myNickname_;
+
+	std::mutex						mutex_;
 };
 
 

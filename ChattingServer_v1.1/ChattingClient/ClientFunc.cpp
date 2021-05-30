@@ -98,3 +98,9 @@ void Client::F_ROOM_NAME(Packet* packet)
 	RoomDisplay* display = static_cast<RoomDisplay*>(display_);
 	display->SetRoomName(namepacket->roomName);
 }
+
+void Client::F_MULTICAST(Packet* packet)
+{
+	RoomDisplay* display = static_cast<RoomDisplay*>(display_);
+	display->OnRecv(packet);
+}

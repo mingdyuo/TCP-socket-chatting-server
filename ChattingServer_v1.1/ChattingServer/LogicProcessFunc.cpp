@@ -36,3 +36,23 @@ void LogicProcess::C_ROOM_ENTER(const RecvPackage& package)
 	room->EnterRoom(uMgr_->GetUser(package.session_->GetId()));
 
 }
+
+void LogicProcess::C_UNICAST(const RecvPackage& package)
+{
+
+}
+
+void LogicProcess::C_MULTICAST(const RecvPackage& package)
+{
+	User* user = uMgr_->GetUser(package.session_->GetId());
+	Room* room = user->GetRoom();
+	
+	PK_C_MULTICAST* recvPacket = static_cast<PK_C_MULTICAST*>(package.packet_);
+	std::shared_ptr<PK_S_MULTICAST> packet = std::make_shared<PK_S_MULTICAST>(user->GetNickname(), recvPacket->text);
+	room->RoomCast(packet);
+}
+
+void LogicProcess::C_BROADCAST(const RecvPackage& package)
+{
+
+}

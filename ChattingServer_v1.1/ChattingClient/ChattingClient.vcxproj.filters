@@ -22,6 +22,9 @@
     <ClCompile Include="ClientFunc.cpp">
       <Filter>Client</Filter>
     </ClCompile>
+    <ClCompile Include="RoomDisplay.cpp">
+      <Filter>Display</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Position.h">

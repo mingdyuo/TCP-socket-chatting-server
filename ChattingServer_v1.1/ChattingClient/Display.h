@@ -44,9 +44,9 @@ public:
 
 	virtual void draw() = 0;
 
-	inline void SetColor(int TColor, int BColor = CLR_BLACK)
+	inline void SetColor(int TextColor, int BGColor = CLR_BLACK)
 	{
-		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), TColor + BColor * 16);
+		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), TextColor + BGColor * 16);
 	}
 
 	void CursorView(char show)

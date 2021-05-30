@@ -50,6 +50,10 @@ public:
 		processFunc_[E_PK_C_ROOM_CREATE] = &LogicProcess::C_ROOM_CREATE;
 		processFunc_[E_PK_C_ROOM_ENTER] = &LogicProcess::C_ROOM_ENTER;
 
+		processFunc_[E_PK_C_UNICAST] = &LogicProcess::C_UNICAST;
+		processFunc_[E_PK_C_MULTICAST] = &LogicProcess::C_MULTICAST;
+		processFunc_[E_PK_C_BROADCAST] = &LogicProcess::C_BROADCAST;
+
 	}
 
 	~LogicProcess();
@@ -97,6 +101,9 @@ protected:
 	void C_ROOM_CREATE(const RecvPackage& package);
 	void C_ROOM_ENTER(const RecvPackage& package);
 
+	void C_UNICAST(const RecvPackage& package);
+	void C_MULTICAST(const RecvPackage& package);
+	void C_BROADCAST(const RecvPackage& package);
 
 private:
 

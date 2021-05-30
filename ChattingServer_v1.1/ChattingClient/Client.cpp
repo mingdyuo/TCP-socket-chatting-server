@@ -21,6 +21,7 @@ Client::Client() :
 	processFunc_[E_PK_S_ROOM_EXIT] = &Client::F_ROOM_EXIT;
 	processFunc_[E_PK_S_ROOM_NAME] = &Client::F_ROOM_NAME;
 
+	processFunc_[E_PK_S_MULTICAST] = &Client::F_MULTICAST;
 	
 }
 

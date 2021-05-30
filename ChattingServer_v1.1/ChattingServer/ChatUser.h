@@ -4,13 +4,15 @@
 
 #include "Session.h"
 
+class Room;
+
 class User
 {
 public:
 	User() = delete;
 
 	User(uint32_t uid) :
-		userId_(uid), session_(uid), currRoom_(0)
+		userId_(uid), session_(uid), currRoom_(nullptr)
 	{}
 
 public:
@@ -25,22 +27,24 @@ public:
 	}
 
 public:
-	bool EnterRoom(uint16_t no)
-	{
-		if (IsInLobby())
-			return false;
-
-		currRoom_ = no;
-		return true;
-	}
-
-	bool ExitRoom()
+	void EnterRoom(Room* room)
 	{
 		if (false == IsInLobby())
-			return false;
+		{
+			//throw
+		}
 
-		currRoom_ = 0;
-		return true;
+		currRoom_ = room;
+	}
+
+	void ExitRoom()
+	{
+		if (IsInLobby())
+		{
+			// throw;
+		}
+
+		currRoom_ = nullptr;
 	}
 
 public:
@@ -48,9 +52,9 @@ public:
 
 	inline std::string	GetNickname() const { return nickname_; }
 
-	inline bool			IsInLobby() const { return currRoom_ == 0; }
+	inline bool			IsInLobby() const { return currRoom_ == nullptr; }
 
-	inline uint16_t		GetRoom() const { return currRoom_; }
+	inline Room*		GetRoom() const { return currRoom_; }
 
 	inline Session*		GetSession() { return &session_; }
 
@@ -61,7 +65,8 @@ private:
 	Session session_;
 
 	uint32_t userId_;
-	uint16_t currRoom_;
+	
+	Room* currRoom_;
 
 	std::string nickname_;
 };
