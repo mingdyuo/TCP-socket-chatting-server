@@ -15,6 +15,9 @@ Client::Client() :
 	processFunc_[E_PK_S_LOBBY_ROOM_INFO] = &Client::F_LOBBY_ROOM_INFO;
 	processFunc_[E_PK_S_LOBBY_USER_INFO] = &Client::F_LOBBY_USER_INFO;
 
+	processFunc_[E_PK_S_ROOM_ENTER] = &Client::F_ROOM_ENTER;
+	processFunc_[E_PK_S_ROOM_EXIT] = &Client::F_ROOM_EXIT;
+
 	
 }
 

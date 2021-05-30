@@ -6,8 +6,9 @@
 
 #include <string>
 #include <set>
-#include "ChatUser.h"
+#include "Package.h"
 
+class User;
 class SendServer;
 
 class Room
@@ -18,21 +19,10 @@ public:
 		roomId_(id), roomName_(name), sendServer_(sendServer) {}
 
 
-	void EnterRoom(User* user)
-	{
-		user->EnterRoom(roomId_);
-		users_.insert(user);
-	}
+	void EnterRoom(User* user);
+	void ExitRoom(User* user);
 
-	void ExitRoom(User* user)
-	{
-		user->ExitRoom();
-		users_.erase(user);
-	}
-
-
-	
-	void RoomCast();
+	void RoomCast(PacketPtr packet);
 
 	uint16_t GetId() const { return roomId_; }
 	const std::string& GetName() const { return roomName_; }

@@ -28,7 +28,7 @@
 #define CONST_LOCK_GUARD(m) const std::lock_guard<std::mutex>(m)
 #endif
 
-#include "../NetworkLib/Package.h"
+#include "Package.h"
 class SendServer;
 class UserManager;
 class RoomManager;

@@ -80,6 +80,9 @@
     <ClInclude Include="unistd.h">
       <Filter>Utility</Filter>
     </ClInclude>
+    <ClInclude Include="Package.h">
+      <Filter>IOCPServer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

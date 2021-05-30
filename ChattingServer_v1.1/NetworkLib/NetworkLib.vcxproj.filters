@@ -28,9 +28,6 @@
     <ClInclude Include="PacketFactory.h">
       <Filter>Packet</Filter>
     </ClInclude>
-    <ClInclude Include="Package.h">
-      <Filter>Packet</Filter>
-    </ClInclude>
     <ClInclude Include="PacketType.h">
       <Filter>Packet</Filter>
     </ClInclude>

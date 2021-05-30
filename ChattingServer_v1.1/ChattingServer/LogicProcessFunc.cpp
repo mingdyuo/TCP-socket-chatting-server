@@ -2,6 +2,7 @@
 #include "SendServer.h"
 #include "UserManager.h"
 #include "RoomManager.h"
+#include "Room.h"
 
 void LogicProcess::C_SERVER_ENTER(const RecvPackage& package)
 {
@@ -31,6 +32,6 @@ void LogicProcess::C_ROOM_CREATE(const RecvPackage& package)
 void LogicProcess::C_ROOM_ENTER(const RecvPackage& package)
 {
 	PK_C_ROOM_ENTER* packet = static_cast<PK_C_ROOM_ENTER*>(package.packet_);
-	
-
+	Room* room = rMgr_->GetRoom(packet->rid);
+	room->EnterRoom(uMgr_->GetUser(package.session_->GetId()));
 }

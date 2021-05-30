@@ -170,12 +170,50 @@ class PK_S_ROOM_ENTER : public Packet
 {
 public:
 	PacketType type() { return E_PK_S_ROOM_ENTER; }
+	PK_S_ROOM_ENTER() : uid(0), rid(0) {}
+	PK_S_ROOM_ENTER(uint32_t uid, uint16_t rid) :
+		uid(uid), rid(rid) {}
+
+	uint32_t uid;
+	uint16_t rid;
+
+	void encode(Stream& stream)
+	{
+		stream << (packet_header_size)this->type();
+		stream << uid;
+		stream << rid;
+	}
+
+	void decode(Stream& stream)
+	{
+		stream >> &uid;
+		stream >> &rid;
+	}
 };
 
 class PK_S_ROOM_EXIT : public Packet
 {
 public:
 	PacketType type() { return E_PK_S_ROOM_EXIT; }
+	uint32_t uid;
+	uint16_t rid;
+
+	PK_S_ROOM_EXIT() : uid(0), rid(0) {}
+	PK_S_ROOM_EXIT(uint32_t uid, uint16_t rid) :
+		uid(uid), rid(rid) {}
+
+	void encode(Stream& stream)
+	{
+		stream << (packet_header_size)this->type();
+		stream << uid;
+		stream << rid;
+	}
+
+	void decode(Stream& stream)
+	{
+		stream >> &uid;
+		stream >> &rid;
+	}
 };
 
 

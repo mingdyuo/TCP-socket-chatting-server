@@ -1,5 +1,5 @@
 #include "ChatServer.h"
-#include "../NetworkLib/Package.h"
+#include "Package.h"
 #include "LogicProcess.h"
 
 

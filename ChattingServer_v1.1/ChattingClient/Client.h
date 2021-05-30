@@ -61,6 +61,8 @@ private:
 	void F_SERVER_ENTER_OK(Packet* packet);
 	void F_LOBBY_ROOM_INFO(Packet* packet);
 	void F_LOBBY_USER_INFO(Packet* packet);
+	void F_ROOM_ENTER(Packet* packet);
+	void F_ROOM_EXIT(Packet* packet);
 
 
 private:

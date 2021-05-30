@@ -27,14 +27,14 @@ void RoomManager::MultiCast(uint16_t roomId)
 	if (room == nullptr)
 		return;
 
-	room->RoomCast();
+	//room->RoomCast();
 }
 
 void RoomManager::BroadCast()
 {
 	for (auto& room : roomList_)
 	{
-		room.second->RoomCast();
+		// room.second->RoomCast();
 		// Multicast in each room
 	}
 }

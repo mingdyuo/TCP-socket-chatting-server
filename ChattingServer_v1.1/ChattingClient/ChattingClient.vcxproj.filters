@@ -42,5 +42,8 @@
     <ClInclude Include="LobbyDisplay.h">
       <Filter>Display</Filter>
     </ClInclude>
+    <ClInclude Include="RoomDisplay.h">
+      <Filter>Display</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

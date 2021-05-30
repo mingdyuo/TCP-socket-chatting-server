@@ -24,6 +24,7 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="RoomDisplay.h" />
     <ClInclude Include="Client.h" />
     <ClInclude Include="ClientBase.h" />
     <ClInclude Include="Display.h" />

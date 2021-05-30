@@ -7,7 +7,7 @@
 
 #include <queue>
 #include <iostream>
-#include "../NetworkLib/Package.h"
+#include "Package.h"
 
 class SendServer
 {

@@ -145,7 +145,6 @@
   <ItemGroup>
     <ClInclude Include="ClientPacket.h" />
     <ClInclude Include="IoData.h" />
-    <ClInclude Include="Package.h" />
     <ClInclude Include="Packet.h" />
     <ClInclude Include="PacketFactory.h" />
     <ClInclude Include="PacketType.h" />

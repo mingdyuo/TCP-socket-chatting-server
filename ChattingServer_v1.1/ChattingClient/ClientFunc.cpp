@@ -1,6 +1,7 @@
 #include "Client.h"
 #include "LoginDisplay.h"
 #include "LobbyDisplay.h"
+#include "RoomDisplay.h"
 
 
 
@@ -22,7 +23,7 @@ void Client::SendNickname()
 
 
 /* * * * * * * * * * * * * * *
-*     Mapped logic functions
+*     Mapped logic functions as received packet from server
 * * * * * * * * * * * * * * */
 
 
@@ -58,4 +59,34 @@ void Client::F_LOBBY_ROOM_INFO(Packet* packet)
 void Client::F_LOBBY_USER_INFO(Packet* packet)
 {
 	PK_S_LOBBY_USER_INFO* userPacket = static_cast<PK_S_LOBBY_USER_INFO*>(packet);
+}
+
+
+void Client::F_ROOM_ENTER(Packet* packet)
+{
+	PK_S_ROOM_ENTER* enterpacket = static_cast<PK_S_ROOM_ENTER*>(packet);
+	if (state_ == ClientState::LOBBY)
+	{
+		delete display_;
+		display_ = new RoomDisplay(this->userId_);
+		display_->draw();
+	}
+	else if (state_ == ClientState::CHATROOM)
+	{
+		// 다른 사람이 들어온 것
+	}
+
+}
+
+
+void Client::F_ROOM_EXIT(Packet* packet)
+{
+	if (state_ == ClientState::LOBBY)
+	{
+		// 내가 나간 것
+	}
+	else if (state_ == ClientState::CHATROOM)
+	{
+		// 다른 사람이 나간 것
+	}
 }

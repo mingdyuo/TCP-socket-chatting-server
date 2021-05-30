@@ -3,7 +3,7 @@
 #ifndef PACKAGE_H
 #define PACKAGE_H
 
-#include "Packet.h"
+#include "../NetworkLib/Packet.h"
 #include "Session.h"
 #include <memory>
 
@@ -46,9 +46,14 @@ public:
 	SendPackage()
 		:session_(nullptr), packet_(nullptr) {}
 
+	SendPackage(Session* session)
+		:session_(session), packet_(nullptr) {}
+
+	SendPackage(PacketPtr packet)
+		:session_(nullptr), packet_(packet) {}
+
 	SendPackage(Session* session, PacketPtr packet)
-		:session_(session), packet_(packet)
-	{}
+		:session_(session), packet_(packet) {}
 
 	~SendPackage()
 	{
