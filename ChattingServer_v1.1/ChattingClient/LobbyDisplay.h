@@ -48,7 +48,8 @@ public:
 		this->EraseCursor();
 
 		int upperLimit = lowerLimit_ + chatRooms_.size();
-		cursorIndex_ = min(++cursorIndex_, upperLimit);
+		cursorIndex_++;
+		cursorIndex_ = min(cursorIndex_, upperLimit);
 
 		this->DrawCursor();
 	}
@@ -57,7 +58,8 @@ public:
 	{
 		this->EraseCursor();
 
-		cursorIndex_= max(--cursorIndex_, lowerLimit_);
+		cursorIndex_--;
+		cursorIndex_= max(cursorIndex_, lowerLimit_);
 
 		this->DrawCursor();
 	}
