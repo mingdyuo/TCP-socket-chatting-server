@@ -15,13 +15,28 @@ void Room::EnterRoom(User* user)
 	sendServer_->PushPackage(package);
 }
 
-void Room::ExitRoom(User* user)
+void Room::ExitRoom(User* user, bool senderExclusive)
 {
+	std::shared_ptr<PK_S_ROOM_EXIT> exitPacket = std::make_shared<PK_S_ROOM_EXIT>(user->GetId());
+
+	if (senderExclusive)
+	{
+		SendPackage package(exitPacket);
+		for (auto& recver : users_)
+		{
+			if (recver->GetId() == user->GetId())
+				continue;
+			package.session_ = recver->GetSession();
+			sendServer_->PushPackage(package);
+		}
+	}
+	else
+	{
+		this->RoomCast(exitPacket);
+	}
+
 	user->ExitRoom();
 	users_.erase(user);
-
-	std::shared_ptr<PK_S_ROOM_EXIT> exitPacket = std::make_shared<PK_S_ROOM_EXIT>(user->GetId());
-	this->RoomCast(exitPacket);
 }
 
 

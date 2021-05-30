@@ -253,6 +253,10 @@ void Client::ChatRoomPage()
 		{
 			continue;
 		}
+		if (state_ != ClientState::CHATROOM)
+		{
+			break;
+		}
 		sendQueue_.push(display->SendChat(buffer));
 		display->OnSend();
 		buffer.clear();

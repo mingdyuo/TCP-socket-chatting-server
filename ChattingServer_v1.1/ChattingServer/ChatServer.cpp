@@ -107,11 +107,14 @@ unsigned ChatServer::WorkerThread()
                 printf("[Error] GQCS error\n");
             }
 
-            logicProcess_->RemoveUser(pSession->GetId());
+            printf("[Error] Remove Client\n");
+            if (pSession->IsConnected())
+            {
+                logicProcess_->RemoveUser(pSession->GetId());
+            }
         }
 
     }
     printf("[알림] Worker thread 종료\n");
     return uResult;
 }
-

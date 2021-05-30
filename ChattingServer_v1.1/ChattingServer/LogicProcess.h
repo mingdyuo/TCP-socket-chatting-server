@@ -45,10 +45,13 @@ public:
 		uMgr_(nullptr), sendServer_(nullptr), rMgr_(nullptr), bProcessRun(true)
 	{
 		processFunc_[E_PK_C_SERVER_ENTER] = &LogicProcess::C_SERVER_ENTER;
+		processFunc_[E_PK_C_SERVER_EXIT] = &LogicProcess::C_SERVER_EXIT;
 		processFunc_[E_PK_C_LOBBY_ROOM_INFO] = &LogicProcess::C_LOBBY_ROOM_INFO;
 
 		processFunc_[E_PK_C_ROOM_CREATE] = &LogicProcess::C_ROOM_CREATE;
 		processFunc_[E_PK_C_ROOM_ENTER] = &LogicProcess::C_ROOM_ENTER;
+		processFunc_[E_PK_C_ROOM_EXIT] = &LogicProcess::C_ROOM_EXIT;
+
 
 		processFunc_[E_PK_C_UNICAST] = &LogicProcess::C_UNICAST;
 		processFunc_[E_PK_C_MULTICAST] = &LogicProcess::C_MULTICAST;
@@ -96,10 +99,13 @@ protected:
 	}
 
 	void C_SERVER_ENTER(const RecvPackage& package);
+	void C_SERVER_EXIT(const RecvPackage& package);
+
 	void C_LOBBY_ROOM_INFO(const RecvPackage& package);
 
 	void C_ROOM_CREATE(const RecvPackage& package);
 	void C_ROOM_ENTER(const RecvPackage& package);
+	void C_ROOM_EXIT(const RecvPackage& package);
 
 	void C_UNICAST(const RecvPackage& package);
 	void C_MULTICAST(const RecvPackage& package);

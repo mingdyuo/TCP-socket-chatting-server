@@ -1,5 +1,6 @@
 #include "UserManager.h"
 #include "RoomManager.h"
+#include "Room.h"
 #include "../NetworkLib/Packet.h"
 
 /* * * * * * * * * * * *
@@ -20,7 +21,7 @@ bool UserManager::CreateUser(HANDLE iocpHandle, SOCKET socket)
 
     userList_.insert({ userId_++, newUser });
 
-    rMgr_->InputNewUser(newUser);
+    rMgr_->PushIntoLobby(newUser);
     // userInLobby_.insert(newUser);
 
     return true;
@@ -28,21 +29,29 @@ bool UserManager::CreateUser(HANDLE iocpHandle, SOCKET socket)
 
 void UserManager::RemoveUser(User* user)
 {
-    user->Release();
-
     uint32_t uid = user->GetId();
 
     if (user->IsInLobby())
     {
-        //< 현재 있는 채팅방에 따라서 암튼 삭제  && 캐스트
+        rMgr_->RemoveFromLobby(user);
+    }
+    else
+    {
+        user->GetRoom()->ExitRoom(user, true);
     }
 
-    printf("[CLOSE] User (%d, %s) 해제\n", user->GetId(), user->GetNickname().c_str());
+    user->Release();
+    printf("[CLOSE] User (%lu, %s) 해제\n", uid, user->GetNickname().c_str());
 
-    delete user;
+    userList_.erase(uid);
+    
+    if (user != nullptr)
+    {
+        delete user;
+        user = nullptr;
+    }
 
     // mutex
-    userList_.erase(uid);
 }
 
 void UserManager::RemoveUser(int index)

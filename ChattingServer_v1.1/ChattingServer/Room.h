@@ -20,7 +20,7 @@ public:
 
 
 	void EnterRoom(User* user);
-	void ExitRoom(User* user);
+	void ExitRoom(User* user, bool senderExclusive = false);
 
 	void RoomCast(PacketPtr packet);
 

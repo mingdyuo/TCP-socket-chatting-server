@@ -89,6 +89,7 @@ void Client::F_ROOM_EXIT(Packet* packet)
 		delete display_;
 		display_ = new LobbyDisplay(this->userId_);
 		state_ = ClientState::LOBBY;
+		display_->draw();
 	}
 	else
 	{

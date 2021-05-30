@@ -55,6 +55,14 @@ public:
 		{
 			return new PK_C_BROADCAST(text.substr(std::string("/all ").size()));
 		}
+		else if (text == std::string("/quit"))
+		{
+			return new PK_C_SERVER_EXIT();
+		}
+		else if (text == std::string("/lobby"))
+		{
+			return new PK_C_ROOM_EXIT();
+		}
 		else if (text.find("/") == 0 && text.find(" ") != std::string::npos)
 		{
 			return new PK_C_UNICAST(this->ParseForNickname(text), text.substr(text.find(" ") + 1));
@@ -103,11 +111,11 @@ private:
 	void DrawTopInfo()
 	{
 		gotoxy(0, 0); printf("┏┓╋╋╋╋╋╋┏┓╋╋╋╋╋╋╋╋┏┓╋╋╋╋┏┓╋┏┓　　　　"); printf("[방제목] %s", roomName_.empty() ? "로딩중..": roomName_.c_str());
-		gotoxy(0, 1); printf("┃┃╋╋╋╋╋┏┛┗┳┓╋╋╋╋╋╋┃┃╋╋╋┏┛┗┓┃┃　　　　"); // printf("현재 인원 (%lld)명", users_.size());
+		gotoxy(0, 1); printf("┃┃╋╋╋╋╋┏┛┗┳┓╋╋╋╋╋╋┃┃╋╋╋┏┛┗┓┃┃　　　　"); printf("현재 인원 (%lld)명", users_.size());
 		gotoxy(0, 2); printf("┃┃╋╋╋┏━┻┓┏┫┣━━┓┏━━┫┗━┳━┻┓┏┛┃┃　　　　"); 
-		gotoxy(0, 3); printf("┃┃╋╋┏┫┃━┫┃┗┫━━┫┃┏━┫┏┓┃┏┓┃┃╋┗┛　　　　"); printf("전체 채팅 : \"/all 채팅내용\"");
-		gotoxy(0, 4); printf("┃┗━━┛┃┃━┫┗┓┣━━┃┃┗━┫┃┃┃┏┓┃┗┓┏┓　　　　"); printf("귓속말 : \"/nickname 채팅내용\"");
-		gotoxy(0, 5); printf("┗━━━━┻━━┻━┛┗━━┛┗━━┻┛┗┻┛┗┻━┛┗┛　　　　");
+		gotoxy(0, 3); printf("┃┃╋╋┏┫┃━┫┃┗┫━━┫┃┏━┫┏┓┃┏┓┃┃╋┗┛　　　　"); printf("전체 채팅 : \"/all\", 귓속말 : \"/nickname\"");
+		gotoxy(0, 4); printf("┃┗━━┛┃┃━┫┗┓┣━━┃┃┗━┫┃┃┃┏┓┃┗┓┏┓　　　　"); printf("로비로 돌아가기 : \"/lobby\"");
+		gotoxy(0, 5); printf("┗━━━━┻━━┻━┛┗━━┛┗━━┻┛┗┻┛┗┻━┛┗┛　　　　"); printf("종료하기 : \"/quit\"");
 	}
 
 	void EnterMessage(const std::string& name)

@@ -17,6 +17,12 @@ void LogicProcess::C_SERVER_ENTER(const RecvPackage& package)
 	// rMgr_->SendRoomListToAll();
 }
 
+void LogicProcess::C_SERVER_EXIT(const RecvPackage& package)
+{
+	User* user = uMgr_->GetUser(package.session_->GetId());
+	uMgr_->RemoveUser(user);
+}
+
 void LogicProcess::C_LOBBY_ROOM_INFO(const RecvPackage& package)
 {
 	rMgr_->SendRoomListToOne(package.session_);
@@ -35,6 +41,14 @@ void LogicProcess::C_ROOM_ENTER(const RecvPackage& package)
 	Room* room = rMgr_->GetRoom(packet->rid);
 	room->EnterRoom(uMgr_->GetUser(package.session_->GetId()));
 
+}
+
+void LogicProcess::C_ROOM_EXIT(const RecvPackage& package)
+{
+	User* user = uMgr_->GetUser(package.session_->GetId());
+	user->GetRoom()->ExitRoom(user);
+
+	rMgr_->PushIntoLobby(user);
 }
 
 void LogicProcess::C_UNICAST(const RecvPackage& package)

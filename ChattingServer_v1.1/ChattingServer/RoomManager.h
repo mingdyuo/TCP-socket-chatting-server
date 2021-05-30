@@ -41,10 +41,16 @@ public:
 
 	void SendRoomListToAll();
 
-	void InputNewUser(User* user)
+	void PushIntoLobby(User* user)
 	{
 		userInLobby_.insert(user);
 	}
+
+	void RemoveFromLobby(User* user)
+	{
+		userInLobby_.erase(user);
+	}
+
 
 private:
 	std::map<uint16_t, Room*>	roomList_;
