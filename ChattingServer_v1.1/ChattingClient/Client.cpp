@@ -192,7 +192,7 @@ void Client::StateProcess()
 	}
 	else if (state_ == ClientState::CHATROOM)
 	{
-		
+		this->ChatRoomPage();
 	}
 }
 
@@ -206,6 +206,10 @@ void Client::LobbyPage()
 		key = _getch();
 		if (key == 224) {
 			key = _getch();
+
+			if (state_ != ClientState::LOBBY)
+				break;
+
 			switch (key) {
 			case KeyInput::KEY_UP:
 				display->CursorUp();
@@ -246,6 +250,7 @@ void Client::ChatRoomPage()
 			continue;
 		}
 		sendQueue_.push(display->SendChat(buffer));
+		display->OnSend();
 		buffer.clear();
 	}
 }

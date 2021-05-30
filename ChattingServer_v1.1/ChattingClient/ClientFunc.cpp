@@ -70,6 +70,7 @@ void Client::F_ROOM_ENTER(Packet* packet)
 		delete display_;
 		display_ = new RoomDisplay(this->userId_, this->nickname_);
 		display_->draw();
+		state_ = ClientState::CHATROOM;
 	}
 	else if (state_ == ClientState::CHATROOM)
 	{

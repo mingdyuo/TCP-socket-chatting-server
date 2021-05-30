@@ -52,16 +52,19 @@ public:
 
 	}
 
-	Packet* SendChat(std::string text)
+	Packet* SendChat(const std::string& text)
 	{
-		// 어떤 방식 캐스트인지 확인
+		// 브로드캐스트/유니캐스트 인지 확인
+		// 일단은 멀티캐스트 먼저 구현 후 변경할 것
 
-		return nullptr;
+		PK_C_MULTICAST* packet = new PK_C_MULTICAST(text);
+
+		return packet;
 	}
 
 	void OnSend()
 	{
-		// input 인덱스 올리기 
+		this->SetCursorToInputBox();
 	}
 
 private:
@@ -71,8 +74,8 @@ private:
 		gotoxy(0, 0); printf("┏┓╋╋╋╋╋╋┏┓╋╋╋╋╋╋╋╋┏┓╋╋╋╋┏┓╋┏┓　　　　"); printf("[방제목] %s", roomName_.empty() ? "로딩중..": roomName_.c_str());
 		gotoxy(0, 1); printf("┃┃╋╋╋╋╋┏┛┗┳┓╋╋╋╋╋╋┃┃╋╋╋┏┛┗┓┃┃　　　　"); printf("현재 인원 (%lld)명", users_.size());
 		gotoxy(0, 2); printf("┃┃╋╋╋┏━┻┓┏┫┣━━┓┏━━┫┗━┳━┻┓┏┛┃┃　　　　"); 
-		gotoxy(0, 3); printf("┃┃╋╋┏┫┃━┫┃┗┫━━┫┃┏━┫┏┓┃┏┓┃┃╋┗┛　　　　");
-		gotoxy(0, 4); printf("┃┗━━┛┃┃━┫┗┓┣━━┃┃┗━┫┃┃┃┏┓┃┗┓┏┓　　　　");
+		gotoxy(0, 3); printf("┃┃╋╋┏┫┃━┫┃┗┫━━┫┃┏━┫┏┓┃┏┓┃┃╋┗┛　　　　"); printf("전체 채팅 : \"/all 채팅내용\"");
+		gotoxy(0, 4); printf("┃┗━━┛┃┃━┫┗┓┣━━┃┃┗━┫┃┃┃┏┓┃┗┓┏┓　　　　"); printf("귓속말 : \"/nickname 채팅내용\"");
 		gotoxy(0, 5); printf("┗━━━━┻━━┻━┛┗━━┛┗━━┻┛┗┻┛┗┻━┛┗┛　　　　");
 	}
 

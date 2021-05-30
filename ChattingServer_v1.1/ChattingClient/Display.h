@@ -8,8 +8,8 @@
 
 enum DisplayColor
 {
-	CLR_BLACK = 0,
-	CLR_BLUE =1,
+	CLR_BLACK,
+	CLR_BLUE,
 	CLR_GREEN =2,
 	CLR_CYAN =3,
 	CLR_RED =4,
