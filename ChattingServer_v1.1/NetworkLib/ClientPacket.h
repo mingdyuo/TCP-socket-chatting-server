@@ -70,6 +70,22 @@ class PK_C_BROADCAST : public Packet
 {
 public:
 	PacketType type() { return E_PK_C_BROADCAST; }
+
+	PK_C_BROADCAST() {}
+	PK_C_BROADCAST(std::string text) :text(text) {}
+
+	std::string text;
+
+	void encode(Stream& stream)
+	{
+		stream << (packet_header_size)this->type();
+		stream << text;
+	}
+
+	void decode(Stream& stream)
+	{
+		stream >> &text;
+	}
 };
 
 class PK_C_MULTICAST : public Packet
@@ -98,6 +114,26 @@ class PK_C_UNICAST : public Packet
 {
 public:
 	PacketType type() { return E_PK_C_UNICAST; }
+
+	PK_C_UNICAST() {}
+	PK_C_UNICAST(std::string recver, std::string text) :
+		recver(recver), text(text) {}
+
+	std::string recver;
+	std::string text;
+
+	void encode(Stream& stream)
+	{
+		stream << (packet_header_size)this->type();
+		stream << recver;
+		stream << text;
+	}
+
+	void decode(Stream& stream)
+	{
+		stream >> &recver;
+		stream >> &text;
+	}
 };
 
 

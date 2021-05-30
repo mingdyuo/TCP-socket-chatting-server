@@ -54,12 +54,16 @@ public:
 
 	Packet* SendChat(const std::string& text)
 	{
-		// 브로드캐스트/유니캐스트 인지 확인
-		// 일단은 멀티캐스트 먼저 구현 후 변경할 것
+		if (text.find("/all ") == 0 && text.size() > std::string("/all ").size())
+		{
+			return new PK_C_BROADCAST(text);
+		}
+		else if (text.find("/") == 0 && text.find(" ") != std::string::npos)
+		{
+			return new PK_C_UNICAST(this->ParseForNickname(text), text);
+		}
 
-		PK_C_MULTICAST* packet = new PK_C_MULTICAST(text);
-
-		return packet;
+		return new PK_C_MULTICAST(text);
 	}
 
 	void OnSend()
@@ -87,6 +91,11 @@ private:
 	void ExitMessage(const std::string& name)
 	{
 		printf("[알림] %s님이 퇴장하셨습니다.", name.c_str());
+	}
+
+	std::string ParseForNickname(std::string text)
+	{
+		return text.substr(1, text.find_first_of(" "));;
 	}
 
 	void SetCursorToInputBox()
